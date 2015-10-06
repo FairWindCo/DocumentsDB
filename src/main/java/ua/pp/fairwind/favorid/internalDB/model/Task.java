@@ -14,6 +14,8 @@ import java.util.Set;
 /**
  * Created by Сергей on 06.10.2015.
  */
+@Entity
+@Table(name = "TASKS")
 public class Task {
     @Id
     @GeneratedValue
@@ -21,13 +23,16 @@ public class Task {
     String name;
     String description;
     @ManyToOne
+    @JoinColumn(name = "task__type_id")
     TaskType taskType;
     @ManyToOne
     Counterparty counterparty;
     @ManyToOne
     @JsonManagedReference
+    @JoinColumn(name = "responsible_person_id")
     Person responsible;
     @ManyToMany
+    @JoinTable(name = "EXECUTORS",joinColumns = @JoinColumn(name="task_id"),inverseJoinColumns = @JoinColumn(name="person_id"))
     @JsonManagedReference
     Set<Person> executors=new HashSet<>();
     Date startDate;
@@ -38,6 +43,7 @@ public class Task {
     Date modificationDate;
     @ManyToMany
     @JsonManagedReference
+    @JoinTable(name = "TASK_DOCUMENTS",joinColumns = @JoinColumn(name="task_id"),inverseJoinColumns = @JoinColumn(name="document_id"))
     Set<Document> taskDocuments=new HashSet<>();
     @ManyToOne
     @CreatedBy

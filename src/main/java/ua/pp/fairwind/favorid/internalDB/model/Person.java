@@ -12,6 +12,7 @@ import java.util.Set;
  * Created by Сергей on 06.10.2015.
  */
 @Entity
+@Table(name = "PERSONS")
 public class Person {
     @Id
     @GeneratedValue

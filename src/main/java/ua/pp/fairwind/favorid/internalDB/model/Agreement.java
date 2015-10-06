@@ -1,14 +1,13 @@
 package ua.pp.fairwind.favorid.internalDB.model;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.Version;
+import javax.persistence.*;
 import java.util.Date;
 
 /**
  * Created by Сергей on 06.10.2015.
  */
+@Entity
+@Table(name = "AGREEMENTS")
 public class Agreement {
     @Id
     @GeneratedValue
@@ -19,6 +18,7 @@ public class Agreement {
     Date planEndDate;
     Date endDate;
     @ManyToOne
+    @JoinColumn(name = "counterparty_id")
     Counterparty counterparty;
 
     @Version

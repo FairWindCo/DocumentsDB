@@ -8,11 +8,13 @@ import javax.persistence.*;
  * Created by Сергей on 06.10.2015.
  */
 @Entity
+@Table(name = "CONTACTS")
 public class Contact {
     @Id
     @GeneratedValue
     Long id;
     @ManyToOne
+    @JoinColumn(name = "contact_type_id")
     ContactType contactType;
     String contact;
     @Version

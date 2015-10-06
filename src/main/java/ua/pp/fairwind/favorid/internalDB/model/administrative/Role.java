@@ -1,14 +1,12 @@
 package ua.pp.fairwind.favorid.internalDB.model.administrative;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Version;
+import javax.persistence.*;
 
 /**
  * Created by Сергей on 06.10.2015.
  */
 @Entity
+@Table(name = "USER_ROELS")
 public class Role {
     @Id
     @GeneratedValue

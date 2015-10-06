@@ -30,6 +30,7 @@ public class User {
 
         @JsonManagedReference
         @ManyToOne
+        @JoinColumn(name = "person_id")
         private Person person;
         @Version
         private long versionId;

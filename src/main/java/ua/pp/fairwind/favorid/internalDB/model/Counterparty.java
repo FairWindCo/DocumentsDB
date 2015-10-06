@@ -19,12 +19,12 @@ public class Counterparty {
     @OneToMany
     @JsonManagedReference
     Set<Contact> contacts=new HashSet<>();
-    @OneToMany
+    @OneToMany(mappedBy = "counterparty")
     @JsonManagedReference
     Set<Person> persons=new HashSet<>();
-    @OneToMany
+    @OneToMany(mappedBy = "counterparty")
     @JsonManagedReference
-    Set<Counterparty> counterparties=new HashSet<>();
+    Set<Agreement> agriments =new HashSet<>();
     @Version
     private long version;
 
@@ -44,12 +44,12 @@ public class Counterparty {
         persons.remove(person);
     }
 
-    public void addPerson(Counterparty counterparty){
-        counterparties.add(counterparty);
+    public void addPerson(Agreement agreement){
+        agriments.add(agreement);
     }
 
-    public void removePerson(Counterparty counterparty){
-        counterparties.remove(counterparty);
+    public void removePerson(Agreement agreement){
+        agriments.remove(agreement);
     }
 
     public Long getId() {
@@ -100,11 +100,11 @@ public class Counterparty {
         this.version = version;
     }
 
-    public Set<Counterparty> getCounterparties() {
-        return counterparties;
+    public Set<Agreement> getAgriments() {
+        return agriments;
     }
 
-    public void setCounterparties(Set<Counterparty> counterparties) {
-        this.counterparties = counterparties;
+    public void setAgriments(Set<Agreement> counterparties) {
+        this.agriments = counterparties;
     }
 }
