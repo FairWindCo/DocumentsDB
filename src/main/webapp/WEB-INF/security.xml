@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:security="http://www.springframework.org/schema/security"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/security
+		http://www.springframework.org/schema/security/spring-security-3.2.xsd">
+
+
+       <security:http pattern="/images/**" security="none"/>
+       <security:http pattern="/resources/**" security="none"/>
+       <security:http pattern="/test/**" security="none"/>
+       <security:http pattern="/login*" security="none"/>
+       <security:http pattern="/error40*" security="none"/>
+       <security:http pattern="/initial/**" security="none"/>
+
+
+       <security:http access-denied-page="/forbidden" authentication-manager-ref="in-memory-auth">
+              <security:intercept-url pattern="/*" access="ROLE_USER"/>
+              <security:form-login login-page="/login" default-target-url="/index" authentication-failure-url="/login?error=true" username-parameter="username" password-parameter="password"/>
+              <security:logout logout-url="/logout" logout-success-url="/login"/>
+       </security:http>
+
+       <!--
+<bean id="myUserDetailsService"
+      class="ua.pp.fairwind.internalDBSystem.security.MyUserDetailService" />
+
+
+<sec:authentication-manager id="dao-auth">
+       <sec:authentication-provider user-service-ref="myUserDetailsService">
+       </sec:authentication-provider>
+</sec:authentication-manager>
+-->
+
+       <security:authentication-manager  id="in-memory-auth">
+              <security:authentication-provider>
+                     <security:user-service>
+                            <security:user name="admin" password="pass" authorities="ROLE_ADMIN,ROLE_USER"/>
+                            <security:user name="user1" password="1111" authorities="ROLE_USER"/>
+                            <security:user name="user2" password="2222" disabled="true" authorities="ROLE_USER"/>
+                     </security:user-service>
+              </security:authentication-provider>
+       </security:authentication-manager>
+
+       <security:global-method-security secured-annotations="enabled"/>
+
+
+</beans>

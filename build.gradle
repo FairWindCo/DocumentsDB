@@ -1,0 +1,57 @@
+group 'ua.pp.fairwind.favorit'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+apply plugin: 'war'
+apply plugin: 'io.spring.dependency-management'
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.11'
+    compile 'org.springframework:spring-core'
+    compile 'org.springframework:spring-webmvc'
+    //SPIRNG основная + дополнения для ВЕБ
+    compile 'org.springframework.security:spring-security-core'
+    compile 'org.springframework.security:spring-security-web'
+    compile 'org.springframework.security:spring-security-taglibs'
+    //SPIRNG JPS+HIBERNATE (связка для работы с БД)
+    compile 'org.springframework.data:spring-data-jpa'
+    compile 'com.mysema.querydsl:querydsl-core'
+    compile 'com.mysema.querydsl:querydsl-jpa'
+    compile 'org.hibernate:hibernate-core'
+    compile 'org.hibernate:hibernate-entitymanager'
+    //ОБРАБОТЧИКИ ОТВЕЧАЮЩТЕ ЗА ПРЕОБРАЗОВАНИЕ ОБЪЕКТОВ В JSON (управление аннотациями)
+    compile 'com.fasterxml.jackson.core:jackson-annotations'
+    compile 'com.fasterxml.jackson.core:jackson-core'
+    compile 'com.fasterxml.jackson.core:jackson-databind'
+    //МАППЕР ДЛЯ ПЕРЕДАЧИ HIBERNATE СУЩНОСТЕЙ С "ЛИНИВЫМИ" ПОЛЯМИ
+    compile 'com.fasterxml.jackson.datatype:jackson-datatype-hibernate4'
+    compile 'mysql:mysql-connector-java'
+    //ОБРАБОТЧИК ЗАГРУЗКИ ФАЙЛОВ
+    compile 'commons-fileupload:commons-fileupload'
+    //ПУЛЫ СОЕДИНЕНИЙ
+    compile 'commons-dbcp:commons-dbcp'
+}
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'io.spring.gradle:dependency-management-plugin:0.5.1.RELEASE'
+    }
+}
+
+dependencyManagement {
+    imports {
+        mavenBom 'io.spring.platform:platform-bom:1.1.3.RELEASE'
+    }
+}
