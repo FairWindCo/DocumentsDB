@@ -4,8 +4,7 @@
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:jdbc="http://www.springframework.org/schema/jdbc"
        xmlns:jpa="http://www.springframework.org/schema/data/jpa"
-       xmlns:context="http://www.springframework.org/schema/context"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd        http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd        http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd">
 
        <!--
         DB: favorit
@@ -58,7 +57,7 @@
                      <jdbc:script location="/WEB-INF/test-data.sql"/>
               </jdbc:initialize-database>-->
 
-
+<!--
        <bean id="sessionFactory"
              class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
               <property name="dataSource" ref="dataSource" />
@@ -70,42 +69,51 @@
               </property>
        </bean>
 
+-->
+
        <bean id="jpaVendorAdapter" class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
               <property name="showSql" value="true"/>
               <property name="generateDdl" value="true"/>
               <property name="database" value="MYSQL"/>
        </bean>
 
-       <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
-              <property name="persistenceXmlLocation" value="/WEB-INF/persistence.xml"/>
+       <bean id="MyEntityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+              <property name="persistenceXmlLocation" value="/META-INF/persistence.xml"/>
               <property name="persistenceUnitName" value="internalDB"/>
               <property name="dataSource" ref="dataSource"/>
-              <property name="jtaDataSource" ref="dataSource"/>
+              <!--
+                THIS ERROR NULL POINTER AT JTA
+                <property name="jtaDataSource" ref="dataSource"/>
+                -->
               <property name="jpaVendorAdapter" ref="jpaVendorAdapter"/>
-              <!-- spring based scanning for entity classes>-->
+
+              <!-- spring based scanning for entity classes>
               <property name="packagesToScan" value="ua.pp.fairwind.favorid.internalDB.model"/>
+              -->
+            <property name="packagesToScan" value="ua.pp.fairwind.favorid.internalDB.model"/>
        </bean>
 
-       <!-- Enables the Hibernate @Transactional programming model -->
-       <tx:annotation-driven transaction-manager="transactionManager" />
+
+
 
        <!--<bean id="transactionManager"
              class="org.springframework.orm.hibernate4.HibernateTransactionManager">
               <property name="sessionFactory" ref="sessionFactory" />
        </bean>-->
+    <!-- Enables the Hibernate @Transactional programming model -->
 
        <bean id="transactionManager"
              class="org.springframework.orm.jpa.JpaTransactionManager">
-              <property name="entityManagerFactory" ref="entityManagerFactory" />
+              <property name="entityManagerFactory" ref="MyEntityManagerFactory" />
        </bean>
 
        <tx:annotation-driven  transaction-manager="transactionManager"/>
 
        <jpa:repositories base-package="ua.pp.fairwind.favorid.internalDB.repository"
-                         entity-manager-factory-ref="entityManagerFactory"
+                         entity-manager-factory-ref="MyEntityManagerFactory"
                          transaction-manager-ref="transactionManager">
        </jpa:repositories>
+
        <!--       -->
 
-       <context:component-scan base-package="ua.pp.fairwind.favorid.internalDB" />
 </beans>

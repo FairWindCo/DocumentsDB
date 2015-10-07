@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:sec="http://www.springframework.org/schema/security"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:mvc="http://www.springframework.org/schema/mvc"
        xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-       http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
-       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
-       http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.2.xsd">
+       http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+       <context:component-scan base-package="ua.pp.fairwind.favorid.internalDB.controllers" />
 
        <mvc:interceptors>
               <mvc:interceptor>
@@ -19,9 +18,13 @@
               </mvc:interceptor>
        </mvc:interceptors>
 
-       <mvc:annotation-driven>
-              <mvc:message-converters>
-                     <!-- Use the HibernateAware mapper instead of the default -->
+    <import resource="security.xml"></import>
+    <import resource="jpaContext.xml"></import>
+
+    <!-- Use the HibernateAware mapper instead of the default -->
+    <mvc:annotation-driven>
+           <mvc:message-converters>
+
                      <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
                             <property name="objectMapper">
                                    <bean class="ua.pp.fairwind.favorid.internalDB.HibernateAwareObjectMapper" />
@@ -29,8 +32,5 @@
                      </bean>
               </mvc:message-converters>
        </mvc:annotation-driven>
-
-       <import resource="jpaContext.xml"></import>
-       <import resource="security.xml"></import>
 
 </beans>

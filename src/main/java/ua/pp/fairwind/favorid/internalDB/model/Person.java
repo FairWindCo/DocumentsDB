@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import ua.pp.fairwind.favorid.internalDB.model.directories.Position;
 
 import javax.persistence.*;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -23,13 +24,21 @@ public class Person {
     Date date_of_birth;
     String comments;
     @ManyToOne
+    @JoinColumn(name = "position_id")
     Position position;
     @JsonManagedReference
     @ManyToOne
+    @JoinColumn(name = "counterparty_id")
     Counterparty counterparty;
     @OneToMany
     @JsonManagedReference
-    Set<Contact> contacts=new HashSet<>();
+    final Set<Contact> contacts=new HashSet<>();
+    @OneToMany(mappedBy = "head")
+    @JsonManagedReference
+    final Set<Person> subordinates=new HashSet<>();
+    @ManyToOne
+    @JoinColumn(name = "head_of_id")
+    Person head;
     @Version
     private long version;
 
@@ -94,16 +103,19 @@ public class Person {
     }
 
     public void setCounterparty(Counterparty counterparty) {
-        this.counterparty = counterparty;
+        if(counterparty!=null) {
+            this.counterparty = counterparty;
+            counterparty.persons.add(this);
+        } else {
+            this.counterparty.persons.remove(this);
+            this.counterparty = counterparty;
+        }
     }
 
     public Set<Contact> getContacts() {
-        return contacts;
+        return Collections.unmodifiableSet(contacts);
     }
 
-    public void setContacts(Set<Contact> contacts) {
-        this.contacts = contacts;
-    }
 
     public void addContact(Contact contact){
         contacts.add(contact);
@@ -119,5 +131,38 @@ public class Person {
 
     public void setVersion(long version) {
         this.version = version;
+    }
+
+    public void setHead(Person person){
+        if(person!=null){
+            person.subordinates.add(this);
+            this.head=person;
+        } else {
+            if(this.head!=null){
+                if(this.head.subordinates.remove(this)){
+                    this.head=null;
+                }
+            }
+        }
+    }
+
+    public void addSubordinate(Person person){
+        if(person!=null){
+            person.setHead(this);
+        }
+    }
+
+    public void removeSubordinate(Person person){
+        if(person!=null){
+            person.setHead(null);
+        }
+    }
+
+    public Person getHead() {
+        return head;
+    }
+
+    public Set<Person> getSubordinates() {
+        return Collections.unmodifiableSet(subordinates);
     }
 }

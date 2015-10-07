@@ -2,11 +2,12 @@ package ua.pp.fairwind.favorid.internalDB.model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
 import ua.pp.fairwind.favorid.internalDB.model.administrative.User;
 import ua.pp.fairwind.favorid.internalDB.model.directories.TaskType;
 
 import javax.persistence.*;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -26,6 +27,7 @@ public class Task {
     @JoinColumn(name = "task__type_id")
     TaskType taskType;
     @ManyToOne
+    @JoinColumn(name = "counterparty_id")
     Counterparty counterparty;
     @ManyToOne
     @JsonManagedReference
@@ -34,19 +36,20 @@ public class Task {
     @ManyToMany
     @JoinTable(name = "EXECUTORS",joinColumns = @JoinColumn(name="task_id"),inverseJoinColumns = @JoinColumn(name="person_id"))
     @JsonManagedReference
-    Set<Person> executors=new HashSet<>();
+    final Set<Person> executors=new HashSet<>();
     Date startDate;
     Date dedLineDate;
     Date endDate;
     Date creationDate=new Date();
-    @LastModifiedBy
+    @LastModifiedDate
     Date modificationDate;
     @ManyToMany
     @JsonManagedReference
     @JoinTable(name = "TASK_DOCUMENTS",joinColumns = @JoinColumn(name="task_id"),inverseJoinColumns = @JoinColumn(name="document_id"))
-    Set<Document> taskDocuments=new HashSet<>();
+    final Set<Document> taskDocuments=new HashSet<>();
     @ManyToOne
     @CreatedBy
+    @JoinColumn(name = "create_user_id")
     User creationUser;
 
     @Version
@@ -101,12 +104,9 @@ public class Task {
     }
 
     public Set<Person> getExecutors() {
-        return executors;
+        return Collections.unmodifiableSet(executors);
     }
 
-    public void setExecutors(Set<Person> executors) {
-        this.executors = executors;
-    }
 
     public Date getStartDate() {
         return startDate;
@@ -149,12 +149,9 @@ public class Task {
     }
 
     public Set<Document> getTaskDocuments() {
-        return taskDocuments;
+        return Collections.unmodifiableSet(taskDocuments);
     }
 
-    public void setTaskDocuments(Set<Document> taskDocuments) {
-        this.taskDocuments = taskDocuments;
-    }
 
     public long getVersion() {
         return version;

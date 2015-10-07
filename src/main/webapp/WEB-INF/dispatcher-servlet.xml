@@ -7,7 +7,7 @@
        ">
 
        <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-              <property name="prefix" value="/WEB-INF/jsp/" />
+              <property name="prefix" value="/jsp/" />
               <property name="suffix" value=".jsp" />
        </bean>
 
@@ -16,7 +16,7 @@
 
        <mvc:resources mapping="/resources/**" location="/resources/"  cache-period="31556926"/>
        <mvc:resources mapping="/dist/**" location="/resources/"  cache-period="31556926"/>
-       <mvc:resources mapping="/images/*" location="/resources/main/images/"  cache-period="31556926"/>
+       <mvc:resources mapping="/images/*" location="/resources/images/"  cache-period="31556926"/>
 
 
        <bean id="localeResolver"
@@ -31,7 +31,7 @@
              class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
               <property name="basenames">
                      <list>
-                            <value>classpath:ua/pp/fairwind/favorit/internalDB/label</value>
+                            <value>classpath:label</value>
                      </list>
               </property>
               <property name="fallbackToSystemLocale" value="false"/>
@@ -39,6 +39,5 @@
               <property name="defaultEncoding" value="UTF-8"/>
               <property name="cacheSeconds" value="1"/>
        </bean>
-
 
 </beans>

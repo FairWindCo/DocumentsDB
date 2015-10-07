@@ -16,13 +16,17 @@ repositories {
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.11'
+    //SPIRNG основная + дополнения для ВЕБ
     compile 'org.springframework:spring-core'
     compile 'org.springframework:spring-webmvc'
-    //SPIRNG основная + дополнения для ВЕБ
+    //SPIRNG безопасность
     compile 'org.springframework.security:spring-security-core'
+    //файл исправляет ошибку Unable to locate Spring NamespaceHandler for XML schema namespace [http://www.springframework.org/schema/security]
+    compile 'org.springframework.security:spring-security-config'
     compile 'org.springframework.security:spring-security-web'
     compile 'org.springframework.security:spring-security-taglibs'
     //SPIRNG JPS+HIBERNATE (связка для работы с БД)
+    compile 'org.springframework.integration:spring-integration-jpa'
     compile 'org.springframework.data:spring-data-jpa'
     compile 'com.mysema.querydsl:querydsl-core'
     compile 'com.mysema.querydsl:querydsl-jpa'
@@ -39,6 +43,7 @@ dependencies {
     compile 'commons-fileupload:commons-fileupload'
     //ПУЛЫ СОЕДИНЕНИЙ
     compile 'commons-dbcp:commons-dbcp'
+    compile 'commons-logging:commons-logging'
 }
 
 buildscript {

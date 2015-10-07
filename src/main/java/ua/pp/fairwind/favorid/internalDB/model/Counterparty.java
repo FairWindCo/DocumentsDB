@@ -3,6 +3,7 @@ package ua.pp.fairwind.favorid.internalDB.model;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import javax.persistence.*;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -18,13 +19,13 @@ public class Counterparty {
     String full_name;
     @OneToMany
     @JsonManagedReference
-    Set<Contact> contacts=new HashSet<>();
+    final Set<Contact> contacts=new HashSet<>();
     @OneToMany(mappedBy = "counterparty")
     @JsonManagedReference
-    Set<Person> persons=new HashSet<>();
+    final Set<Person> persons=new HashSet<>();
     @OneToMany(mappedBy = "counterparty")
     @JsonManagedReference
-    Set<Agreement> agriments =new HashSet<>();
+    final Set<Agreement> agriments =new HashSet<>();
     @Version
     private long version;
 
@@ -37,19 +38,31 @@ public class Counterparty {
     }
 
     public void addPerson(Person person){
-        persons.add(person);
+        if(person!=null){
+            person.setCounterparty(this);
+        }
     }
 
     public void removePerson(Person person){
-        persons.remove(person);
+        if(person!=null){
+            person.setCounterparty(null);
+        }
     }
 
-    public void addPerson(Agreement agreement){
-        agriments.add(agreement);
+    public void addAgreement(Agreement agreement){
+        if(agreement!=null) {
+            if(agriments.add(agreement)) {
+                agreement.counterparty = this;
+            }
+        }
     }
 
-    public void removePerson(Agreement agreement){
-        agriments.remove(agreement);
+    public void removeAgreement(Agreement agreement){
+        if(agreement!=null){
+            if(agriments.remove(agreement)){
+                agreement.counterparty=null;
+            }
+        }
     }
 
     public Long getId() {
@@ -77,19 +90,15 @@ public class Counterparty {
     }
 
     public Set<Contact> getContacts() {
-        return contacts;
-    }
-
-    public void setContacts(Set<Contact> contacts) {
-        this.contacts = contacts;
+        return Collections.unmodifiableSet(contacts);
     }
 
     public Set<Person> getPersons() {
-        return persons;
+        return Collections.unmodifiableSet(persons);
     }
 
-    public void setPersons(Set<Person> persons) {
-        this.persons = persons;
+    public Set<Agreement> getAgriments() {
+        return Collections.unmodifiableSet(agriments);
     }
 
     public long getVersion() {
@@ -100,11 +109,7 @@ public class Counterparty {
         this.version = version;
     }
 
-    public Set<Agreement> getAgriments() {
-        return agriments;
-    }
 
-    public void setAgriments(Set<Agreement> counterparties) {
-        this.agriments = counterparties;
-    }
+
+
 }

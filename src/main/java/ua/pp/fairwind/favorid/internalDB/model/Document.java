@@ -8,6 +8,7 @@ import ua.pp.fairwind.favorid.internalDB.model.administrative.User;
 import ua.pp.fairwind.favorid.internalDB.model.directories.DocumentType;
 
 import javax.persistence.*;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -56,11 +57,11 @@ public class Document {
 
     @OneToMany
     @JsonManagedReference
-    Set<Document> atachments=new HashSet<>();
+    final Set<Document> atachments=new HashSet<>();
 
     @OneToMany
     @JsonManagedReference
-    Set<DocumentFile> documentFiles=new HashSet<>();
+    final Set<DocumentFile> documentFiles=new HashSet<>();
 
     Date creationDate=new Date();
     @LastModifiedDate
@@ -76,4 +77,140 @@ public class Document {
 
     @Version
     private long version;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public DocumentType getDocumentType() {
+        return documentType;
+    }
+
+    public void setDocumentType(DocumentType documentType) {
+        this.documentType = documentType;
+    }
+
+    public String getNumber() {
+        return number;
+    }
+
+    public void setNumber(String number) {
+        this.number = number;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Counterparty getCounterparty_from() {
+        return counterparty_from;
+    }
+
+    public void setCounterparty_from(Counterparty counterparty_from) {
+        this.counterparty_from = counterparty_from;
+    }
+
+    public Counterparty getCounterparty_to() {
+        return counterparty_to;
+    }
+
+    public void setCounterparty_to(Counterparty counterparty_to) {
+        this.counterparty_to = counterparty_to;
+    }
+
+    public Person getPerson_from() {
+        return person_from;
+    }
+
+    public void setPerson_from(Person person_from) {
+        this.person_from = person_from;
+    }
+
+    public Person getPerson_to() {
+        return person_to;
+    }
+
+    public void setPerson_to(Person person_to) {
+        this.person_to = person_to;
+    }
+
+    public Agreement getAgreement() {
+        return agreement;
+    }
+
+    public void setAgreement(Agreement agreement) {
+        this.agreement = agreement;
+    }
+
+    public Document getParent() {
+        return parent;
+    }
+
+    public void setParent(Document parent) {
+        this.parent = parent;
+    }
+
+    public Set<Document> getAtachments() {
+        return Collections.unmodifiableSet(atachments);
+    }
+
+    public Set<DocumentFile> getDocumentFiles() {
+        return Collections.unmodifiableSet(documentFiles);
+    }
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public Date getModificationDate() {
+        return modificationDate;
+    }
+
+    public void setModificationDate(Date modificationDate) {
+        this.modificationDate = modificationDate;
+    }
+
+    public User getCreationUser() {
+        return creationUser;
+    }
+
+    public void setCreationUser(User creationUser) {
+        this.creationUser = creationUser;
+    }
+
+    public User getModificationUser() {
+        return modificationUser;
+    }
+
+    public void setModificationUser(User modificationUser) {
+        this.modificationUser = modificationUser;
+    }
+
+    public long getVersion() {
+        return version;
+    }
+
+    public void setVersion(long version) {
+        this.version = version;
+    }
 }
