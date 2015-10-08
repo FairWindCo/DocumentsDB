@@ -1,0 +1,62 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title id='Description'>The following example shows how to get the Grid's HTML, add it to a new browser window and trigger printing.</title>
+    <link rel="stylesheet" href="jqx.base.css" type="text/css" />
+    <script type="text/javascript" src="jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="jqxcore.js"></script>
+    <script type="text/javascript" src="jqxbuttons.js"></script>
+    <script type="text/javascript" src="jqxscrollbar.js"></script>
+    <script type="text/javascript" src="jqxmenu.js"></script>
+    <script type="text/javascript" src="jqxcheckbox.js"></script>
+    <script type="text/javascript" src="jqxgrid.js"></script>
+    <script type="text/javascript" src="jqxgrid.selection.js"></script> 
+	<script type="text/javascript" src="jqxgrid.edit.js"></script> 
+	<script type="text/javascript" src="jqxgrid.columnsresize.js"></script> 
+    <script type="text/javascript" src="jqxdata.js"></script> 
+    <script type="text/javascript" src="jqxgrid.sort.js"></script> 
+
+    <script type="text/javascript">		
+        $(document).ready(function () {
+			var source =
+			{
+				type:"POST",
+				datatype: "jsonp",
+				datafields: [
+					{ name: 'id', type: 'int' },
+					{ name: 'name'},
+					{ name: 'numberFormat'},
+					{ name: 'version'}
+				],				
+				id: 'id',
+				url: 'http://localhost:8080/DocumentsDB-1.0-SNAPSHOT/contacttypes/listing'
+			};
+			var dataAdapter = new $.jqx.dataAdapter(source);
+		
+			$("#jqxgrid").jqxGrid(
+			{
+				source: dataAdapter,
+				columnsresize: true,
+				columns: [
+					{ text: 'Name', datafield: 'name', width: 250 },
+					{ text: 'ID', datafield: 'id', width: 250 },
+					{ text: 'Format', datafield: 'numberFormat', width: 180 },
+					{ text: 'Version', datafield: 'version', width: 120 },
+				],
+				editable: true,
+				selectionmode: 'singlecell'
+			});
+     });
+    </script>
+</head>
+<body class='default'>
+    <div id='jqxWidget' style="font-size: 13px; font-family: Verdana; float: left;">
+		TEST
+        <div id="jqxgrid"></div>
+    </div>
+<div style="margin-left:20px">
+    <table id="jqGrid"></table>
+    <div id="jqGridPager"></div>
+</div>
+</body>
+</html>

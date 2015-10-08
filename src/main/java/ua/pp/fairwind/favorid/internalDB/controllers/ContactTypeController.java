@@ -1,7 +1,6 @@
 package ua.pp.fairwind.favorid.internalDB.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpRequest;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,6 +11,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import ua.pp.fairwind.favorid.internalDB.jgrid.JGridRowsResponse;
 import ua.pp.fairwind.favorid.internalDB.model.directories.ContactType;
 import ua.pp.fairwind.favorid.internalDB.repository.ContactTypeRepository;
+
+import javax.servlet.http.HttpServletRequest;
 
 
 /**
@@ -32,7 +33,7 @@ public class ContactTypeController {
     @Transactional(readOnly = true)
     @RequestMapping(value = "/listing", method = RequestMethod.POST)
     @ResponseBody
-    public JGridRowsResponse<ContactType> getTable(HttpRequest request){
+    public JGridRowsResponse<ContactType> getTable(HttpServletRequest request){
         return new JGridRowsResponse<ContactType>(repositoryContactType.findAll());
     }
 

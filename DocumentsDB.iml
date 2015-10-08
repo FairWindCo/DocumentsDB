@@ -107,5 +107,7 @@
     <orderEntry type="library" exported="" name="Gradle: com.lmax:disruptor:3.2.1" level="project" />
     <orderEntry type="library" exported="" name="Gradle: io.gatling:jsr166e:1.0" level="project" />
     <orderEntry type="library" exported="" name="Gradle: com.goldmansachs:gs-collections-api:5.1.0" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: javax.servlet:javax.servlet-api:3.0.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: javax.servlet:jstl:1.2" level="project" />
   </component>
 </module>

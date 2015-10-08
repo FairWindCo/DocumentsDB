@@ -71,6 +71,8 @@
           <element id="library" level="project" name="Gradle: com.lmax:disruptor:3.2.1" />
           <element id="library" level="project" name="Gradle: io.gatling:jsr166e:1.0" />
           <element id="library" level="project" name="Gradle: com.goldmansachs:gs-collections-api:5.1.0" />
+          <element id="library" level="project" name="Gradle: javax.servlet:javax.servlet-api:3.0.1" />
+          <element id="library" level="project" name="Gradle: javax.servlet:jstl:1.2" />
         </element>
       </element>
       <element id="directory" name="META-INF">

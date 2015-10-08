@@ -19,7 +19,7 @@
 <script type="text/javascript">
     $(document).ready(function () {
 
-        $("#jqGrid").jqGrid({
+        $("#jqGrid").jqxGrid({
             url: '${pageContext.request.contextPath}/contacttypes/listing',
             mtype: "POST",
             styleUI : 'Bootstrap',
