@@ -28,7 +28,7 @@ dependencies {
     compile 'org.springframework.security:spring-security-web'
     compile 'org.springframework.security:spring-security-taglibs'
     //SPIRNG JPS+HIBERNATE (связка для работы с БД)
-    compile 'org.springframework.integration:spring-integration-jpa'
+    //compile 'org.springframework.integration:spring-integration-jpa'
     compile 'org.springframework.data:spring-data-jpa'
     compile 'com.mysema.querydsl:querydsl-core'
     compile 'com.mysema.querydsl:querydsl-jpa'

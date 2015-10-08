@@ -10,14 +10,30 @@
     <script type="text/javascript" src="jqxmenu.js"></script>
     <script type="text/javascript" src="jqxcheckbox.js"></script>
     <script type="text/javascript" src="jqxgrid.js"></script>
-    <script type="text/javascript" src="jqxgrid.selection.js"></script> 
-	<script type="text/javascript" src="jqxgrid.edit.js"></script> 
-	<script type="text/javascript" src="jqxgrid.columnsresize.js"></script> 
-    <script type="text/javascript" src="jqxdata.js"></script> 
-    <script type="text/javascript" src="jqxgrid.sort.js"></script> 
+    <script type="text/javascript" src="jqxgrid.selection.js"></script>
+	<script type="text/javascript" src="jqxgrid.edit.js"></script>
+	<script type="text/javascript" src="jqxgrid.columnsresize.js"></script>
+    <script type="text/javascript" src="jqxdata.js"></script>
+    <script type="text/javascript" src="jqxgrid.sort.js"></script>
 
     <script type="text/javascript">		
         $(document).ready(function () {
+			var firstNames = ["Nancy", "Andrew", "Janet", "Margaret", "Steven", "Michael", "Robert", "Laura", "Anne"];
+			var lastNames = ["Davolio", "Fuller", "Leverling", "Peacock", "Buchanan", "Suyama", "King", "Callahan", "Dodsworth"];
+			var titles = ["Sales Representative", "Vice President, Sales", "Sales Representative", "Sales Representative", "Sales Manager", "Sales Representative", "Sales Representative", "Inside Sales Coordinator", "Sales Representative"];
+			var generaterow = function() {
+				var row = {};
+				var firtnameindex = Math.floor(Math.random() * firstNames.length);
+				var lastnameindex = Math.floor(Math.random() * lastNames.length);
+				var k = firtnameindex;
+				row["FirstName"] = firstNames[firtnameindex];
+				row["LastName"] = lastNames[lastnameindex];
+				row["Title"] = titles[k];
+				var startDate = new Date(1950, 0, 1);
+				row["BirthDate"] = new Date(startDate.getTime() + Math.random() * (new Date(1999, 0, 1).getTime() - startDate.getTime()));
+				return row;
+			}
+
 			var source =
 			{
 				type:"POST",
@@ -29,7 +45,60 @@
 					{ name: 'version'}
 				],				
 				id: 'id',
-				url: 'http://localhost:8080/DocumentsDB-1.0-SNAPSHOT/contacttypes/listing'
+				url: 'http://localhost:8080/DocumentsDB-1.0-SNAPSHOT/contacttypes/listing',
+				async: true,
+				addrow: function(rowid, rowdata, position, commit) {
+					//var formattedBirthDate = $.jqx.formatDate(rowdata.BirthDate, 'yyyy-MM-dd');
+					var data = $.extend({}, rowdata);
+					//data.BirthDate = formattedBirthDate;
+					$.ajax({
+						url: 'http://localhost:8080/DocumentsDB-1.0-SNAPSHOT/contacttypes/add',
+						data: data,
+						type: 'POST',
+						success: function(data, textStatus, jqXHR) {
+							var newRowId = data != undefined ? parseInt(data) : 0
+							if (!newRowId)
+								commit(false);
+							else
+								commit(true, newRowId);
+						},
+						error: function(jqXHR, textStatus, errorThrown) {
+							commit(false);
+						}
+					});
+				},
+				deleterow: function(rowid, commit) {
+					$.ajax({
+						url: 'http://localhost:8080/DocumentsDB-1.0-SNAPSHOT/contacttypes/delete',
+						data: {
+							row: rowid
+						},
+						type: 'POST',
+						success: function(data, textStatus, jqXHR) {
+							commit(true);
+						},
+						error: function(jqXHR, textStatus, errorThrown) {
+							commit(false);
+						}
+					});
+				},
+				updaterow: function(rowid, newdata, commit) {
+					//var formattedBirthDate = $.jqx.formatDate(newdata.BirthDate, 'yyyy-MM-dd');
+					var data = $.extend({}, newdata);
+					//data.BirthDate = formattedBirthDate;
+					data.id = rowid;
+					$.ajax({
+						url: 'http://localhost:8080/DocumentsDB-1.0-SNAPSHOT/contacttypes/add',
+						data: data,
+						type: 'POST',
+						success: function(data, textStatus, jqXHR) {
+							commit(true);
+						},
+						error: function(jqXHR, textStatus, errorThrown) {
+							commit(false);
+						}
+					});
+				}
 			};
 			var dataAdapter = new $.jqx.dataAdapter(source);
 		
@@ -46,6 +115,31 @@
 				editable: true,
 				selectionmode: 'singlecell'
 			});
+			$("#addrowbutton, #deleterowbutton, #updaterowbutton").jqxButton({
+				width: 150
+			});
+			$('#addrowbutton').click(function() {
+				var datarow = {id:null};
+				var commit = $("#jqxgrid").jqxGrid('addrow', null, datarow);
+			});
+			$('#deleterowbutton').click(function() {
+				var selectedrowindex = $("#jqxgrid").jqxGrid('getselectedrowindex');
+				var rowscount = $("#jqxgrid").jqxGrid('getdatainformation').rowscount;
+				if (selectedrowindex >= 0 && selectedrowindex < rowscount) {
+					var id = $("#jqxgrid").jqxGrid('getrowid', selectedrowindex);
+					var commit = $("#jqxgrid").jqxGrid('deleterow', id);
+				}
+			});
+			$('#updaterowbutton').click(
+					function() {
+						var selectedrowindex = $("#jqxgrid").jqxGrid('getselectedrowindex');
+						var rowscount = $("#jqxgrid").jqxGrid('getdatainformation').rowscount;
+						if (selectedrowindex >= 0 && selectedrowindex < rowscount) {
+							var id = $("#jqxgrid").jqxGrid('getrowid', selectedrowindex);
+							var datarow = generaterow();
+							$("#jqxgrid").jqxGrid('updaterow', id, datarow);
+						}
+					});
      });
     </script>
 </head>
@@ -53,6 +147,17 @@
     <div id='jqxWidget' style="font-size: 13px; font-family: Verdana; float: left;">
 		TEST
         <div id="jqxgrid"></div>
+		<div style="margin-left: 30px; float: left;">
+			<div>
+				<input id="addrowbutton" type="button" value="Add New Row" />
+			</div>
+			<div style="margin-top: 10px;">
+				<input id="deleterowbutton" type="button" value="Delete Selected Row" />
+			</div>
+			<div style="margin-top: 10px;">
+				<input id="updaterowbutton" type="button" value="Update Selected Row" />
+			</div>
+		</div>
     </div>
 <div style="margin-left:20px">
     <table id="jqGrid"></table>

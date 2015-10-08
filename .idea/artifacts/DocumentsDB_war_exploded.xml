@@ -1,15 +1,10 @@
 <component name="ArtifactManager">
-  <artifact type="exploded-war" name="Gradle : ua.pp.fairwind.favorit:DocumentsDB : DocumentsDB-1.0-SNAPSHOT.war (exploded)">
-    <output-path>$PROJECT_DIR$/out/artifacts/DocumentsDB/exploded/DocumentsDB-1.0-SNAPSHOT.war</output-path>
-    <properties id="gradle-properties">
-      <options external-project-path="$PROJECT_DIR$" />
-    </properties>
+  <artifact type="exploded-war" build-on-make="true" name="DocumentsDB:war exploded">
+    <output-path>$PROJECT_DIR$/out/artifacts/DocumentsDB_war_exploded</output-path>
     <root id="root">
-      <element id="javaee-facet-resources" facet="DocumentsDB/web/Web Gradle : DocumentsDB-1.0-SNAPSHOT.war" />
       <element id="directory" name="WEB-INF">
         <element id="directory" name="classes">
           <element id="module-output" name="DocumentsDB" />
-          <element id="dir-copy" path="$PROJECT_DIR$/build/resources/main" />
         </element>
         <element id="directory" name="lib">
           <element id="library" level="project" name="Gradle: org.springframework:spring-core:4.1.7.RELEASE" />
@@ -71,13 +66,10 @@
           <element id="library" level="project" name="Gradle: com.lmax:disruptor:3.2.1" />
           <element id="library" level="project" name="Gradle: io.gatling:jsr166e:1.0" />
           <element id="library" level="project" name="Gradle: com.goldmansachs:gs-collections-api:5.1.0" />
-          <element id="library" level="project" name="Gradle: javax.servlet:javax.servlet-api:3.0.1" />
-          <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/javax.servlet/jstl/1.2/74aca283cd4f4b4f3e425f5820cda58f44409547/jstl-1.2.jar" />
+          <element id="library" level="project" name="Gradle: javax.servlet:jstl:1.2" />
         </element>
       </element>
-      <element id="directory" name="META-INF">
-        <element id="file-copy" path="$PROJECT_DIR$/out/artifacts/DocumentsDB/exploded/DocumentsDB-1.0-SNAPSHOT.war/META-INF/MANIFEST.MF" />
-      </element>
+      <element id="javaee-facet-resources" facet="DocumentsDB/web/Web Gradle : DocumentsDB-1.0-SNAPSHOT.war" />
     </root>
   </artifact>
 </component>

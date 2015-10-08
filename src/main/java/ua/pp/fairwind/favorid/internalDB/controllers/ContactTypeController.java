@@ -5,6 +5,8 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -37,4 +39,14 @@ public class ContactTypeController {
         return new JGridRowsResponse<ContactType>(repositoryContactType.findAll());
     }
 
+    @Transactional(readOnly = false)
+    @RequestMapping(value = "/add", method = RequestMethod.POST)
+    @ResponseBody
+    public String add(@ModelAttribute ContactType contactType, BindingResult result){
+        if(result.hasErrors()){
+            return "ERROR:"+result.toString();
+        }
+        repositoryContactType.save(contactType);
+        return "Success";
+    }
 }

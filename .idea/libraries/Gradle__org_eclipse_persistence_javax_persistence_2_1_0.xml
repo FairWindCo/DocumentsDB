@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="Gradle: org.eclipse.persistence:javax.persistence:2.1.0">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/eclipse/persistence/javax.persistence/2.1.0/javax.persistence-2.1.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
