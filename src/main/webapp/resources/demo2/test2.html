@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" type="text/css" media="screen" href='ui.jqgrid.css'/>
+    <link rel="stylesheet" type="text/css" media="screen" href='jquery-ui.structure.min.css'/>
+    <link rel="stylesheet" type="text/css" media="screen" href='jquery-ui.theme.min.css'/>
+    <script type='text/javascript' src='jquery-1.11.3.min.js'></script>
+    <script type='text/javascript' src='jquery-ui.min.js'></script>
+    <script type='text/javascript' src='i18n/grid.locale-en.js'></script>
+    <script type='text/javascript' src='jquery.jqGrid.min.js'></script>
+
+    <title>User Records</title>
+
+    <script type='text/javascript'>
+        $(function() {
+            $("#grid").jqGrid({
+                url:'/DocumentsDB_war_exploded/contacttypes/listing',
+                datatype: 'json',
+                mtype: 'POST',
+                colNames:['Id', 'Name', 'Format', 'Version'],
+                colModel:[
+                    {name:'id',index:'id', width:55, editable:false, editoptions:{readonly:true, size:10,NullIfEmpty:true,defaultValue:'0'}, hidden:true},
+                    {name:'name',index:'name', width:100, editable:true, editrules:{required:true}, editoptions:{size:200}},
+                    {name:'numberFormat',index:'numberFormat', width:100, editable:true, editrules:{required:true}, editoptions:{size:50}},
+                    {name:'version',index:'version', width:100, editable:true, editrules:{readonly:true}, editoptions:{size:10,defaultValue:'0'}, hidden:true}
+                ],
+                rowNum:10,
+                rowList:[10,20,40,60],
+                height: 240,
+                autowidth: true,
+                rownumbers: true,
+                pager: '#pager',
+                sortname: 'id',
+                viewrecords: true,
+                sortorder: "asc",
+                caption:"Records",
+                emptyrecords: "Empty records",
+                loadonce: false,
+                editurl: '/DocumentsDB_war_exploded/contacttypes/edit',
+                loadComplete: function() {},
+                jsonReader : {
+                    root: "rows",
+                    page: "page",
+                    total: "total",
+                    records: "records",
+                    repeatitems: false,
+                    cell: "cell",
+                    id: "id"
+                }
+            });
+            $("#grid").jqGrid('navGrid','#pager',
+                    {/*navGrid options*/
+                        edit:true, add:true, del:true, search:true},
+                    {/*edit options*/},
+                    {
+                        /*add options*/
+                        serializeEditData: function (postData) {
+                            if(postData && postData.id=="_empty") postData.id=0;
+                            return postData;
+                        }
+                    }, {/*del options*/},
+                    { 	// search
+                        sopt:['cn', 'eq', 'ne', 'lt', 'gt', 'bw', 'ew'],
+                        closeOnEscape: true,
+                        multipleSearch: true,
+                        closeAfterSearch: true
+                    }
+            );
+
+            // Toolbar Search
+            $("#grid").jqGrid('filterToolbar',{stringResult: true,searchOnEnter : true, defaultSearch:"cn"});
+
+
+
+        });
+
+    </script>
+</head>
+
+<body>
+<h1 id='banner'>System Records</h1>
+
+<div id='jqgrid'>
+    <table id='grid'></table>
+    <div id='pager'></div>
+</div>
+
+<div id='msgbox' title='' style='display:none'></div>
+</body>
+</html>

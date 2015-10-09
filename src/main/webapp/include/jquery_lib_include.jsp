@@ -8,8 +8,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+
 <script src="<c:url value="/resources/script/jquery/jquery-1.11.3.min.js"/>"></script>
-<%--
-<script src="<c:url value="/resources/jquery/jquery-2.1.4.min.js"/>"></script>
-<script src="<c:url value="/resources/jquery/jquery-1.11.3.min.js"/>"></script>
---%>
+
