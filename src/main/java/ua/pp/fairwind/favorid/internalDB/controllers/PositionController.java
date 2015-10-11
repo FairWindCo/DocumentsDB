@@ -8,10 +8,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import ua.pp.fairwind.favorid.internalDB.jgrid.JGridRowsResponse;
-import ua.pp.fairwind.favorid.internalDB.model.directories.ContactType;
-import ua.pp.fairwind.favorid.internalDB.repository.ContactTypeRepository;
+import ua.pp.fairwind.favorid.internalDB.model.directories.Position;
+import ua.pp.fairwind.favorid.internalDB.repository.PositionRepository;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -22,21 +25,21 @@ import java.io.IOException;
  * Created by Сергей on 07.10.2015.
  */
 @Controller
-@RequestMapping("/contacttypes")
-public class ContactTypeController {
+@RequestMapping("/positions")
+public class PositionController {
     @Autowired
-    ContactTypeRepository repositoryContactType;
+    PositionRepository repositoryPosition;
 
     @Secured("ROLE_USER")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     public String list(Model model) {
-        return "contact_type_list";
+        return "position_list";
     }
 
     @Transactional(readOnly = true)
     @RequestMapping(value = "/listing", method = RequestMethod.POST)
     @ResponseBody
-    public JGridRowsResponse<ContactType> getTable(HttpServletRequest request){
+    public JGridRowsResponse<Position> getTable(HttpServletRequest request){
         //Pegeable
         /*
         nd:1444413790954
@@ -67,46 +70,35 @@ public class ContactTypeController {
         String filterName=request.getParameter("name");
         if(pageRequest!=null){
             if(filterName!=null && !filterName.isEmpty()){
-                return new JGridRowsResponse<ContactType>(repositoryContactType.findByNameContains(filterName, pageRequest));
+                return new JGridRowsResponse<>(repositoryPosition.findByNameContains(filterName, pageRequest));
             } else
-            return new JGridRowsResponse<ContactType>(repositoryContactType.findAll(pageRequest));
+            return new JGridRowsResponse<>(repositoryPosition.findAll(pageRequest));
         } else {
             if(filterName!=null && !filterName.isEmpty()){
-                return new JGridRowsResponse<ContactType>(repositoryContactType.findByNameContains(filterName));
+                return new JGridRowsResponse<>(repositoryPosition.findByNameContains(filterName));
             } else
-            return new JGridRowsResponse<ContactType>(repositoryContactType.findAll());
+            return new JGridRowsResponse<>(repositoryPosition.findAll());
         }
-    }
-
-    @Transactional(readOnly = false)
-    @RequestMapping(value = "/add", method = RequestMethod.POST)
-    @ResponseBody
-    public String add(@ModelAttribute ContactType contactType, BindingResult result){
-        if(result.hasErrors()){
-            return "ERROR:"+result.toString();
-        }
-        repositoryContactType.save(contactType);
-        return "Success";
     }
 
     @Transactional(readOnly = false)
     @RequestMapping(value = "/edit", method = {RequestMethod.POST,RequestMethod.GET})
-    public void editor(@RequestParam String oper,ContactType contactType,BindingResult result,HttpServletResponse response)throws IOException{
+    public void editor(@RequestParam String oper,Position position,BindingResult result,HttpServletResponse response)throws IOException{
         if(result.hasErrors()){
             response.sendError(400,result.toString());
             return;
         }
         switch (oper){
             case "add":
-                repositoryContactType.save(contactType);
+                repositoryPosition.save(position);
                 response.setStatus(200);
                 break;
             case "edit":
-                ContactType fromDB=repositoryContactType.getOne(contactType.getId());
+                Position fromDB= repositoryPosition.getOne(position.getId());
                 if(fromDB!=null) {
-                    repositoryContactType.save(contactType);
-                    if(contactType.getVersion()>=fromDB.getVersion()) {
-                        repositoryContactType.save(contactType);
+                    repositoryPosition.save(position);
+                    if(position.getVersion()>=fromDB.getVersion()) {
+                        repositoryPosition.save(position);
                         response.setStatus(200);
                     } else {
                         response.sendError(406,"ANOTHER TRANSACTION MODIFICATION");
@@ -117,7 +109,7 @@ public class ContactTypeController {
 
                 break;
             case "del":
-                repositoryContactType.delete(contactType.getId());
+                repositoryPosition.delete(position.getId());
                 response.setStatus(200);
                 break;
             default:

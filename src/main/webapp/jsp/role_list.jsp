@@ -48,18 +48,19 @@
     $(document).ready(function () {
 
         $("#grid").jqGrid({
-            url:'${pageContext.request.contextPath}/contacttypes/listing',
-            editurl:'${pageContext.request.contextPath}/contacttypes/edit',
-            datatype: 'json',
+            url:"${pageContext.request.contextPath}/roles/listing",
+            datatype: "json",
             mtype: 'POST',
+            width:600,
+            caption:"<c:message code="label.role.title"/>",
+            emptyrecords: "<c:message code="label.emptyrecords"/>",
             styleUI : 'Bootstrap',
-            colNames:['Id', 'Name', 'Format', 'Version'],
-            colModel:[
-                {name:'id',index:'id', width:55, editable:false, editoptions:{readonly:true, size:10}, hidden:true},
-                {name:'name',index:'name', width:100, editable:true, editrules:{required:true}, editoptions:{size:10}},
-                {name:'numberFormat',index:'numberFormat', width:100, editable:true, editrules:{required:true}, editoptions:{size:10},search:false},
-                {name:'version',index:'version', width:100, editable:true, editrules:{readonly:true}, editoptions:{size:10,defaultValue:'0'}, hidden:true}
+            colNames: ['<c:message code="label.id"/>','<c:message code="label.role.name"/>'],
+            colModel: [
+                {name:"id",index:"id",width:80,hidden:true},
+                {name:"name",index:"name",width:130,editable:false},
             ],
+            id: "id",
             rowNum:10,
             rowList:[10,20,40,60],
             height: 240,
@@ -84,26 +85,7 @@
             }
         });
         $("#grid").jqGrid('navGrid','#pager',
-                {edit:true, add:true, del:true, search:false},
-                {/*MOD PARAM*/
-                    closeAfterEdit: true,
-                },
-                {/*ADD PARAM*/
-                    closeOnEscape: true,
-                    closeAfterAdd: true,
-                    serializeEditData:function (data) {
-                        if(data.id=="_empty")data.id=null;
-                        return data;
-                    }
-                },
-                {/*DEL PARAM*/},
-                { 	// search
-                    sopt:['cn', 'eq', 'ne', 'lt', 'gt', 'bw', 'ew'],
-                    closeOnEscape: true,
-                    multipleSearch: true,
-                    closeAfterSearch: true,
-                    multipleGroup:true
-                }
+                {edit:false, add:false, del:false, search:false}
         );
 
         jQuery("#grid").jqGrid('filterToolbar',{stringResult: false,searchOnEnter:true});
