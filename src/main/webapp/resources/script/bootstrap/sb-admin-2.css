@@ -360,3 +360,42 @@ table.dataTable thead .sorting:after {
 .panel-yellow a:hover {
     color: #df8a13;
 }
+
+.ui-jqgrid td input, .ui-jqgrid td select, .ui-jqgrid td textarea {
+    margin: 0;
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+
+.table>thead>tr>th {
+    padding: 8px;
+    line-height: 1;
+    vertical-align: top;
+    border-top: 1px solid #ddd;
+    background-color: #608abb;
+}
+.form-control{
+    height: 25px;
+}
+
+.ui-pager-table{
+    background-color: #1b6d85;
+}
+
+.jqgrow .ui-row-ltr .active{
+    background-color: #2931a7;
+}
+
+.jqgrow .ui-row-ltr .ui-priority-secondary .active{
+    background-color: #3945ea;
+}
+.ui-priority-secondary{
+    background-color: #6fa4a7;
+    opacity: 1;
+    filter: Alpha(Opacity=100);
+    font-weight: normal;
+}
+
+.table>tbody>tr.success>td, .table>tbody>tr.success>th, .table>tbody>tr>td.success, .table>tbody>tr>th.success, .table>tfoot>tr.success>td, .table>tfoot>tr.success>th, .table>tfoot>tr>td.success, .table>tfoot>tr>th.success, .table>thead>tr.success>td, .table>thead>tr.success>th, .table>thead>tr>td.success, .table>thead>tr>th.success{
+    background-color: #2931a7;
+}

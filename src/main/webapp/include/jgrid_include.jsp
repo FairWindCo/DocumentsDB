@@ -7,15 +7,10 @@
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
-<script src="<c:url value="/resources/script/jqwidget/jqxcore.js"/>"></script>
-<script src="<c:url value="/resources/script/jqwidget/jqxdata.js"/>"></script>
-<script src="<c:url value="/resources/script/jqwidget/jqxbuttons.js"/>"></script>
-<script src="<c:url value="/resources/script/jqwidget/jqxscrollbar.js"/>"></script>
-<script src="<c:url value="/resources/script/jqwidget/jqxmenu.js"/>"></script>
-<script src="<c:url value="/resources/script/jqwidget/jqxgrid.js"/>"></script>
-<script src="<c:url value="/resources/script/jqwidget/jqxgrid.selection.js"/>"></script>
-<script src="<c:url value="/resources/script/jqwidget/jqxtabs.js"/>"></script>
+<script src="<c:url value="/resources/script/jqgrid/jquery.jqGrid.min.js"/>"></script>
+<script src="<c:url value="/resources/script/jqgrid/i18n/grid.locale-en.js"/>"></script>
 
-<link rel="stylesheet" type="text/css" media="screen" href="<c:url value="/resources/script/jqwidget/styles/jqx.base.css"/>" />
-<link rel="stylesheet" type="text/css" media="screen" href="<c:url value="/resources/script/jqwidget/styles/jqx.metro.css"/>" />
+<link rel="stylesheet" type="text/css" media="screen" href="<c:url value="/resources/script/jqgrid/css/ui.jqgrid.css"/>" />
+<link rel="stylesheet" type="text/css" media="screen" href="<c:url value="/resources/script/jqgrid/css/ui.jqgrid-bootstrap.css"/>" />
+<link rel="stylesheet" type="text/css" media="screen" href="<c:url value="/resources/script/jqgrid/css/ui.jqgrid-bootstrap-ui.css"/>" />
 

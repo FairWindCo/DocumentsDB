@@ -39,7 +39,7 @@
        <security:authentication-manager id="authenticationManager">
               <security:authentication-provider>
                      <security:user-service>
-                            <security:user name="admin" password="pass" authorities="ROLE_ADMIN,ROLE_USER"/>
+                            <security:user name="admin" password="pass" authorities="ROLE_ADMIN,ROLE_USER,ROLE_GLOBAL_INFO_EDIT"/>
                             <security:user name="user1" password="1111" authorities="ROLE_USER"/>
                             <security:user name="user2" password="2222" disabled="true" authorities="ROLE_USER"/>
                      </security:user-service>

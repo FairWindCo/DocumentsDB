@@ -20,8 +20,7 @@
 <div id="page-wrapper">
     <ol class="breadcrumb">
         <li><a href="${pageContext.request.contextPath}/"><c:message code="label.main"/></a></li>
-        <li><a href="#"><c:message code="label.globaldirectory"/></a></li>
-        <li class="active"><c:message code="label.globaldirectory.relativies"/></li>
+        <li class="active"><c:message code="label.globaldirectory.tasktypes"/></li>
     </ol>
     <div class="row">
 
@@ -29,7 +28,7 @@
 
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title"><c:message code="label.globaldirectory.relativies.title"/></h3>
+                    <h3 class="panel-title"><c:message code="label.globaldirectory.tasktypes.title"/></h3>
                 </div>
                 <div class="panel-body">
                     <div>
@@ -48,16 +47,15 @@
     $(document).ready(function () {
 
         $("#grid").jqGrid({
-            url:'${pageContext.request.contextPath}/contacttypes/listing',
-            editurl:'${pageContext.request.contextPath}/contacttypes/edit',
+            url:'${pageContext.request.contextPath}/tasktypes/listing',
+            editurl:'${pageContext.request.contextPath}/tasktypes/edit',
             datatype: 'json',
             mtype: 'POST',
             styleUI : 'Bootstrap',
-            colNames:['Id', 'Name', 'Format', 'Version'],
+            colNames:['Id', 'Name', 'Version'],
             colModel:[
                 {name:'id',index:'id', width:55, editable:false, editoptions:{readonly:true, size:10}, hidden:true},
                 {name:'name',index:'name', width:100, editable:true, editrules:{required:true}, editoptions:{size:10}},
-                {name:'numberFormat',index:'numberFormat', width:100, editable:true, editrules:{required:true}, editoptions:{size:10},search:false},
                 {name:'version',index:'version', width:100, editable:true, editrules:{readonly:true}, editoptions:{size:10,defaultValue:'0'}, hidden:true}
             ],
             rowNum:10,
