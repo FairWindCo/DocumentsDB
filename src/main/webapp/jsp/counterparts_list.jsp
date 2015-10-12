@@ -39,7 +39,6 @@
                         <table id="grid"></table>
                         <div id="pager"></div>
                         <div>
-                            <input type="text" id="test">
                         </div>
                     </div>
                 </div>
@@ -187,6 +186,7 @@
                                         select_only: true,
                                         primary_key: 'id',
                                         show_field: 'surname',
+                                        field:'surname',
                                         button_img:'${pageContext.request.contextPath}/resources/images/btn.png',
                                         init_record: [value_elem],
                                         sub_as: {
@@ -263,7 +263,7 @@
 
         jQuery("#grid").jqGrid('filterToolbar',{stringResult: false,searchOnEnter:true});
 
-
+/*
         jQuery("#test").ajaxComboBox('${pageContext.request.contextPath}/persons/showList?firmID=1',
                 {lang: 'en',
                     db_table: 'nation',
@@ -272,6 +272,7 @@
                     sub_info: true,
                     select_only: true,
                     primary_key: 'id',
+                    field:'surname',
                     show_field: 'surname',
                     search_field: 'surname',
                     button_img:'${pageContext.request.contextPath}/resources/images/btn.png',
@@ -282,7 +283,7 @@
                         firstName:'firstName'
                     }
                 });
-
+/**/
     });
 </script>
 </html>
