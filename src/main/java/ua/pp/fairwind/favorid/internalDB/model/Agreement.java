@@ -1,5 +1,9 @@
 package ua.pp.fairwind.favorid.internalDB.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import org.springframework.format.annotation.DateTimeFormat;
+
 import javax.persistence.*;
 import java.util.Date;
 
@@ -14,11 +18,18 @@ public class Agreement {
     Long id;
     String number;
     String name;
+    @DateTimeFormat(pattern = "dd-mm-YYYY")
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
     Date startDate;
+    @DateTimeFormat(pattern = "dd-mm-YYYY")
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
     Date planEndDate;
+    @DateTimeFormat(pattern = "dd-mm-YYYY")
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
     Date endDate;
     @ManyToOne
     @JoinColumn(name = "counterparty_id")
+    @JsonBackReference
     Counterparty counterparty;
 
     @Version

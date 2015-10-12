@@ -15,10 +15,11 @@ public class Counterparty {
     @Id
     @GeneratedValue
     Long id;
-    String short_name;
-    String full_name;
+    @Column(name = "short_name")
+    String shortName;
+    @Column(name = "full_name")
+    String fullName;
     @OneToMany
-    @JsonManagedReference
     final Set<Contact> contacts=new HashSet<>();
     @OneToMany(mappedBy = "counterparty")
     @JsonManagedReference
@@ -73,20 +74,20 @@ public class Counterparty {
         this.id = id;
     }
 
-    public String getShort_name() {
-        return short_name;
+    public String getShortName() {
+        return shortName;
     }
 
-    public void setShort_name(String short_name) {
-        this.short_name = short_name;
+    public void setShortName(String short_name) {
+        this.shortName = short_name;
     }
 
-    public String getFull_name() {
-        return full_name;
+    public String getFullName() {
+        return fullName;
     }
 
-    public void setFull_name(String full_name) {
-        this.full_name = full_name;
+    public void setFullName(String full_name) {
+        this.fullName = full_name;
     }
 
     public Set<Contact> getContacts() {

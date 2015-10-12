@@ -52,7 +52,7 @@ public class UserController {
             try {
                 page = Integer.parseInt(request.getParameter("page")) - 1;
                 rows = request.getParameter("rows") == null ? 10 : Integer.parseInt(request.getParameter("rows"));
-                if(request.getParameter("sidx")!=null){
+                if(request.getParameter("sidx")!=null && !request.getParameter("sidx").isEmpty()){
                     String direction=request.getParameter("sord");
                     pageRequest=new PageRequest(page,rows,"asc".equals(direction)? Sort.Direction.ASC: Sort.Direction.DESC,request.getParameter("sidx"));
                 } else {
@@ -89,7 +89,7 @@ public class UserController {
                 page = Integer.parseInt(request.getParameter("page")) - 1;
                 if(page<0)page=0;
                 rows = request.getParameter("rows") == null ? 10 : Integer.parseInt(request.getParameter("rows"));
-                if(request.getParameter("sidx")!=null){
+                if(request.getParameter("sidx")!=null && !request.getParameter("sidx").isEmpty()){
                     String direction=request.getParameter("sord");
                     pageRequest=new PageRequest(page,rows,"asc".equals(direction)? Sort.Direction.ASC: Sort.Direction.DESC,request.getParameter("sidx"));
                 } else {

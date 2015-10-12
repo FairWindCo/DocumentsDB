@@ -1,6 +1,11 @@
 package ua.pp.fairwind.favorid.internalDB.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.springframework.format.annotation.DateTimeFormat;
 import ua.pp.fairwind.favorid.internalDB.model.directories.Position;
 
 import javax.persistence.*;
@@ -18,29 +23,57 @@ public class Person {
     @Id
     @GeneratedValue
     Long id;
+    @Column(name = "surname")
     String surname;
-    String middle_name;
-    String first_name;
+    @Column(name = "middle_name")
+    String middleName;
+    @Column(name = "first_name")
+    String firstName;
+    @DateTimeFormat(pattern = "dd-mm-YYYY")
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
     Date date_of_birth;
     String comments;
     @ManyToOne
     @JoinColumn(name = "position_id")
     Position position;
-    @JsonManagedReference
     @ManyToOne
+    @JsonBackReference
     @JoinColumn(name = "counterparty_id")
     Counterparty counterparty;
     @OneToMany
     @JsonManagedReference
     final Set<Contact> contacts=new HashSet<>();
+
     @OneToMany(mappedBy = "head")
-    @JsonManagedReference
+    @JsonBackReference
+    @JsonIgnore
     final Set<Person> subordinates=new HashSet<>();
     @ManyToOne
     @JoinColumn(name = "head_of_id")
+    @JsonManagedReference
     Person head;
     @Version
     private long version;
+
+    @JsonSerialize
+    public long getLevel(){
+        return getLevelNode(head);
+    }
+
+    @JsonSerialize
+    public Long getParentId(){
+        return head==null?null:head.id;
+    }
+
+    @JsonSerialize
+    public boolean isLeaf(){
+        return (subordinates.size()==0);
+    }
+
+    private long getLevelNode(Person node){
+        if(node==null)return 0;
+        return getLevelNode(node.getHead())+1;
+    }
 
     public Long getId() {
         return id;
@@ -58,20 +91,20 @@ public class Person {
         this.surname = surname;
     }
 
-    public String getMiddle_name() {
-        return middle_name;
+    public String getMiddleName() {
+        return middleName;
     }
 
-    public void setMiddle_name(String middle_name) {
-        this.middle_name = middle_name;
+    public void setMiddleName(String middle_name) {
+        this.middleName = middle_name;
     }
 
-    public String getFirst_name() {
-        return first_name;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setFirst_name(String first_name) {
-        this.first_name = first_name;
+    public void setFirstName(String first_name) {
+        this.firstName = first_name;
     }
 
     public Date getDate_of_birth() {

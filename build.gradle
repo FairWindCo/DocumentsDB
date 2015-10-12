@@ -3,7 +3,9 @@ version '1.0-SNAPSHOT'
 
 apply plugin: 'java'
 apply plugin: 'war'
+//apply plugin: 'idea'
 apply plugin: 'io.spring.dependency-management'
+//apply plugin: 'org.akhikhl.gretty'
 
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
@@ -54,8 +56,16 @@ buildscript {
     }
     dependencies {
         classpath 'io.spring.gradle:dependency-management-plugin:0.5.1.RELEASE'
+        //classpath 'org.akhikhl.gretty:gretty:+'
     }
 }
+/*
+gretty {
+    port = 8080
+    contextPath = 'spring4'
+    servletContainer = 'jetty9' //tomcat7 or tomcat8
+}
+/**/
 
 dependencyManagement {
     imports {

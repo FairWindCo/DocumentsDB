@@ -2,7 +2,7 @@ package ua.pp.fairwind.favorid.internalDB.jgrid;
 
 import org.springframework.data.domain.Page;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
  * Created by Сергей on 07.10.2015.
@@ -11,7 +11,7 @@ public class JGridRowsResponse<T> {
     final Long records;
     final Integer page;
     final Integer total;
-    final List<T> rows;
+    final Collection<T> rows;
 
     public JGridRowsResponse(Page<T> page) {
         this.records=page.getTotalElements();
@@ -20,7 +20,7 @@ public class JGridRowsResponse<T> {
         this.rows=page.getContent();
     }
 
-    public JGridRowsResponse(List<T> list) {
+    public JGridRowsResponse(Collection<T> list) {
         if(list!=null) {
             this.records = (long)list.size();
         } else {
@@ -29,6 +29,15 @@ public class JGridRowsResponse<T> {
         this.page = null;
         this.total = null;
         this.rows=list;
+    }
+
+
+
+    public JGridRowsResponse() {
+        records=0L;
+        page=0;
+        total=0;
+        rows=null;
     }
 
     public Long getRecords() {
@@ -43,7 +52,7 @@ public class JGridRowsResponse<T> {
         return total;
     }
 
-    public List<T> getRows() {
+    public Collection<T> getRows() {
         return rows;
     }
 }
