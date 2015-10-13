@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import ua.pp.fairwind.favorid.internalDB.model.Agreement;
+import ua.pp.fairwind.favorid.internalDB.model.Contact;
 import ua.pp.fairwind.favorid.internalDB.model.Counterparty;
 import ua.pp.fairwind.favorid.internalDB.model.Person;
 
@@ -31,5 +32,9 @@ public interface CounterpartyRepository extends JpaRepository<Counterparty,Long>
     Page<Person> getPersons(@Param("ID") long id, Pageable pager);
     @Query("select p from Person p join p.counterparty c where c.id=:ID")
     List<Person> getPersons(@Param("ID") long id);
+    @Query("select c from Contact c,Counterparty  f where f.id=:ID and c member of f.contacts")
+    Page<Contact> getContacts(@Param("ID") long id, Pageable pager);
+    @Query("select c from Contact c,Counterparty  f where f.id=:ID and c member of f.contacts")
+    List<Contact> getContacts(@Param("ID") long id);
 
 }

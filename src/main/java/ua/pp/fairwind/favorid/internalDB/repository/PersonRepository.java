@@ -6,6 +6,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import ua.pp.fairwind.favorid.internalDB.model.Contact;
 import ua.pp.fairwind.favorid.internalDB.model.Person;
 import ua.pp.fairwind.favorid.internalDB.model.proxy.PersonProxy;
 
@@ -24,4 +25,9 @@ public interface PersonRepository extends JpaRepository<Person,Long>{
     Page<PersonProxy> findProxyByFirm(@Param("firmID")long firmIDPageable, Pageable pageRequest);
     @Query("Select new ua.pp.fairwind.favorid.internalDB.model.proxy.PersonProxy(p.id,p.surname,p.firstName,p.middleName,p.date_of_birth) from Person p where p.counterparty.id=:firmID")
     List<PersonProxy> findProxyByFirm(@Param("firmID")long firmID,Sort sort);
+
+    @Query("select c from Contact c,Person  p where f.id=:ID and c member of p.contacts")
+    Page<Contact> getContacts(@Param("ID") long id, Pageable pager);
+    @Query("select c from Contact c,Person  p where f.id=:ID and c member of p.contacts")
+    List<Contact> getContacts(@Param("ID") long id);
 }

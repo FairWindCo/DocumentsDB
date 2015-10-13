@@ -173,27 +173,31 @@
                         }
                         },datefmt:'dd-mm-yyyy'},
                         {name:"head.surname",index:"head.surname",width:80,hidden:false,editable:false},
-                        {name:"head.id",hidden:true,editrules:{edithidden:true},editable:true,editoptions:{
+                        {name:"head.id",hidden:true,width:100,editrules:{edithidden:true},editable:true,editoptions:{
                             /**/
                             dataInit : function (elem) {
                                 var value_elem=$(elem).val();
+                                $(elem).wrap("<div></div>");
+                                $(elem).width='80px';
                                 $(elem).ajaxComboBox('${pageContext.request.contextPath}/persons/showList?firmID='+row_id,
                                     {lang: 'en',
                                         db_table: 'nation',
                                         per_page: 20,
                                         navi_num: 10,
-                                        sub_info: true,
                                         select_only: true,
                                         primary_key: 'id',
-                                        show_field: 'surname',
+                                        show_field: 'surname,middleName,firstName',
                                         field:'surname',
+                                        //recalc_width:false,
                                         button_img:'${pageContext.request.contextPath}/resources/images/btn.png',
                                         init_record: [value_elem],
+                                        sub_info: true,
+                                        /**/
                                         sub_as: {
                                             surname: 'surname',
                                             middleName: 'middleName',
                                             firstName:'firstName'
-                                        }
+                                        }/**/
                                     });
                             }/**/
                         }},

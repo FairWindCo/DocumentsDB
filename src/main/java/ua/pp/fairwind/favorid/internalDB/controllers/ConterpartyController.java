@@ -13,9 +13,11 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import ua.pp.fairwind.favorid.internalDB.jgrid.JGridRowsResponse;
 import ua.pp.fairwind.favorid.internalDB.model.Agreement;
+import ua.pp.fairwind.favorid.internalDB.model.Contact;
 import ua.pp.fairwind.favorid.internalDB.model.Counterparty;
 import ua.pp.fairwind.favorid.internalDB.model.Person;
 import ua.pp.fairwind.favorid.internalDB.repository.AgrimentRepository;
+import ua.pp.fairwind.favorid.internalDB.repository.ContactRepository;
 import ua.pp.fairwind.favorid.internalDB.repository.CounterpartyRepository;
 import ua.pp.fairwind.favorid.internalDB.repository.PersonRepository;
 
@@ -38,6 +40,8 @@ public class ConterpartyController {
     PersonRepository personRepository;
     @Autowired
     AgrimentRepository agreementRepository;
+    @Autowired
+    ContactRepository contactRepository;
 
     @Secured("ROLE_USER")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
@@ -153,6 +157,36 @@ public class ConterpartyController {
         }
     }
 
+
+    @Transactional(readOnly = true)
+    @RequestMapping(value = "/contacts", method = RequestMethod.POST)
+    @ResponseBody
+    public JGridRowsResponse<Contact> getContacts(HttpServletRequest request,@RequestParam Long ID){
+        PageRequest pageRequest=null;
+        if(request.getParameter("page")!=null){
+            int rows=10;
+            int page;
+            try {
+                page = Integer.parseInt(request.getParameter("page")) - 1;
+                if(page<0)page=0;
+                rows = request.getParameter("rows") == null ? 10 : Integer.parseInt(request.getParameter("rows"));
+                if(request.getParameter("sidx")!=null && !request.getParameter("sidx").isEmpty()){
+                    String direction=request.getParameter("sord");
+                    pageRequest=new PageRequest(page,rows,"asc".equals(direction)? Sort.Direction.ASC: Sort.Direction.DESC,request.getParameter("sidx"));
+                } else {
+                    pageRequest=new PageRequest(page,rows);
+                }
+            }catch (NumberFormatException ex){
+                //do nothing
+            }
+        }/**/
+        if(pageRequest!=null){
+            return new JGridRowsResponse<>(counterpartyRepository.getContacts(ID, pageRequest));
+        } else {
+            return new JGridRowsResponse<>(counterpartyRepository.getContacts(ID));
+        }
+    }
+
     @Transactional(readOnly = false)
     @RequestMapping(value = "/edit", method = {RequestMethod.POST,RequestMethod.GET})
     public void editor(@RequestParam String oper,Counterparty counterparty,BindingResult result,HttpServletResponse response)throws IOException{
@@ -172,6 +206,57 @@ public class ConterpartyController {
                 break;
             default:
                 response.sendError(406,"UNKNOWN OPERATION");
+        }
+    }
+
+    @Transactional(readOnly = false)
+    @RequestMapping(value = "/editcontact", method = {RequestMethod.POST,RequestMethod.GET})
+    public void contacteditor(@RequestParam String oper,@RequestParam long ID,Contact contact,BindingResult result,HttpServletResponse response)throws IOException{
+        if(result.hasErrors()){
+            response.sendError(400,result.toString());
+            return;
+        }
+        switch (oper){
+            case "add":{
+                Counterparty counterparty= counterpartyRepository.findOne(ID);
+                if(counterparty!=null) {
+                    counterparty.addContact(contact);
+                    contactRepository.save(contact);
+                    counterpartyRepository.save(counterparty);
+                    response.setStatus(200);
+                } else{
+                    response.sendError(404, "NO COUNTERPART WITH ID " +ID+" FOUND");
+                }
+            }break;
+            case "edit": {
+                Contact agr = contactRepository.findOne(contact.getId());
+                if (agr != null && agr.getVersion() <= contact.getVersion()) {
+                    agr.setContact(contact.getContact());
+                    agr.setContactType(contact.getContactType());
+                    contactRepository.save(agr);
+                    response.setStatus(200);
+                } else {
+                    response.sendError(404, "NO Agreement WITH ID " + contact.getId() + " FOUND");
+                }
+            }break;
+            case "del": {
+                Counterparty counterparty = counterpartyRepository.findOne(ID);
+                if (counterparty != null) {
+                    Contact agr=contactRepository.findOne(contact.getId());
+                    if(agr!=null) {
+                        counterparty.removeContact(agr);
+                        contactRepository.delete(agr);
+                        counterpartyRepository.save(counterparty);
+                        response.setStatus(200);
+                    } else {
+                        response.sendError(404, "NO Agreement WITH ID " + contact.getId() + " FOUND");
+                    }
+                } else {
+                    response.sendError(404, "NO COUNTERPART WITH ID " + ID + " FOUND");
+                }
+            }break;
+            default:
+                response.sendError(406, "UNKNOWN OPERATION");
         }
     }
 

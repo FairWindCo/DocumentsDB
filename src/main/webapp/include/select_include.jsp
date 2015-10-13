@@ -8,3 +8,14 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <script src="<c:url value="/resources/script/ajax_combo/jquery.ajax-combobox.js"/>"></script>
 <link rel="stylesheet" href="<c:url value="/resources/script/ajax_combo/jquery.ajax-combobox.css"/>">
+
+<style>
+  .FormGrid {
+    overflow:visible !important;
+  }
+
+  .ui-jqdialog.modal-content{
+    overflow:visible !important;
+  }
+
+</style>

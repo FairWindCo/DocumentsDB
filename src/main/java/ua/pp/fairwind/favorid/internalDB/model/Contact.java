@@ -43,4 +43,8 @@ public class Contact {
     public void setContact(String contact) {
         this.contact = contact;
     }
+
+    public long getVersion() {
+        return version;
+    }
 }

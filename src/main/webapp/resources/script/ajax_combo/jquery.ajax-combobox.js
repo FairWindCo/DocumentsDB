@@ -128,6 +128,8 @@ $.extend(AjaxComboBox.prototype, /** @lends AjaxComboBox.prototype */ {
       // セレクト専用
       select_only: false,
 
+      //recalc width
+      recalc_width: false,
       // タグ検索
       tags: false,
 
@@ -569,32 +571,32 @@ $.extend(AjaxComboBox.prototype, /** @lends AjaxComboBox.prototype */ {
     // 本体
     var elem = {};
     elem.combo_input = $(combo_input)
-      .attr('autocomplete', 'off')
-      .addClass(this.css_class.input)
-      .wrap('<div>'); // This "div" is "container".
+        .attr('autocomplete', 'off')
+        .addClass(this.css_class.input)
+        .wrap('<div>'); // This "div" is "container".
 
     elem.container = $(elem.combo_input).parent().addClass(this.css_class.container);
     if (this.option.plugin_type == 'combobox') {
       elem.button = $('<div>').addClass(this.css_class.button);
-      elem.img    = $('<img>').attr('src', this.option.button_img);
+      elem.img = $('<img>').attr('src', this.option.button_img);
     } else {
       elem.button = false;
-      elem.img    = false;
+      elem.img = false;
     }
     // サジェストリスト
     elem.result_area = $('<div>').addClass(this.css_class.re_area);
-    elem.navi        = $('<div>').addClass(this.css_class.navi);
-    elem.navi_info   = $('<div>').addClass('info');
-    elem.navi_p      = $('<p>');
-    elem.results     = $('<ul>' ).addClass(this.css_class.results);
-    elem.sub_info    = $('<div>').addClass(this.css_class.sub_info);
+    elem.navi = $('<div>').addClass(this.css_class.navi);
+    elem.navi_info = $('<div>').addClass('info');
+    elem.navi_p = $('<p>');
+    elem.results = $('<ul>').addClass(this.css_class.results);
+    elem.sub_info = $('<div>').addClass(this.css_class.sub_info);
     // primary_keyカラムの値を送信するための"input:hidden"を作成
     if (this.option.plugin_type == 'textarea') {
       elem.hidden = false;
     } else {
       var hidden_name = ($(elem.combo_input).attr('name') !== undefined) ?
-        $(elem.combo_input).attr('name') :
-        $(elem.combo_input).attr('id');
+          $(elem.combo_input).attr('name') :
+          $(elem.combo_input).attr('id');
       // CakePHP用の対策 例:data[search][user] -> data[search][user_primary_key]
       if (hidden_name.match(/\]$/)) {
         hidden_name = hidden_name.replace(/\]?$/, '_primary_key]');
@@ -602,47 +604,49 @@ $.extend(AjaxComboBox.prototype, /** @lends AjaxComboBox.prototype */ {
         hidden_name += '_primary_key';
       }
       elem.hidden = $('<input type="hidden" />')
-        .attr({
-          name: hidden_name,
-          id: hidden_name
-        })
-        .val('');
+          .attr({
+            name: hidden_name,
+            id: hidden_name
+          })
+          .val('');
     }
 
     // 2. 要素をHTML内に配置する
     switch (this.option.plugin_type) {
       case 'combobox':
         $(elem.container)
-          .append(elem.button)
-          .append(elem.result_area)
-          .append(elem.hidden);
+            .append(elem.button)
+            .append(elem.result_area)
+            .append(elem.hidden);
         $(elem.button).append(elem.img);
         break;
-      
+
       case 'simple':
         $(elem.container)
-          .append(elem.result_area)
-          .append(elem.hidden);
+            .append(elem.result_area)
+            .append(elem.hidden);
         break;
-      
+
       case 'textarea':
         $(elem.container)
-          .append(elem.result_area);
+            .append(elem.result_area);
     }
     $(elem.result_area)
-      .append(elem.navi)
-      .append(elem.results)
-      .append(elem.sub_info);
+        .append(elem.navi)
+        .append(elem.results)
+        .append(elem.sub_info);
     $(elem.navi)
-      .append(elem.navi_info)
-      .append(elem.navi_p);
+        .append(elem.navi_info)
+        .append(elem.navi_p);
 
     // 3. サイズ調整
     // ComboBoxの幅
-    if (this.option.plugin_type == 'combobox') {
-      $(elem.container).width($(elem.combo_input).outerWidth() + $(elem.button).outerWidth());
-    } else {
-      $(elem.container).width($(elem.combo_input).outerWidth());
+    if ((this.option.recalc_width)) {
+      if (this.option.plugin_type == 'combobox') {
+        $(elem.container).width($(elem.combo_input).outerWidth() + $(elem.button).outerWidth());
+      } else {
+        $(elem.container).width($(elem.combo_input).outerWidth());
+      }
     }
 
     this.elem = elem;
@@ -1896,13 +1900,15 @@ $.extend(AjaxComboBox.prototype, /** @lends AjaxComboBox.prototype */ {
   _calcWidthResults: function(self) {
     // 候補の幅とトップ位置を再計算 (textareaがリサイズされることに対処するため)
     // ComboBoxの幅
-    var w;
-    if (self.option.plugin_type == 'combobox') {
-      w = $(self.elem.combo_input).outerWidth() + $(self.elem.button).outerWidth();
-    } else {
-      w = $(self.elem.combo_input).outerWidth();
+    if ((this.option.recalc_width)) {
+      var w;
+      if (self.option.plugin_type == 'combobox') {
+        w = $(self.elem.combo_input).outerWidth() + $(self.elem.button).outerWidth();
+      } else {
+        w = $(self.elem.combo_input).outerWidth();
+      }
+      $(self.elem.container).width(w);
     }
-    $(self.elem.container).width(w);
     
     // containerのpositionの値に合わせてtop,leftを設定する。
     if ($(self.elem.container).css('position') == 'static') {
