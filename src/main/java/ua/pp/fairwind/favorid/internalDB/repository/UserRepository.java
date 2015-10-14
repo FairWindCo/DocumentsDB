@@ -17,6 +17,7 @@ import java.util.List;
 public interface UserRepository extends JpaRepository<User,Long>{
     Page<User> findByUserNameContains(String name, Pageable pager);
     List<User> findByUserNameContains(String name);
+    User findByUserName(String userName);
     //@Query("select r from User u join u.userRoles r where u.userID=:userID")
     @Query("select r from Role r,User u where u.userID=:userID and (r MEMBER u.userRoles)")
     Page<Role> getUserRoles(@Param("userID")long userId, Pageable pager);

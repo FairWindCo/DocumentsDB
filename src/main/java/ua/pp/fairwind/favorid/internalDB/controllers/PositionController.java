@@ -1,6 +1,7 @@
 package ua.pp.fairwind.favorid.internalDB.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.access.annotation.Secured;
@@ -13,12 +14,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import ua.pp.fairwind.favorid.internalDB.jgrid.JGridRowsResponse;
+import ua.pp.fairwind.favorid.internalDB.jgrid.JSComboExpenseResp;
 import ua.pp.fairwind.favorid.internalDB.model.directories.Position;
 import ua.pp.fairwind.favorid.internalDB.repository.PositionRepository;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
 
 
 /**
@@ -116,5 +119,45 @@ public class PositionController {
                 response.sendError(406,"UNKNOWN OPERATION");
         }
     }
+
+    @Transactional(readOnly = true)
+    @RequestMapping(value = "/showList", method = RequestMethod.GET)
+    @ResponseBody
+    public Object simpleClientList(@RequestParam(required = false) Integer page_num, @RequestParam(required = false) Integer per_page,@RequestParam(value = "pkey_val[]",required = false) String pkey,@RequestParam(value = "q_word[]",required = false) String[] qword,@RequestParam long firmID) {
+        // Retrieve all persons by delegating the call to PersonService
+        //Sort sort= FormSort.formSortFromSortDescription(orderby);
+        Sort sort=new Sort(Sort.Direction.ASC,"surname");
+        PageRequest pager=null;
+        if(page_num!=null && per_page!=null) {
+            pager = new PageRequest(page_num - 1, per_page, sort);
+        }
+        if(pager!=null) {
+            Page<Position> page;
+            if (qword != null && qword.length > 0) {
+                page = repositoryPosition.findByNameContains(qword[0], pager);
+            } else {
+                page = repositoryPosition.findAll(pager);
+            }
+            return new JSComboExpenseResp<>(page);
+        } else {
+            if(pkey!=null && !pkey.isEmpty()){
+                Long key=Long.valueOf(pkey);
+                Position ft=null;
+                if(key!=null) {
+                    ft = repositoryPosition.findOne(key);
+                }
+                return ft;
+            } else {
+                List<Position> page;
+                if (qword != null && qword.length > 0) {
+                    page = repositoryPosition.findByNameContains(qword[0],sort);
+                } else {
+                    page = repositoryPosition.findAll(sort);
+                }
+                return new JSComboExpenseResp<>(page);
+            }
+        }
+    }
+
 
 }

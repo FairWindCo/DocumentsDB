@@ -2,6 +2,7 @@ package ua.pp.fairwind.favorid.internalDB.repository;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -19,6 +20,7 @@ import java.util.List;
 public interface CounterpartyRepository extends JpaRepository<Counterparty,Long>{
     Page<Counterparty> findByShortNameContains(String shortName, Pageable pager);
     List<Counterparty> findByShortNameContains(String ShortName);
+    List<Counterparty> findByShortNameContains(String ShortName,Sort sort);
     //@Query("select r from User u join u.userRoles r where u.userID=:userID")
     @Query("select a from Agreement a join a.counterparty c where c.id=:ID")
     Page<Agreement> getAgreements(@Param("ID") long id, Pageable pager);

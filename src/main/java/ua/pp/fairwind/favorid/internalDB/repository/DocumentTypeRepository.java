@@ -2,6 +2,7 @@ package ua.pp.fairwind.favorid.internalDB.repository;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import ua.pp.fairwind.favorid.internalDB.model.directories.DocumentType;
 
@@ -14,4 +15,5 @@ import java.util.List;
 public interface DocumentTypeRepository extends JpaRepository<DocumentType,Long>{
     Page<DocumentType> findByNameContains(String name, Pageable pager);
     List<DocumentType> findByNameContains(String name);
+    List<DocumentType> findByNameContains(String name,Sort sort);
 }
