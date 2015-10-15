@@ -1,7 +1,7 @@
 package ua.pp.fairwind.favorid.internalDB.model.administrative;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import ua.pp.fairwind.favorid.internalDB.model.Person;
 
 import javax.persistence.*;
@@ -28,12 +28,23 @@ public class User {
         @ManyToMany(fetch = FetchType.EAGER)
         private Set<Role> userRoles=new HashSet<>();
 
-        @JsonManagedReference
         @ManyToOne
+        @JsonIgnore
         @JoinColumn(name = "person_id")
         private Person person;
         @Version
         private long versionId;
+
+    @JsonSerialize
+    public String getFIO(){
+        if(person==null) return null;
+        return person.getSurname()==null?"":person.getSurname()+" "+person.getFirstName()==null?"":person.getFirstName()+" "+person.getMiddleName()==null?"":person.getMiddleName();
+    }
+
+    @JsonSerialize
+    public Long getPersonID(){
+        return person==null?null:person.getId();
+    }
 
     public Long getUserID() {
         return userID;

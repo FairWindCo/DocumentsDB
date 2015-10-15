@@ -13,8 +13,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import ua.pp.fairwind.favorid.internalDB.jgrid.JGridRowsResponse;
+import ua.pp.fairwind.favorid.internalDB.model.Person;
 import ua.pp.fairwind.favorid.internalDB.model.administrative.Role;
 import ua.pp.fairwind.favorid.internalDB.model.administrative.User;
+import ua.pp.fairwind.favorid.internalDB.repository.PersonRepository;
 import ua.pp.fairwind.favorid.internalDB.repository.RoleRepository;
 import ua.pp.fairwind.favorid.internalDB.repository.UserRepository;
 
@@ -34,6 +36,8 @@ public class UserController {
     UserRepository userRepository;
     @Autowired
     RoleRepository roleRepository;
+    @Autowired
+    PersonRepository personRepository;
 
     @Secured("ROLE_USER")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
@@ -115,16 +119,55 @@ public class UserController {
 
     @Transactional(readOnly = false)
     @RequestMapping(value = "/edit", method = {RequestMethod.POST,RequestMethod.GET})
-    public void editor(@RequestParam String oper,User user,BindingResult result,HttpServletResponse response)throws IOException{
+    public void editor(@RequestParam String oper,User user,BindingResult result,HttpServletRequest request,HttpServletResponse response)throws IOException{
         if(result.hasErrors()){
             response.sendError(400,result.toString());
             return;
         }
         switch (oper){
             case "add":
-            case "edit":
+                String pk=request.getParameter("person_id_primary_key");
+                if(pk!=null){
+                    try {
+                        Long pid=Long.getLong(pk);
+                        Person person=personRepository.findOne(pid);
+                        if(person!=null){
+                            user.setPerson(person);
+                        }
+                    }catch (NumberFormatException e){
+                        //do nothing
+                    }
+                }
                 userRepository.save(user);
                 response.setStatus(200);
+                break;
+            case "edit":
+                User usr=userRepository.getOne(user.getUserID());
+                if(usr!=null) {
+                    if( usr.getVersionId() <= user.getVersionId()) {
+                        usr.setEnabled(user.isEnabled());
+                        usr.setPasswordHash(user.getPasswordHash());
+                        usr.setUserName(user.getUserName());
+                        String pkey=request.getParameter("person_id_primary_key");
+                        if(pkey!=null) {
+                            try {
+                                Long pid = Long.getLong(pkey);
+                                Person person = personRepository.findOne(pid);
+                                if (person != null) {
+                                    usr.setPerson(person);
+                                }
+                            } catch (NumberFormatException e) {
+                                //do nothing
+                            }
+                        }
+                        userRepository.save(usr);
+                        response.setStatus(200);
+                    } else {
+                        response.sendError(400, "ANOTHER TRANSACTION MODIFICATION");
+                    }
+                } else {
+                    response.sendError(404, "NO USER WITH ID " + user.getUserID() + " FOUND");
+                }
                 break;
             case "del":
                 userRepository.delete(user.getUserID());

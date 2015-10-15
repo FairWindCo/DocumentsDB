@@ -87,10 +87,21 @@
                 -->
               <property name="jpaVendorAdapter" ref="jpaVendorAdapter"/>
 
-              <!-- spring based scanning for entity classes>
-              <property name="packagesToScan" value="ua.pp.fairwind.favorid.internalDB.model"/>
-              -->
-            <property name="packagesToScan" value="ua.pp.fairwind.favorid.internalDB.model"/>
+           <property name="jpaProperties">
+               <props>
+                   <prop key="hibernate.hbm2ddl.auto">update</prop>
+                   <prop key="hibernate.dialect">org.hibernate.dialect.MySQL5Dialect</prop>
+               </props>
+           </property>
+
+            <!-- spring based scanning for entity classes>-->
+            <property name="packagesToScan">
+               <array>
+                   <value>ua.pp.fairwind.favorid.internalDB.model</value>
+                   <value>ua.pp.fairwind.favorid.internalDB.model.products</value>
+                   <value>ua.pp.fairwind.favorid.internalDB.model.storehouses</value>
+               </array>
+           </property>
        </bean>
 
 
