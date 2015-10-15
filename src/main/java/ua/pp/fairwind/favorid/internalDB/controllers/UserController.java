@@ -126,7 +126,7 @@ public class UserController {
         }
         switch (oper){
             case "add":
-                String pk=request.getParameter("person_id_primary_key");
+                String pk=request.getParameter("personIDkey");
                 if(pk!=null){
                     try {
                         Long pid=Long.getLong(pk);
@@ -148,7 +148,7 @@ public class UserController {
                         usr.setEnabled(user.isEnabled());
                         usr.setPasswordHash(user.getPasswordHash());
                         usr.setUserName(user.getUserName());
-                        String pkey=request.getParameter("person_id_primary_key");
+                        String pkey=request.getParameter("personIDkey");
                         if(pkey!=null) {
                             try {
                                 Long pid = Long.getLong(pkey);

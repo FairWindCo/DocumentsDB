@@ -55,7 +55,7 @@
             datatype: 'json',
             mtype: 'POST',
             styleUI : 'Bootstrap',
-            colNames:['<c:message code="label.id"/>', '<c:message code="label.usertables.table.col_title.login"/>', '<c:message code="label.usertables.table.col_title.password"/>','<c:message code="label.user.enabled"/>', '<c:message code="label.version"/>','<c:message code="label.user.person_name"/>','<c:message code="label.user.person_name"/>'],
+            colNames:['<c:message code="label.id"/>', '<c:message code="label.usertables.table.col_title.login"/>', '<c:message code="label.usertables.table.col_title.password"/>','<c:message code="label.user.enabled"/>', '<c:message code="label.version"/>','<c:message code="label.user.person_name"/>','<c:message code="label.user.person_name"/>','<c:message code="label.user.person_name"/>'],
             colModel:[
                 {name:'userID',index:'userID', width:55, editable:true, editoptions:{readonly:true, size:10}, hidden:true},
                 {name:'userName',index:'userName', width:100, editable:true, editrules:{required:true}, editoptions:{size:10}},
@@ -63,6 +63,7 @@
                 {name:'enabled',index:'numberFormat', width:100, editable:true, editrules:{required:true}, editoptions:{size:10},search:false},
                 {name:'versionId',index:'versionID', width:100, editable:true, editrules:{readonly:true}, editoptions:{size:10,defaultValue:'0'}, hidden:true},
                 {name:'FIO',width:100, editable:false, search:false},
+                {name:'personIDkey',width:100, editable:true, search:false, hidden:true},
                 {name:'personID',width:100, editable:true, search:false, hidden:true, editrules:{edithidden:true},editable:true,editoptions:{
                     /**/
                     dataInit : function (elem) {
@@ -82,13 +83,17 @@
                                     button_img:'${pageContext.request.contextPath}/resources/images/btn.png',
                                     init_record: [value_elem],
                                     sub_info: true,
+                                    bind_to:'personIDkey_setup',
                                     /**/
                                     sub_as: {
                                         surname: 'surname',
                                         middleName: 'middleName',
                                         firstName:'firstName'
                                     }/**/
-                                });
+                                }).bind('personIDkey_setup', function() {
+                                    $('#personIDkey').val($('#personID_primary_key').val());
+                                }
+                        );
                     }/**/
                 }},
             ],
