@@ -16,9 +16,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import ua.pp.fairwind.favorid.internalDB.jgrid.JGridRowsResponse;
 import ua.pp.fairwind.favorid.internalDB.jgrid.JSComboExpenseResp;
+import ua.pp.fairwind.favorid.internalDB.jgrid.Utils;
+import ua.pp.fairwind.favorid.internalDB.model.directories.DocumentType;
 import ua.pp.fairwind.favorid.internalDB.model.document.Document;
 import ua.pp.fairwind.favorid.internalDB.model.proxy.DocumentProxy;
+import ua.pp.fairwind.favorid.internalDB.repository.CounterpartyRepository;
 import ua.pp.fairwind.favorid.internalDB.repository.DocumentRepository;
+import ua.pp.fairwind.favorid.internalDB.repository.DocumentTypeRepository;
+import ua.pp.fairwind.favorid.internalDB.repository.PersonRepository;
 import ua.pp.fairwind.favorid.internalDB.security.UserDetailsAdapter;
 
 import javax.servlet.http.HttpServletRequest;
@@ -34,7 +39,12 @@ import java.util.List;
 public class DocumentController {
     @Autowired
     DocumentRepository documentRepository;
-
+    @Autowired
+    DocumentTypeRepository documentTypeRepository;
+    @Autowired
+    PersonRepository personRepository;
+    @Autowired
+    CounterpartyRepository counterpartyRepository;
 
 
     @Secured("ROLE_USER")
@@ -81,12 +91,12 @@ public class DocumentController {
 
     @Transactional(readOnly = false)
     @RequestMapping(value = "/edit", method = {RequestMethod.POST,RequestMethod.GET})
-    public void editor(@RequestParam String oper,Document document,BindingResult result,HttpServletResponse response)throws IOException {
+    public void editor(@RequestParam String oper,Document document,BindingResult result,HttpServletRequest request,HttpServletResponse response)throws IOException {
         if(result.hasErrors()){
             response.sendError(400,result.toString());
             return;
         }
-        UserDetailsAdapter userDetail=(UserDetailsAdapter)SecurityContextHolder.getContext().getAuthentication().getDetails();
+        UserDetailsAdapter userDetail=(UserDetailsAdapter)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if(userDetail==null){
             response.sendError(403, "FORBIDDEN!");
             return;
@@ -95,6 +105,11 @@ public class DocumentController {
             case "add":
                 if(userDetail.hasRole("ROLE_ADD_DOCUMENTS")) {
                     //document.setCreationUser(userDetail.getUserP());
+                    Long typeId= Utils.getLongParameter("documentType_key",request);
+                    if(typeId!=null){
+                        DocumentType dt=documentTypeRepository.findOne(typeId);
+                        if(dt!=null)document.setDocumentType(dt);
+                    }
                     documentRepository.save(document);
                     response.setStatus(200);
                 } else {
@@ -109,6 +124,11 @@ public class DocumentController {
                             cpt.setNumber(document.getNumber());
                             cpt.setName(document.getName());
                             cpt.setDescription(document.getDescription());
+                            Long typeId= Utils.getLongParameter("documentType_key",request);
+                            if(typeId!=null){
+                                DocumentType dt=documentTypeRepository.findOne(typeId);
+                                if(dt!=null)cpt.setDocumentType(dt);
+                            }
                             documentRepository.save(cpt);
                             response.setStatus(200);
                         } else {

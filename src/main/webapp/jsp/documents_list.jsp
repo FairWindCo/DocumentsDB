@@ -67,11 +67,8 @@
                 {name:'name',index:'name', width:100, editable:true, editrules:{required:false}, editoptions:{size:10},search:false},
                 {name:'description',index:'description', width:100, editable:true, editrules:{required:false}, editoptions:{size:10},search:false},
                 {name:'documentType_key', width:100, editable:true,hidden:true, search:false},
-                {name:'documentType', width:100, editable:true, editrules:{required:false},search:false,editoptions:{
+                {name:'documentType_name', width:100, editable:true, editrules:{edithidden:true,required:false},jsonmap:'documentType.name',search:false,editoptions:{
                     /**/
-                    formater:function(elem){
-                        return elem.name;
-                    },
                     dataInit : function (elem) {
                         var value_elem=$(elem).val();
                         $(elem).wrap("<div></div>");
@@ -90,7 +87,7 @@
                                     init_record: [value_elem.id],
                                     bind_to:'personIDkey_setup',
                                 }).bind('personIDkey_setup', function() {
-                                    $('#documentType_key').val($('#documenttypeid_primary_key').val());
+                                    $('#documentType_key').val($('#documentType_name_primary_key').val());
                                 });
                     }/**/
                 }},
