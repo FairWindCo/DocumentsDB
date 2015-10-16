@@ -124,10 +124,10 @@ public class DocumentTypeController {
     @Transactional(readOnly = true)
     @RequestMapping(value = "/showList", method = RequestMethod.GET)
     @ResponseBody
-    public Object simpleClientList(@RequestParam(required = false) Integer page_num, @RequestParam(required = false) Integer per_page,@RequestParam(value = "pkey_val[]",required = false) String pkey,@RequestParam(value = "q_word[]",required = false) String[] qword,@RequestParam long firmID) {
+    public Object simpleClientList(@RequestParam(required = false) Integer page_num, @RequestParam(required = false) Integer per_page,@RequestParam(value = "pkey_val[]",required = false) String pkey,@RequestParam(value = "q_word[]",required = false) String[] qword) {
         // Retrieve all persons by delegating the call to PersonService
         //Sort sort= FormSort.formSortFromSortDescription(orderby);
-        Sort sort=new Sort(Sort.Direction.ASC,"surname");
+        Sort sort=new Sort(Sort.Direction.ASC,"name");
         PageRequest pager=null;
         if(page_num!=null && per_page!=null) {
             pager = new PageRequest(page_num - 1, per_page, sort);

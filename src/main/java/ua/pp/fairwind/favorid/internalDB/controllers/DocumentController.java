@@ -5,7 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -34,8 +34,8 @@ import java.util.List;
 public class DocumentController {
     @Autowired
     DocumentRepository documentRepository;
-    @Autowired
-    SecurityContext securityContext;
+
+
 
     @Secured("ROLE_USER")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
@@ -86,7 +86,7 @@ public class DocumentController {
             response.sendError(400,result.toString());
             return;
         }
-        UserDetailsAdapter userDetail=(UserDetailsAdapter)securityContext.getAuthentication().getDetails();
+        UserDetailsAdapter userDetail=(UserDetailsAdapter)SecurityContextHolder.getContext().getAuthentication().getDetails();
         if(userDetail==null){
             response.sendError(403, "FORBIDDEN!");
             return;

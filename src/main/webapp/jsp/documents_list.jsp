@@ -60,12 +60,40 @@
             datatype: 'json',
             mtype: 'POST',
             styleUI : 'Bootstrap',
-            colNames:['<c:message code="label.id"/>', '<c:message code="label.counterparts.table.col_title.name"/>', '<c:message code="label.counterparts.table.col_title.fullname"/>','<c:message code="label.version"/>'],
+            colNames:['<c:message code="label.id"/>', '<c:message code="label.documents.table.col_title.number"/>', '<c:message code="label.documents.table.col_title.name"/>', '<c:message code="label.documents.table.col_title.description"/>','<c:message code="label.documents.table.col_title.document_type"/>','<c:message code="label.documents.table.col_title.document_type"/>','<c:message code="label.version"/>'],
             colModel:[
                 {name:'id',index:'id', width:55, editable:false, editoptions:{readonly:true, size:10}, hidden:true},
                 {name:'number',index:'number', width:100, editable:true, editrules:{required:true}, editoptions:{size:10}},
                 {name:'name',index:'name', width:100, editable:true, editrules:{required:false}, editoptions:{size:10},search:false},
                 {name:'description',index:'description', width:100, editable:true, editrules:{required:false}, editoptions:{size:10},search:false},
+                {name:'documentType_key', width:100, editable:true,hidden:true, search:false},
+                {name:'documentType', width:100, editable:true, editrules:{required:false},search:false,editoptions:{
+                    /**/
+                    formater:function(elem){
+                        return elem.name;
+                    },
+                    dataInit : function (elem) {
+                        var value_elem=$(elem).val();
+                        $(elem).wrap("<div></div>");
+                        $(elem).width='80px';
+                        $(elem).ajaxComboBox('${pageContext.request.contextPath}/documenttypes/showList',
+                                {lang: 'en',
+                                    db_table: 'nation',
+                                    per_page: 20,
+                                    navi_num: 10,
+                                    select_only: true,
+                                    primary_key: 'id',
+                                    show_field: 'name',
+                                    field:'name',
+                                    //recalc_width:false,
+                                    button_img:'${pageContext.request.contextPath}/resources/images/btn.png',
+                                    init_record: [value_elem.id],
+                                    bind_to:'personIDkey_setup',
+                                }).bind('personIDkey_setup', function() {
+                                    $('#documentType_key').val($('#documenttypeid_primary_key').val());
+                                });
+                    }/**/
+                }},
                 {name:'version',index:'version', width:100, editable:true, editrules:{readonly:true}, editoptions:{size:10,defaultValue:'0'}, hidden:true},
             ],
             rowNum:10,

@@ -193,12 +193,15 @@
                                         button_img:'${pageContext.request.contextPath}/resources/images/btn.png',
                                         init_record: [value_elem],
                                         sub_info: true,
+                                        bind_to:'personIDkey_setup',
                                         /**/
                                         sub_as: {
                                             surname: 'surname',
                                             middleName: 'middleName',
                                             firstName:'firstName'
                                         }/**/
+                                    }).bind('personIDkey_setup', function() {
+                                            $('#headID_primary_key').val($('#head.id_primary_key').val());
                                     });
                             }/**/
                         }},
