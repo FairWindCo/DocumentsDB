@@ -35,25 +35,67 @@
         </ul>
         <!-- /.nav-second-level -->
       </li>
-      <sec:authorize ifAnyGranted="ROLE_GROUP_INF_EDIT,ROLE_SUPER_INF_EDIT,ROLE_MAIN_INF_EDIT,ROLE_GROUP_INF_VIEW,ROLE_SUPER_INF_VIEW,ROLE_MAIN_INF_VIEW">
+
+      <sec:authorize ifAnyGranted="ROLE_VIEW_DOCUMENTS">
         <li>
           <a href="search/"><i class="fa fa-search fa-fw"></i> <c:message code="label.search"/></a>
         </li>
+        <sec:authorize ifAnyGranted="ROLE_PRODUCT_ADD, ROLE_REPAIR_ADD, ROLE_REPAIR_MANAGE, ROLE_PRODUCT_VIEW">
+          <li>
+            <a href="#"><i class="fa fa-inbox fa-fw"></i><c:message code="label.products"/><span class="fa arrow"></span></a>
+            <ul class="nav nav-second-level">
+              <li>
+                <a href="${pageContext.request.contextPath}/documents/list/"><c:message code="label.products.view"/></a>
+              </li>
+              <sec:authorize ifAnyGranted="ROLE_REPAIR_ADD, ROLE_REPAIR_MANAGE">
+              <li>
+                <a href="${pageContext.request.contextPath}/documents/list/"><c:message code="label.products.repair"/></a>
+              </li>
+              </sec:authorize>
+            </ul>
+            <!-- /.nav-second-level -->
+          </li>
+        </sec:authorize>
+        <sec:authorize ifAnyGranted="ROLE_STOREHOUSE, ROLE_STOREHOUSE_MASTER, ROLE_STOREHOUSE_VIEW">
+          <li>
+            <a href="#"><i class="fa fa-inbox fa-fw"></i><c:message code="label.storehouse"/><span class="fa arrow"></span></a>
+            <ul class="nav nav-second-level">
+              <li>
+                <a href="${pageContext.request.contextPath}/documents/list/"><c:message code="label.storehouse.view"/></a>
+              </li>
+            </ul>
+            <!-- /.nav-second-level -->
+          </li>
+        </sec:authorize>
       </sec:authorize>
+        <li>
+          <a href="#"><i class="fa fa-inbox fa-fw"></i><c:message code="label.tasks"/><span class="fa arrow"></span></a>
+          <ul class="nav nav-second-level">
+            <li>
+              <a href="${pageContext.request.contextPath}/task/list"><c:message code="label.tasks.task"/></a>
+            </li>
+            <li>
+              <a href="${pageContext.request.contextPath}/task/active"><c:message code="label.tasks.task"/></a>
+            </li>
+            <sec:authorize ifAnyGranted="ROLE_TASK_CREATE">
+            <li>
+              <a href="${pageContext.request.contextPath}/task/control"><c:message code="label.tasks.control"/></a>
+            </li>
+            </sec:authorize>
+          </ul>
+          <!-- /.nav-second-level -->
+        </li>
+      <sec:authorize ifAnyGranted="ROLE_VIEW_DOCUMENTS, ROLE_EDIT_DOCUMENTS, ROLE_ADD_DOCUMENTS, ROLE_DELETE_DOCUMENTS">
       <li>
-        <a href="#"><i class="fa fa-inbox fa-fw"></i><c:message code="label.persons"/><span class="fa arrow"></span></a>
+        <a href="#"><i class="fa fa-inbox fa-fw"></i><c:message code="label.documents"/><span class="fa arrow"></span></a>
         <ul class="nav nav-second-level">
           <li>
-            <a href="person/"><c:message code="label.persons.clients"/></a>
+            <a href="${pageContext.request.contextPath}/documents/list/"><c:message code="label.documents.document"/></a>
           </li>
-          <sec:authorize ifAnyGranted="ROLE_PERSONAL_VIEW,ROLE_PERSONAL_EDIT,ROLE_PERSONAL_ADD">
-            <li>
-              <a href="person/worker"> <c:message code="label.persons.workers"/></a>
-            </li>
-          </sec:authorize>
         </ul>
         <!-- /.nav-second-level -->
       </li>
+      </sec:authorize>
       <sec:authorize ifAnyGranted="ROLE_ADMIN">
         <li>
           <a href=""><i class="fa fa-wrench fa-fw"></i><c:message code="label.administrate"/><span class="fa arrow"></span></a>
@@ -73,7 +115,7 @@
           </ul>
         </li>
       </sec:authorize>
-      <sec:authorize ifAnyGranted="ROLE_GLOBAL_INFO_EDIT">
+      <sec:authorize ifAnyGranted="ROLE_DIRECTORY">
         <li>
           <a href=""><i class="fa fa-sitemap fa-fw"></i><c:message code="label.menu.globaldirectory"/><span class="fa arrow"></span></a>
           <ul class="nav nav-second-level">
@@ -88,21 +130,6 @@
             </li>
             <li>
               <a href="${pageContext.request.contextPath}/positions/list"> <c:message code="label.menu.globaldirectory.hobbi"/></a>
-            </li>
-          </ul>
-          <!-- /.nav-second-level -->
-        </li>
-      </sec:authorize>
-
-      <sec:authorize ifAnyGranted="ROLE_GROUP_INF_EDIT,ROLE_SUPER_INF_EDIT,ROLE_MAIN_INF_EDIT">
-        <li>
-          <a href=""><i class="fa fa-edit fa-fw"></i><c:message code="label.direcotry"/><span class="fa arrow"></span></a>
-          <ul class="nav nav-second-level">
-            <li>
-              <a href="category/"> <c:message code="label.direcotry.category"/></a>
-            </li>
-            <li>
-              <a href="info/"> <c:message code="label.direcotry.info"/></a>
             </li>
           </ul>
           <!-- /.nav-second-level -->

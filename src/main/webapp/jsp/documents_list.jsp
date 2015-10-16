@@ -1,3 +1,5 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="http://www.springframework.org/tags" %>
 <html>
 <head>
     <title></title>
@@ -23,8 +25,8 @@
 <div id="page-wrapper">
     <ol class="breadcrumb">
         <li><a href="${pageContext.request.contextPath}/"><c:message code="label.main"/></a></li>
-        <li><a href="#"><c:message code="label.counterparts"/></a></li>
-        <li class="active"><c:message code="label.counterparts.counterparts"/></li>
+        <li><a href="#"><c:message code="label.documents"/></a></li>
+        <li class="active"><c:message code="label.documents.document"/></li>
     </ol>
     <div class="row">
 
@@ -32,7 +34,7 @@
 
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title"><c:message code="label.counterparts.title"/></h3>
+                    <h3 class="panel-title"><c:message code="label.document.title"/></h3>
                 </div>
                 <div class="panel-body">
                     <div>
@@ -53,16 +55,17 @@
     $(document).ready(function () {
 
         $("#grid").jqGrid({
-            url:'${pageContext.request.contextPath}/counterparts/listing',
-            editurl:'${pageContext.request.contextPath}/counterparts/edit',
+            url:'${pageContext.request.contextPath}/documents/listing',
+            editurl:'${pageContext.request.contextPath}/documents/edit',
             datatype: 'json',
             mtype: 'POST',
             styleUI : 'Bootstrap',
             colNames:['<c:message code="label.id"/>', '<c:message code="label.counterparts.table.col_title.name"/>', '<c:message code="label.counterparts.table.col_title.fullname"/>','<c:message code="label.version"/>'],
             colModel:[
                 {name:'id',index:'id', width:55, editable:false, editoptions:{readonly:true, size:10}, hidden:true},
-                {name:'shortName',index:'shortName', width:100, editable:true, editrules:{required:true}, editoptions:{size:10}},
-                {name:'fullName',index:'fullName', width:100, editable:true, editrules:{required:false}, editoptions:{size:10},search:false},
+                {name:'number',index:'number', width:100, editable:true, editrules:{required:true}, editoptions:{size:10}},
+                {name:'name',index:'name', width:100, editable:true, editrules:{required:false}, editoptions:{size:10},search:false},
+                {name:'description',index:'description', width:100, editable:true, editrules:{required:false}, editoptions:{size:10},search:false},
                 {name:'version',index:'version', width:100, editable:true, editrules:{readonly:true}, editoptions:{size:10,defaultValue:'0'}, hidden:true},
             ],
             rowNum:10,
@@ -118,16 +121,16 @@
                         {name:"number",index:"number",width:80,editable:true},
                         {name:"name",index:"name",width:130,editable:true},
                         {name:"startDate",index:"startDate",width:130,editable:true,editrules:{date:true},editoptions:{dataInit:function(el){
-                                    $(el).datepicker({dateFormat:'dd-mm-yy'});
-                                }
+                            $(el).datepicker({dateFormat:'dd-mm-yy'});
+                        }
                         },datefmt:'dd-mm-yyyy'},
                         {name:"planEndDate",index:"planEndDate",width:130,editable:true, editrules:{date:true},editoptions:{dataInit:function(el){
-                                    $(el).datepicker({dateFormat:'dd-mm-yy'});
-                                }
+                            $(el).datepicker({dateFormat:'dd-mm-yy'});
+                        }
                         },datefmt:'dd-mm-yyyy'},
                         {name:"endDate",index:"endDate",width:130,editable:true,editrules:{date:true},editoptions:{dataInit:function(el){
-                                    $(el).datepicker({dateFormat:'dd-mm-yy'});
-                                }
+                            $(el).datepicker({dateFormat:'dd-mm-yy'});
+                        }
                         },datefmt:'dd-mm-yyyy'},
 
                     ],
@@ -181,33 +184,33 @@
                                 $(elem).wrap("<div></div>");
                                 $(elem).width='80px';
                                 $(elem).ajaxComboBox('${pageContext.request.contextPath}/persons/showList?firmID='+row_id,
-                                    {lang: 'en',
-                                        db_table: 'nation',
-                                        per_page: 20,
-                                        navi_num: 10,
-                                        select_only: true,
-                                        primary_key: 'id',
-                                        show_field: 'surname,middleName,firstName',
-                                        field:'surname',
-                                        //recalc_width:false,
-                                        button_img:'${pageContext.request.contextPath}/resources/images/btn.png',
-                                        init_record: [value_elem],
-                                        sub_info: true,
-                                        /**/
-                                        sub_as: {
-                                            surname: 'surname',
-                                            middleName: 'middleName',
-                                            firstName:'firstName'
-                                        }/**/
-                                    });
+                                        {lang: 'en',
+                                            db_table: 'nation',
+                                            per_page: 20,
+                                            navi_num: 10,
+                                            select_only: true,
+                                            primary_key: 'id',
+                                            show_field: 'surname,middleName,firstName',
+                                            field:'surname',
+                                            //recalc_width:false,
+                                            button_img:'${pageContext.request.contextPath}/resources/images/btn.png',
+                                            init_record: [value_elem],
+                                            sub_info: true,
+                                            /**/
+                                            sub_as: {
+                                                surname: 'surname',
+                                                middleName: 'middleName',
+                                                firstName:'firstName'
+                                            }/**/
+                                        });
                             }/**/
                         }},
                     ],/*
-                    colModel: [
-                        {name:"id",index:"id",width:80,hidden:true,key:true},
-                        {name:"surname",index:"surname",width:100},
-                        {name:"parentId",index:"parentId",width:80,hidden:true},
-                    ],/**/
+                     colModel: [
+                     {name:"id",index:"id",width:80,hidden:true,key:true},
+                     {name:"surname",index:"surname",width:100},
+                     {name:"parentId",index:"parentId",width:80,hidden:true},
+                     ],/**/
                     rowNum:20,
                     "hoverrows":false,
                     "viewrecords":false,
@@ -244,7 +247,17 @@
 
         });
         $("#grid").jqGrid('navGrid','#pager',
-                {edit:true, add:true, del:true, search:false},
+                {
+                    <sec:authorize ifAnyGranted="ROLE_ADD_DOCUMENTS">
+                    edit:true,
+                    </sec:authorize>
+                    <sec:authorize ifAnyGranted="ROLE_EDIT_DOCUMENTS">
+                    add:true,
+                    </sec:authorize>
+                    <sec:authorize ifAnyGranted="ROLE_DELETE_DOCUMENTS">
+                    del:true,
+                    </sec:authorize>
+                    search:false},
                 {/*MOD PARAM*/
                     closeAfterEdit: true,
                 },
@@ -268,27 +281,27 @@
 
         jQuery("#grid").jqGrid('filterToolbar',{stringResult: false,searchOnEnter:true});
 
-/*
-        jQuery("#test").ajaxComboBox('${pageContext.request.contextPath}/persons/showList?firmID=1',
-                {lang: 'en',
-                    db_table: 'nation',
-                    per_page: 20,
-                    navi_num: 10,
-                    sub_info: true,
-                    select_only: true,
-                    primary_key: 'id',
-                    field:'surname',
-                    show_field: 'surname',
-                    search_field: 'surname',
-                    button_img:'${pageContext.request.contextPath}/resources/images/btn.png',
-                    init_record: [1],
-                    sub_as: {
-                        surname: 'surname',
-                        middleName: 'middleName',
-                        firstName:'firstName'
-                    }
-                });
-/**/
+        /*
+         jQuery("#test").ajaxComboBox('${pageContext.request.contextPath}/persons/showList?firmID=1',
+         {lang: 'en',
+         db_table: 'nation',
+         per_page: 20,
+         navi_num: 10,
+         sub_info: true,
+         select_only: true,
+         primary_key: 'id',
+         field:'surname',
+         show_field: 'surname',
+         search_field: 'surname',
+         button_img:'${pageContext.request.contextPath}/resources/images/btn.png',
+         init_record: [1],
+         sub_as: {
+         surname: 'surname',
+         middleName: 'middleName',
+         firstName:'firstName'
+         }
+         });
+         /**/
     });
 </script>
 </html>

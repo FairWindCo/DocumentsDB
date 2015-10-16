@@ -3,10 +3,10 @@ package ua.pp.fairwind.favorid.internalDB.security;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import ua.pp.fairwind.favorid.internalDB.model.Person;
 import ua.pp.fairwind.favorid.internalDB.model.administrative.User;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -37,6 +37,10 @@ public class UserDetailsAdapter implements UserDetails{
             }
         }
         return hasRole;
+    }
+
+    public Person getUserPerson(){
+        return user.getPerson();
     }
 
 

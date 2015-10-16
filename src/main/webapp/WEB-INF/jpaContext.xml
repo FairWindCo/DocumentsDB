@@ -98,6 +98,7 @@
             <property name="packagesToScan">
                <array>
                    <value>ua.pp.fairwind.favorid.internalDB.model</value>
+                   <value>ua.pp.fairwind.favorid.internalDB.model.document</value>
                    <value>ua.pp.fairwind.favorid.internalDB.model.products</value>
                    <value>ua.pp.fairwind.favorid.internalDB.model.storehouses</value>
                </array>

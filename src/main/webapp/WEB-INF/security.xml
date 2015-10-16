@@ -7,7 +7,7 @@
 		http://www.springframework.org/schema/security
 		http://www.springframework.org/schema/security/spring-security.xsd">
 
-       <security:http use-expressions="true" auto-config="true" access-denied-page="/error403" authentication-manager-ref="authenticationManager" >
+       <security:http use-expressions="true" auto-config="true" access-denied-page="/error403" authentication-manager-ref="dao-auth" >
               <security:intercept-url pattern="/images/**" access="permitAll"/>
               <security:intercept-url pattern="/resources/**" access="permitAll"/>
               <security:intercept-url pattern="/login*" access="permitAll"/>
@@ -25,16 +25,16 @@
 
 
 
-       <!--
-<bean id="myUserDetailsService"
-      class="ua.pp.fairwind.internalDBSystem.security.MyUserDetailService" />
+
+       <bean id="myUserDetailsService"
+              class="ua.pp.fairwind.favorid.internalDB.security.MyUserDetailService" />
 
 
-<sec:authentication-manager id="dao-auth">
-       <sec:authentication-provider user-service-ref="myUserDetailsService">
-       </sec:authentication-provider>
-</sec:authentication-manager>
--->
+       <security:authentication-manager id="dao-auth">
+              <security:authentication-provider user-service-ref="myUserDetailsService">
+              </security:authentication-provider>
+       </security:authentication-manager>
+
 
        <security:authentication-manager id="authenticationManager">
               <security:authentication-provider>

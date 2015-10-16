@@ -1,9 +1,12 @@
-package ua.pp.fairwind.favorid.internalDB.model;
+package ua.pp.fairwind.favorid.internalDB.model.document;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
+import ua.pp.fairwind.favorid.internalDB.model.Agreement;
+import ua.pp.fairwind.favorid.internalDB.model.Counterparty;
+import ua.pp.fairwind.favorid.internalDB.model.Person;
 import ua.pp.fairwind.favorid.internalDB.model.administrative.User;
 import ua.pp.fairwind.favorid.internalDB.model.directories.DocumentType;
 
@@ -59,9 +62,14 @@ public class Document {
     @JsonManagedReference
     final Set<Document> atachments=new HashSet<>();
 
-    @OneToMany
+    @OneToMany(mappedBy = "document")
     @JsonManagedReference
     final Set<DocumentFile> documentFiles=new HashSet<>();
+
+    DOCUMENT_SECURITY_MODEL security_model;
+    @OneToMany(mappedBy = "document")
+    @JsonManagedReference
+    final Set<DocumentSecurity> securities=new HashSet<>();
 
     Date creationDate=new Date();
     @LastModifiedDate

@@ -1,9 +1,8 @@
-package ua.pp.fairwind.favorid.internalDB.model;
+package ua.pp.fairwind.favorid.internalDB.model.document;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+import javax.persistence.*;
 import java.util.Date;
 
 /**
@@ -20,6 +19,10 @@ public class DocumentFile {
     String mimeType;
     long size;
     Date creationDate=new Date();
+    @ManyToOne
+    @JsonManagedReference
+    @JoinColumn(name = "document_id")
+    Document document;
 
     public Long getId() {
         return id;
@@ -67,5 +70,13 @@ public class DocumentFile {
 
     public void setCreationDate(Date creationDate) {
         this.creationDate = creationDate;
+    }
+
+    public Document getDocument() {
+        return document;
+    }
+
+    public void setDocument(Document document) {
+        this.document = document;
     }
 }

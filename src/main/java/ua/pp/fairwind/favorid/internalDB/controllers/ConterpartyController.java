@@ -196,9 +196,24 @@ public class ConterpartyController {
         }
         switch (oper){
             case "add":
-            case "edit":
                 counterpartyRepository.save(counterparty);
                 response.setStatus(200);
+                break;
+            case "edit":
+                Counterparty cpt = counterpartyRepository.findOne(counterparty.getId());
+                if (counterparty != null) {
+                        if(cpt.getVersion() <= counterparty.getVersion()) {
+                            cpt.setFullName(counterparty.getFullName());
+                            cpt.setShortName(counterparty.getShortName());
+                            counterpartyRepository.save(cpt);
+                            response.setStatus(200);
+                        } else {
+                            response.sendError(400, "ANOTHER TRANSACTION MODIFICATION!");
+                        }
+                } else {
+                    response.sendError(404, "NO Counterpart WITH ID " + counterparty.getId() + " FOUND");
+                }
+
                 break;
             case "del":
                 counterpartyRepository.delete(counterparty.getId());
@@ -306,6 +321,80 @@ public class ConterpartyController {
                         response.setStatus(200);
                     } else {
                         response.sendError(404, "NO Agreement WITH ID " + agreement.getId() + " FOUND");
+                    }
+                } else {
+                    response.sendError(404, "NO COUNTERPART WITH ID " + ID + " FOUND");
+                }
+            }break;
+            default:
+                response.sendError(406, "UNKNOWN OPERATION");
+        }
+    }
+
+    @Transactional(readOnly = false)
+    @RequestMapping(value = "/editperson", method = {RequestMethod.POST,RequestMethod.GET})
+    public void personsEditor(@RequestParam String oper,@RequestParam long ID,Person person,BindingResult result,HttpServletRequest request,HttpServletResponse response)throws IOException{
+        if(result.hasErrors()){
+            response.sendError(400,result.toString());
+            return;
+        }
+        switch (oper){
+            case "add":{
+                Counterparty counterparty= counterpartyRepository.findOne(ID);
+                if(counterparty!=null) {
+                    counterparty.addPerson(person);
+                    String headIDS=request.getParameter("headID_primary_key");
+                    if(headIDS!=null && !headIDS.isEmpty()){
+                        try {
+                            Long headid=Long.getLong(headIDS);
+                            Person headPerson=personRepository.findOne(headid);
+                            person.setHead(headPerson);
+                        } catch (NumberFormatException e){
+                            //do nothing
+                        }
+                    }
+                    personRepository.save(person);
+                    counterpartyRepository.save(counterparty);
+                    response.setStatus(200);
+                } else{
+                    response.sendError(404, "NO COUNTERPART WITH ID " +ID+" FOUND");
+                }
+            }break;
+            case "edit": {
+                Person prsn = personRepository.findOne(person.getId());
+                if (prsn != null && prsn.getVersion() <= person.getVersion()) {
+                    prsn.setSurname(person.getSurname());
+                    prsn.setFirstName(person.getFirstName());
+                    prsn.setMiddleName(person.getMiddleName());
+                    prsn.setComments(person.getComments());
+                    prsn.setDate_of_birth(person.getDate_of_birth());
+                    String headIDS=request.getParameter("headID_primary_key");
+                    if(headIDS!=null && !headIDS.isEmpty()){
+                        try {
+                            Long headid=Long.getLong(headIDS);
+                            Person headPerson=personRepository.findOne(headid);
+                            person.setHead(headPerson);
+                        } catch (NumberFormatException e){
+                            //do nothing
+                        }
+                    }
+                    personRepository.save(prsn);
+                    response.setStatus(200);
+                } else {
+                    response.sendError(404, "NO Agreement WITH ID " + person.getId() + " FOUND");
+                }
+            }break;
+            case "del": {
+                Counterparty counterparty = counterpartyRepository.findOne(ID);
+                if (counterparty != null) {
+                    Person prsn=personRepository.findOne(person.getId());
+                    if(prsn!=null) {
+                        counterparty.removePerson(prsn);
+                        personRepository.delete(prsn);
+                        counterpartyRepository.save(counterparty);
+                        response.setStatus(200);
+                    } else {
+                        response.sendError(404, "NO Agreement WITH ID " + person.getId() + " FOUND");
                     }
                 } else {
                     response.sendError(404, "NO COUNTERPART WITH ID " + ID + " FOUND");

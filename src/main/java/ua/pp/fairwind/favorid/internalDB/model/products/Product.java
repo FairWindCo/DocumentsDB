@@ -1,6 +1,6 @@
 package ua.pp.fairwind.favorid.internalDB.model.products;
 
-import ua.pp.fairwind.favorid.internalDB.model.Document;
+import ua.pp.fairwind.favorid.internalDB.model.document.Document;
 import ua.pp.fairwind.favorid.internalDB.model.storehouses.Nomenclature;
 
 import javax.persistence.*;

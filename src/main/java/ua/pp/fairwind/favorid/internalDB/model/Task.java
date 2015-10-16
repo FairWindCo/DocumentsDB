@@ -5,6 +5,7 @@ import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import ua.pp.fairwind.favorid.internalDB.model.administrative.User;
 import ua.pp.fairwind.favorid.internalDB.model.directories.TaskType;
+import ua.pp.fairwind.favorid.internalDB.model.document.Document;
 
 import javax.persistence.*;
 import java.util.Collections;
