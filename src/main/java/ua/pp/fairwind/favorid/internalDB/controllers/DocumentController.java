@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import ua.pp.fairwind.favorid.internalDB.jgrid.JGridRowsResponse;
 import ua.pp.fairwind.favorid.internalDB.jgrid.JSComboExpenseResp;
 import ua.pp.fairwind.favorid.internalDB.jgrid.Utils;
+import ua.pp.fairwind.favorid.internalDB.model.Counterparty;
+import ua.pp.fairwind.favorid.internalDB.model.Person;
 import ua.pp.fairwind.favorid.internalDB.model.directories.DocumentType;
 import ua.pp.fairwind.favorid.internalDB.model.document.Document;
 import ua.pp.fairwind.favorid.internalDB.model.proxy.DocumentProxy;
@@ -32,7 +34,7 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * Created by Сергей on 14.10.2015.
+ * Created by пїЅпїЅпїЅпїЅпїЅпїЅ on 14.10.2015.
  */
 @Controller
 @RequestMapping("/documents")
@@ -110,6 +112,26 @@ public class DocumentController {
                         DocumentType dt=documentTypeRepository.findOne(typeId);
                         if(dt!=null)document.setDocumentType(dt);
                     }
+                    Long from_firm=Utils.getLongParameter("counterprty_from_id",request);
+                    if(from_firm!=null){
+                        Counterparty from=counterpartyRepository.findOne(from_firm);
+                        if(from!=null)document.setCounterparty_from(from);
+                    }
+                    Long to_firm=Utils.getLongParameter("counterprty_to_id",request);
+                    if(to_firm!=null){
+                        Counterparty to=counterpartyRepository.findOne(to_firm);
+                        if(to!=null)document.setCounterparty_to(to);
+                    }
+                    Long from_person=Utils.getLongParameter("person_from_id",request);
+                    if(from_person!=null){
+                        Person from=personRepository.findOne(from_person);
+                        if(from!=null)document.setPerson_from(from);
+                    }
+                    Long to_person=Utils.getLongParameter("person_to_id",request);
+                    if(to_person!=null){
+                        Person to=personRepository.findOne(to_person);
+                        if(to!=null)document.setPerson_to(to);
+                    }
                     documentRepository.save(document);
                     response.setStatus(200);
                 } else {
@@ -128,6 +150,26 @@ public class DocumentController {
                             if(typeId!=null){
                                 DocumentType dt=documentTypeRepository.findOne(typeId);
                                 if(dt!=null)cpt.setDocumentType(dt);
+                            }
+                            Long from_firm=Utils.getLongParameter("counterprty_from_id",request);
+                            if(from_firm!=null){
+                                Counterparty from=counterpartyRepository.findOne(from_firm);
+                                if(from!=null)cpt.setCounterparty_from(from);
+                            }
+                            Long to_firm=Utils.getLongParameter("counterprty_to_id",request);
+                            if(to_firm!=null){
+                                Counterparty to=counterpartyRepository.findOne(to_firm);
+                                if(to!=null)cpt.setCounterparty_to(to);
+                            }
+                            Long from_person=Utils.getLongParameter("person_from_id",request);
+                            if(from_person!=null){
+                                Person from=personRepository.findOne(from_person);
+                                if(from!=null)cpt.setPerson_from(from);
+                            }
+                            Long to_person=Utils.getLongParameter("person_to_id",request);
+                            if(to_person!=null){
+                                Person to=personRepository.findOne(to_person);
+                                if(to!=null)cpt.setPerson_to(to);
                             }
                             documentRepository.save(cpt);
                             response.setStatus(200);
