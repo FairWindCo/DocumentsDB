@@ -10,6 +10,7 @@ import ua.pp.fairwind.favorid.internalDB.model.Agreement;
 import ua.pp.fairwind.favorid.internalDB.model.Contact;
 import ua.pp.fairwind.favorid.internalDB.model.Counterparty;
 import ua.pp.fairwind.favorid.internalDB.model.Person;
+import ua.pp.fairwind.favorid.internalDB.model.proxy.CounterpartProxy;
 
 import java.util.List;
 
@@ -38,5 +39,14 @@ public interface CounterpartyRepository extends JpaRepository<Counterparty,Long>
     Page<Contact> getContacts(@Param("ID") long id, Pageable pager);
     @Query("select c from Contact c,Counterparty  f where f.id=:ID and c member of f.contacts")
     List<Contact> getContacts(@Param("ID") long id);
+
+    @Query("select new ua.pp.fairwind.favorid.internalDB.model.proxy.CounterpartProxy(c.id,c.shortName,c.fullName) from Counterparty c where c.shortName like %:search%")
+    Page<CounterpartProxy> findCounterpart(@Param("search")String search,Pageable pager);
+    @Query("select new ua.pp.fairwind.favorid.internalDB.model.proxy.CounterpartProxy(c.id,c.shortName,c.fullName) from Counterparty c where c.shortName like %:search%")
+    List<CounterpartProxy> findCounterpart(@Param("search")String search,Sort sort);
+    @Query("select new ua.pp.fairwind.favorid.internalDB.model.proxy.CounterpartProxy(c.id,c.shortName,c.fullName) from Counterparty c")
+    Page<CounterpartProxy> findCounterpart(Pageable pager);
+    @Query("select new ua.pp.fairwind.favorid.internalDB.model.proxy.CounterpartProxy(c.id,c.shortName,c.fullName) from Counterparty c")
+    List<CounterpartProxy> findCounterpart(Sort sort);
 
 }

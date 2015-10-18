@@ -2,6 +2,7 @@ package ua.pp.fairwind.favorid.internalDB.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.access.annotation.Secured;
@@ -12,10 +13,12 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import ua.pp.fairwind.favorid.internalDB.jgrid.JGridRowsResponse;
+import ua.pp.fairwind.favorid.internalDB.jgrid.JSComboExpenseResp;
 import ua.pp.fairwind.favorid.internalDB.model.Agreement;
 import ua.pp.fairwind.favorid.internalDB.model.Contact;
 import ua.pp.fairwind.favorid.internalDB.model.Counterparty;
 import ua.pp.fairwind.favorid.internalDB.model.Person;
+import ua.pp.fairwind.favorid.internalDB.model.proxy.CounterpartProxy;
 import ua.pp.fairwind.favorid.internalDB.repository.AgrimentRepository;
 import ua.pp.fairwind.favorid.internalDB.repository.ContactRepository;
 import ua.pp.fairwind.favorid.internalDB.repository.CounterpartyRepository;
@@ -26,6 +29,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -402,6 +406,44 @@ public class ConterpartyController {
             }break;
             default:
                 response.sendError(406, "UNKNOWN OPERATION");
+        }
+    }
+
+    @Transactional(readOnly = true)
+    @RequestMapping(value = "/showList", method = RequestMethod.GET)
+    @ResponseBody
+    public Object simpleClientList(@RequestParam(required = false) Integer page_num, @RequestParam(required = false) Integer per_page,@RequestParam(value = "pkey_val[]",required = false) String pkey,@RequestParam(value = "q_word[]",required = false) String[] qword) {
+        //Sort sort= FormSort.formSortFromSortDescription(orderby);
+        Sort sort=new Sort(Sort.Direction.ASC,"shortName");
+        PageRequest pager=null;
+        if(page_num!=null && per_page!=null) {
+            pager = new PageRequest(page_num - 1, per_page, sort);
+        }
+        if(pager!=null) {
+            Page<CounterpartProxy> page;
+            if (qword != null && qword.length > 0) {
+                page = counterpartyRepository.findCounterpart(qword[0], pager);
+            } else {
+                page = counterpartyRepository.findCounterpart(pager);
+            }
+            return new JSComboExpenseResp<>(page);
+        } else {
+            if(pkey!=null && !pkey.isEmpty()){
+                Long key=Long.valueOf(pkey);
+                Counterparty ft=null;
+                if(key!=null) {
+                    ft = counterpartyRepository.findOne(key);
+                }
+                return ft;
+            } else {
+                List<CounterpartProxy> page;
+                if (qword != null && qword.length > 0) {
+                    page = counterpartyRepository.findCounterpart("%" + qword[0] + "%", sort);
+                } else {
+                    page = counterpartyRepository.findCounterpart(sort);
+                }
+                return new JSComboExpenseResp<>(page);
+            }
         }
     }
 

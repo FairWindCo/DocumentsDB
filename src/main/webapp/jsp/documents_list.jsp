@@ -53,25 +53,35 @@
 </body>
 <script type="text/javascript">
     $(document).ready(function () {
-
+        var documentType_id;
+        var counterprty_from_id=1;
+        var counterprty_to_id=1;
+        var person_from_id;
+        var person_to_id;
+        var GridData={documentType_key:function(){return documentType_id},
+            counterprty_to_id:function(){return counterprty_to_id},
+            counterprty_from_id:function(){return counterprty_from_id},
+            person_from_id:function(){return person_from_id},
+            person_to_id:function(){return person_to_id}
+        };
         $("#grid").jqGrid({
             url:'${pageContext.request.contextPath}/documents/listing',
             editurl:'${pageContext.request.contextPath}/documents/edit',
             datatype: 'json',
             mtype: 'POST',
             styleUI : 'Bootstrap',
-            colNames:['<c:message code="label.id"/>', '<c:message code="label.documents.table.col_title.number"/>', '<c:message code="label.documents.table.col_title.name"/>', '<c:message code="label.documents.table.col_title.description"/>','<c:message code="label.documents.table.col_title.document_type"/>','<c:message code="label.documents.table.col_title.document_type"/>','<c:message code="label.version"/>'],
+            colNames:['<c:message code="label.id"/>', '<c:message code="label.documents.table.col_title.number"/>', '<c:message code="label.documents.table.col_title.name"/>', '<c:message code="label.documents.table.col_title.description"/>','<c:message code="label.documents.table.col_title.document_type"/>','<c:message code="label.documents.table.col_title.counterpart_from"/>','<c:message code="label.documents.table.col_title.person_from"/>','<c:message code="label.documents.table.col_title.counterpart_to"/>','<c:message code="label.documents.table.col_title.person_to"/>','<c:message code="label.version"/>'],
             colModel:[
                 {name:'id',index:'id', width:55, editable:false, editoptions:{readonly:true, size:10}, hidden:true},
                 {name:'number',index:'number', width:100, editable:true, editrules:{required:true}, editoptions:{size:10}},
                 {name:'name',index:'name', width:100, editable:true, editrules:{required:false}, editoptions:{size:10},search:false},
                 {name:'description',index:'description', width:100, editable:true, editrules:{required:false}, editoptions:{size:10},search:false},
-                {name:'documentType_key', width:100, editable:true,hidden:true, search:false},
-                {name:'documentType_name', width:100, editable:true, editrules:{edithidden:true,required:false},jsonmap:'documentType.name',search:false,editoptions:{
+                {name:'documentType_name', width:100, editable:true, editrules:{edithidden:true,required:false},jsonmap:'documentType',search:false,editoptions:{
                     /**/
                     dataInit : function (elem) {
                         var value_elem=$(elem).val();
                         $(elem).wrap("<div></div>");
+                        documentType_id=value_elem;
                         $(elem).width='80px';
                         $(elem).ajaxComboBox('${pageContext.request.contextPath}/documenttypes/showList',
                                 {lang: 'en',
@@ -84,13 +94,151 @@
                                     field:'name',
                                     //recalc_width:false,
                                     button_img:'${pageContext.request.contextPath}/resources/images/btn.png',
-                                    init_record: [value_elem.id],
+                                    init_record: [value_elem],
                                     bind_to:'personIDkey_setup',
                                 }).bind('personIDkey_setup', function() {
-                                    $('#documentType_key').val($('#documentType_name_primary_key').val());
+                                    //$('#documentType_key').val($('#documentType_name_primary_key').val());
+                                    documentType_id=$('#documentType_name_primary_key').val();
                                 });
                     }/**/
-                }},
+                    },formatter:function(cellvalue, options, rowObject ){
+                        if(cellvalue===null || cellvalue===undefined)return '';
+                        return '<p pkey='+cellvalue.id+'>'+cellvalue.name+'</p>'
+                    },unformat:function(cellvalue, options, cellObject ){
+                        var element=$(cellObject).html();
+                        return $(element).attr('pkey');
+                    }
+                },
+                {name:'from_counterperty', width:100, editable:true, editrules:{edithidden:true,required:false},jsonmap:'counterparty_from.shortName',search:false,editoptions:{
+                    /**/
+                    dataInit : function (elem) {
+                        var value_elem=$(elem).val();
+                        $(elem).wrap("<div></div>");
+                        counterprty_from_id=value_elem;
+                        $(elem).width='80px';
+                        $(elem).ajaxComboBox('${pageContext.request.contextPath}/counterparts/showList',
+                                {lang: 'en',
+                                    db_table: 'nation',
+                                    per_page: 20,
+                                    navi_num: 10,
+                                    select_only: true,
+                                    primary_key: 'id',
+                                    show_field: 'shortName',
+                                    field:'shortName',
+                                    //recalc_width:false,
+                                    button_img:'${pageContext.request.contextPath}/resources/images/btn.png',
+                                    init_record: [value_elem],
+                                    bind_to:'key_setup',
+                                }).bind('key_setup', function() {
+                                    counterprty_from_id=$('#from_counterperty_primary_key').val();
+                                });
+                    }/**/
+                },formatter:function(cellvalue, options, rowObject ){
+                    if(cellvalue===null || cellvalue===undefined)return '';
+                    return '<p pkey='+cellvalue.id+'>'+cellvalue.shortName+'</p>'
+                },unformat:function(cellvalue, options, cellObject ){
+                    var element=$(cellObject).html();
+                    return $(element).attr('pkey');
+                }
+                },
+                {name:'from_person', width:100, editable:true, editrules:{edithidden:true,required:false},jsonmap:'person_from.surname',search:false,editoptions:{
+                    /**/
+                    dataInit : function (elem) {
+                        var value_elem=$(elem).val();
+                        person_from_id=value_elem;
+                        $(elem).wrap("<div></div>");
+                        $(elem).width='80px';
+                        $(elem).ajaxComboBox('${pageContext.request.contextPath}/persons/showList',
+                                {lang: 'en',
+                                    db_table: 'nation',
+                                    per_page: 20,
+                                    navi_num: 10,
+                                    postData:{'firmID':function(){return counterprty_from_id}},
+                                    select_only: true,
+                                    primary_key: 'id',
+                                    show_field: 'surname',
+                                    field:'surname',
+                                    //recalc_width:false,
+                                    button_img:'${pageContext.request.contextPath}/resources/images/btn.png',
+                                    init_record: [value_elem],
+                                    bind_to:'key_setup',
+                                }).bind('key_setup', function() {
+                                    person_from_id=$('#from_person_primary_key').val();
+                                });
+                    }/**/
+                },formatter:function(cellvalue, options, rowObject ){
+                    if(cellvalue===null || cellvalue===undefined)return '';
+                    return '<p pkey='+cellvalue.id+'>'+cellvalue.surname+'</p>'
+                },unformat:function(cellvalue, options, cellObject ){
+                    var element=$(cellObject).html();
+                    return $(element).attr('pkey');
+                }
+                },
+                {name:'to_counterperty', width:100, editable:true, editrules:{edithidden:true,required:false},jsonmap:'counterparty_from.shortName',search:false,editoptions:{
+                    /**/
+                    dataInit : function (elem) {
+                        var value_elem=$(elem).val();
+                        $(elem).wrap("<div></div>");
+                        $(elem).width='80px';
+                        counterprty_to_id=value_elem;
+                        $(elem).ajaxComboBox('${pageContext.request.contextPath}/counterparts/showList',
+                                {lang: 'en',
+                                    db_table: 'nation',
+                                    per_page: 20,
+                                    navi_num: 10,
+                                    select_only: true,
+                                    primary_key: 'id',
+                                    show_field: 'shortName',
+                                    field:'shortName',
+                                    //recalc_width:false,
+                                    button_img:'${pageContext.request.contextPath}/resources/images/btn.png',
+                                    init_record: [value_elem],
+                                    bind_to:'key_setup',
+                                }).bind('key_setup', function() {
+                                    counterprty_to_id=$('#to_counterperty_primary_key').val();
+                                });
+                    }/**/
+                },formatter:function(cellvalue, options, rowObject ){
+                    if(cellvalue===null || cellvalue===undefined)return '';
+                    return '<p pkey='+cellvalue.id+'>'+cellvalue.shortName+'</p>'
+                },unformat:function(cellvalue, options, cellObject ){
+                    var element=$(cellObject).html();
+                    return $(element).attr('pkey');
+                }
+                },
+                {name:'to_person', width:100, editable:true, editrules:{edithidden:true,required:false},jsonmap:'person_from.surname',search:false,editoptions:{
+                    /**/
+                    dataInit : function (elem) {
+                        var value_elem=$(elem).val();
+                        $(elem).wrap("<div></div>");
+                        $(elem).width='80px';
+                        person_to_id=value_elem;
+                        $(elem).ajaxComboBox('${pageContext.request.contextPath}/persons/showList',
+                                {lang: 'en',
+                                    db_table: 'nation',
+                                    per_page: 20,
+                                    navi_num: 10,
+                                    postData:{'firmID':function(){return counterprty_to_id}},
+                                    select_only: true,
+                                    primary_key: 'id',
+                                    show_field: 'surname',
+                                    field:'surname',
+                                    //recalc_width:false,
+                                    button_img:'${pageContext.request.contextPath}/resources/images/btn.png',
+                                    init_record: [value_elem],
+                                    bind_to:'key_setup',
+                                }).bind('key_setup', function() {
+                                    person_from_id=$('#from_person_primary_key').val();
+                                });
+                    }/**/
+                },formatter:function(cellvalue, options, rowObject ){
+                    if(cellvalue===null || cellvalue===undefined)return '';
+                    return '<p pkey='+cellvalue.id+'>'+cellvalue.surname+'</p>'
+                },unformat:function(cellvalue, options, cellObject ){
+                    var element=$(cellObject).html();
+                    return $(element).attr('pkey');
+                }
+                },
                 {name:'version',index:'version', width:100, editable:true, editrules:{readonly:true}, editoptions:{size:10,defaultValue:'0'}, hidden:true},
             ],
             rowNum:10,
@@ -284,9 +432,11 @@
                     </sec:authorize>
                     search:false},
                 {/*MOD PARAM*/
+                    editData:GridData,
                     closeAfterEdit: true,
                 },
                 {/*ADD PARAM*/
+                    editData:GridData,
                     closeOnEscape: true,
                     closeAfterAdd: true,
                     serializeEditData:function (data) {

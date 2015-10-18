@@ -132,7 +132,8 @@ $.extend(AjaxComboBox.prototype, /** @lends AjaxComboBox.prototype */ {
       recalc_width: false,
       // タグ検索
       tags: false,
-
+      //aditional post data
+      postData:{},
       // URL短縮用
       shorten_btn: false, // 短縮実行ボタンのセレクタ
       shorten_src: 'dist/bitly.php',
@@ -711,14 +712,16 @@ $.extend(AjaxComboBox.prototype, /** @lends AjaxComboBox.prototype */ {
       this._afterInit(this, data);
     } else {
       var self = this;
+      var data={
+            db_table: this.option.db_table,
+            pkey_name: this.option.primary_key,
+            pkey_val: this.option.init_record
+          };
+      $.extend(data,this.option.postData);
       $.ajax({
         dataType: 'json',
         url: self.option.source,
-        data: {
-          db_table: this.option.db_table,
-          pkey_name: this.option.primary_key,
-          pkey_val: this.option.init_record
-        },
+        data: data,
         success: function (json) {
           self._afterInit(self, json);
         },
@@ -1392,18 +1395,20 @@ $.extend(AjaxComboBox.prototype, /** @lends AjaxComboBox.prototype */ {
    * @param {number} which_page_num - ページ番号
    */
   _searchForDb: function(self, q_word, which_page_num) {
+    var data={
+      q_word: q_word,
+      page_num: which_page_num,
+      per_page: self.option.per_page,
+      search_field: self.option.search_field,
+      and_or: self.option.and_or,
+      order_by: self.option.order_by,
+      db_table: self.option.db_table
+    };
+    $.extend(data,self.option.postData)
     self.prop.xhr = $.ajax({
       dataType: 'json',
       url: self.option.source,
-      data: {
-        q_word: q_word,
-        page_num: which_page_num,
-        per_page: self.option.per_page,
-        search_field: self.option.search_field,
-        and_or: self.option.and_or,
-        order_by: self.option.order_by,
-        db_table: self.option.db_table
-      },
+      data: data,
       success: function(json) {
         json.candidate   = [];
         json.primary_key = [];
