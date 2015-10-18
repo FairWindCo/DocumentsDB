@@ -81,7 +81,6 @@
                     dataInit : function (elem) {
                         var value_elem=$(elem).val();
                         $(elem).wrap("<div></div>");
-                        documentType_id=value_elem;
                         $(elem).width='80px';
                         $(elem).ajaxComboBox('${pageContext.request.contextPath}/documenttypes/showList',
                                 {lang: 'en',
