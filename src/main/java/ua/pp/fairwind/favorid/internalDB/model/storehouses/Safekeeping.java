@@ -19,8 +19,10 @@ public class Safekeeping {
     @JoinColumn(name = "nomenclature_ID")
     Nomenclature nomenclature;
     long count;
-    String  units;
+    Units  units;
     Date lastUpdate;
+    boolean defective=false;
+    String comments;
 
     public Long getId() {
         return id;
@@ -39,7 +41,7 @@ public class Safekeeping {
         if(storehouse!=null) {
             storehouse.addSafekeeping(this);
         } else {
-            storehouse.removeSafekeeping(this);
+            this.storehouse.removeSafekeeping(this);
         }
     }
 
@@ -51,7 +53,7 @@ public class Safekeeping {
         if(nomenclature!=null) {
             nomenclature.addSafekeeping(this);
         } else {
-            nomenclature.removeSafekeeping(this);
+            this.nomenclature.removeSafekeeping(this);
         }
     }
 
@@ -63,11 +65,11 @@ public class Safekeeping {
         this.count = count;
     }
 
-    public String getUnits() {
+    public Units getUnits() {
         return units;
     }
 
-    public void setUnits(String units) {
+    public void setUnits(Units units) {
         this.units = units;
     }
 
@@ -77,5 +79,21 @@ public class Safekeeping {
 
     public void setLastUpdate(Date lastUpdate) {
         this.lastUpdate = lastUpdate;
+    }
+
+    public boolean isDefective() {
+        return defective;
+    }
+
+    public void setDefective(boolean defective) {
+        this.defective = defective;
+    }
+
+    public String getComments() {
+        return comments;
+    }
+
+    public void setComments(String comments) {
+        this.comments = comments;
     }
 }

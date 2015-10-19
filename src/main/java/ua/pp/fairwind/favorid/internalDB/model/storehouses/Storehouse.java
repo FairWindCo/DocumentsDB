@@ -27,6 +27,16 @@ public class Storehouse {
     @OneToMany
     @JsonIgnore
     Set<Safekeeping> safekeeping=new HashSet<>();
+    @Version
+    long version=0;
+
+    public long getVersion() {
+        return version;
+    }
+
+    public void setVersion(long version) {
+        this.version = version;
+    }
 
     public Long getId() {
         return id;

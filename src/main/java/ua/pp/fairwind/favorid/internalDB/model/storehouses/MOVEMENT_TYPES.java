@@ -8,5 +8,6 @@ public enum MOVEMENT_TYPES {
     SHIPMENT,
     MOVE,
     DEFECTIVE,
-    UTILIZATION
+    UTILIZATION,
+    COMBINED
 }

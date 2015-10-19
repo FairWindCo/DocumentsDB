@@ -32,8 +32,13 @@ public class Movement {
     @ManyToOne
     @JoinColumn(name = "nomenclature_ID")
     Nomenclature nomenclature;
+    @ManyToOne
+    @JoinColumn(name = "created_nomenclature_ID")
+    Nomenclature nomenclature_created;
     long count;
-    String  units;
+    Units  units;
+    String comments;
+
 
     public Long getId() {
         return id;
@@ -107,11 +112,11 @@ public class Movement {
         this.count = count;
     }
 
-    public String getUnits() {
+    public Units getUnits() {
         return units;
     }
 
-    public void setUnits(String units) {
+    public void setUnits(Units units) {
         this.units = units;
     }
 }
