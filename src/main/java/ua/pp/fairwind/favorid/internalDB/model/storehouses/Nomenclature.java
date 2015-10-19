@@ -20,9 +20,15 @@ public class Nomenclature {
     String name;
     String manufacturer;
     String country;
+    boolean combined=false;
+    @OneToMany(mappedBy = "parent")
+    @JsonIgnore
+    Set<CombinedTemplate> templates=new HashSet<>();
     @OneToMany
     @JsonIgnore
     final Set<Safekeeping> safekeeping=new HashSet<>();
+    @Version
+    long version=0;
 
     public Long getId() {
         return id;
@@ -85,5 +91,21 @@ public class Nomenclature {
 
     public Set<Safekeeping> getSafekeeping() {
         return Collections.unmodifiableSet(safekeeping);
+    }
+
+    public boolean isCombined() {
+        return combined;
+    }
+
+    public void setCombined(boolean combined) {
+        this.combined = combined;
+    }
+
+    public long getVersion() {
+        return version;
+    }
+
+    public void setVersion(long version) {
+        this.version = version;
     }
 }

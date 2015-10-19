@@ -26,7 +26,6 @@
     <ol class="breadcrumb">
         <li><a href="${pageContext.request.contextPath}/"><c:message code="label.main"/></a></li>
         <li><a href="#"><c:message code="label.documents"/></a></li>
-        <li class="active"><c:message code="label.documents.document"/></li>
     </ol>
     <div class="row">
 
@@ -70,12 +69,11 @@
             datatype: 'json',
             mtype: 'POST',
             styleUI : 'Bootstrap',
-            colNames:['<c:message code="label.id"/>', '<c:message code="label.documents.table.col_title.number"/>', '<c:message code="label.documents.table.col_title.name"/>', '<c:message code="label.documents.table.col_title.description"/>','<c:message code="label.documents.table.col_title.document_type"/>','<c:message code="label.documents.table.col_title.counterpart_from"/>','<c:message code="label.documents.table.col_title.person_from"/>','<c:message code="label.documents.table.col_title.counterpart_to"/>','<c:message code="label.documents.table.col_title.person_to"/>','<c:message code="label.version"/>'],
+            colNames:['<c:message code="label.id"/>', '<c:message code="label.documents.table.col_title.number"/>', '<c:message code="label.documents.table.col_title.name"/>','<c:message code="label.documents.table.col_title.document_type"/>','<c:message code="label.documents.table.col_title.counterpart_from"/>','<c:message code="label.documents.table.col_title.person_from"/>','<c:message code="label.documents.table.col_title.counterpart_to"/>','<c:message code="label.documents.table.col_title.person_to"/>', '<c:message code="label.documents.table.col_title.description"/>','<c:message code="label.version"/>'],
             colModel:[
                 {name:'id',index:'id', width:55, editable:false, editoptions:{readonly:true, size:10}, hidden:true},
                 {name:'number',index:'number', width:100, editable:true, editrules:{required:true}, editoptions:{size:10}},
                 {name:'name',index:'name', width:100, editable:true, editrules:{required:false}, editoptions:{size:10},search:false},
-                {name:'description',index:'description', width:100, editable:true, editrules:{required:false}, editoptions:{size:10},search:false},
                 {name:'documentType_name', width:100, editable:true, editrules:{edithidden:true,required:false},jsonmap:'documentType',search:false,editoptions:{
                     /**/
                     dataInit : function (elem) {
@@ -113,7 +111,10 @@
                     dataInit : function (elem) {
                         var value_elem=$(elem).val();
                         $(elem).wrap("<div></div>");
-                        counterprty_from_id=value_elem;
+                        if(value_elem===null || value_elem===undefined || !(value_elem)){
+                            value_elem=counterprty_from_id;
+                        }
+                        //counterprty_from_id=value_elem;
                         $(elem).width='80px';
                         $(elem).ajaxComboBox('${pageContext.request.contextPath}/counterparts/showList',
                                 {lang: 'en',
@@ -179,7 +180,10 @@
                         var value_elem=$(elem).val();
                         $(elem).wrap("<div></div>");
                         $(elem).width='80px';
-                        counterprty_to_id=value_elem;
+                        //counterprty_to_id=value_elem;
+                        if(value_elem===null || value_elem===undefined || !(value_elem)){
+                            value_elem=counterprty_to_id;
+                        }
                         $(elem).ajaxComboBox('${pageContext.request.contextPath}/counterparts/showList',
                                 {lang: 'en',
                                     db_table: 'nation',
@@ -227,7 +231,7 @@
                                     init_record: [value_elem],
                                     bind_to:'key_setup',
                                 }).bind('key_setup', function() {
-                                    person_from_id=$('#from_person_primary_key').val();
+                                    person_to_id=$('#from_person_primary_key').val();
                                 });
                     }/**/
                 },formatter:function(cellvalue, options, rowObject ){
@@ -238,6 +242,7 @@
                     return $(element).attr('pkey');
                 }
                 },
+                {name:'description',index:'description', width:100, editable:true, editrules:{required:false}, search:false,edittype:textarea},
                 {name:'version',index:'version', width:100, editable:true, editrules:{readonly:true}, editoptions:{size:10,defaultValue:'0'}, hidden:true},
             ],
             rowNum:10,

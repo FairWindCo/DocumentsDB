@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import ua.pp.fairwind.favorid.internalDB.jgrid.JGridRowsResponse;
 import ua.pp.fairwind.favorid.internalDB.jgrid.JSComboExpenseResp;
+import ua.pp.fairwind.favorid.internalDB.jgrid.Utils;
 import ua.pp.fairwind.favorid.internalDB.model.Contact;
 import ua.pp.fairwind.favorid.internalDB.model.Person;
 import ua.pp.fairwind.favorid.internalDB.model.proxy.PersonProxy;
@@ -38,9 +39,11 @@ public class PersonController {
     @Transactional(readOnly = true)
     @RequestMapping(value = "/showList", method = RequestMethod.GET)
     @ResponseBody
-    public Object simpleClientList(@RequestParam(required = false) Integer page_num, @RequestParam(required = false) Integer per_page,@RequestParam(value = "pkey_val[]",required = false) String pkey,@RequestParam(value = "q_word[]",required = false) String[] qword,@RequestParam long firmID) {
+    public Object simpleClientList(@RequestParam(required = false) Integer page_num, @RequestParam(required = false) Integer per_page,@RequestParam(value = "pkey_val[]",required = false) String pkey,@RequestParam(value = "q_word[]",required = false) String[] qword,HttpServletRequest request) {
         // Retrieve all persons by delegating the call to PersonService
         //Sort sort= FormSort.formSortFromSortDescription(orderby);
+        Long firmID= Utils.getLongParameter("firmID",request);
+        if(firmID==null)firmID=1L;
         Sort sort=new Sort(Sort.Direction.ASC,"surname");
         PageRequest pager=null;
         if(page_num!=null && per_page!=null) {
