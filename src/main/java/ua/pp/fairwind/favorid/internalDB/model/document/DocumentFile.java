@@ -77,6 +77,12 @@ public class DocumentFile {
     }
 
     public void setDocument(Document document) {
-        this.document = document;
+        if(this.document!=null){
+            this.document.documentFiles.remove(this);
+        }
+        if(document!=null) {
+            this.document = document;
+            this.document.documentFiles.add(this);
+        }
     }
 }

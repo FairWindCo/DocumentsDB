@@ -9,5 +9,7 @@ public enum Units {
     TONS,
     COUNT,
     LITRES,
-    MILILITRES
+    MILLILITRES,
+    METERS,
+    MILLIMETERS
 }

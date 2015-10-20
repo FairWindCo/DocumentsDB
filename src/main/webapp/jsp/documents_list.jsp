@@ -8,7 +8,7 @@
     <!-- Bootstrap Core JavaScript -->
     <%@include file="/include/bootstrup_include.jsp" %>
     <%-- JQGrid --%>
-    <%@include file="/include/jgrid_include.jsp" %>
+    <%@include file="/include/jgrid_include_ex.jsp" %>
     <%-- jquery.ajax-combobox --%>
     <%@include file="/include/select_include.jsp" %>
 
@@ -242,7 +242,7 @@
                     return $(element).attr('pkey');
                 }
                 },
-                {name:'description',index:'description', width:100, editable:true, editrules:{required:false}, search:false,edittype:textarea},
+                {name:'description',index:'description', width:100, editable:true, editrules:{required:false}, search:false,edittype:'textarea'},
                 {name:'version',index:'version', width:100, editable:true, editrules:{readonly:true}, editoptions:{size:10,defaultValue:'0'}, hidden:true},
             ],
             rowNum:10,
@@ -277,46 +277,45 @@
                 // here we can easy construct the following
                 var subgrid_table_id;
                 var subgrid_pager_id;
+                var subgrid_table_sec_id;
+                var subgrid_pager_sec_id;
+                var subgrid_table_scr_id;
+                var subgrid_pager_scr_id;
                 subgrid_table_id = subgrid_id+"_t";
                 subgrid_pager_id = subgrid_id+"_p"
-                tree_table_id = subgrid_id+"_tree";
-                tree_pager_id = subgrid_id+"_tp"
-                jQuery("#"+subgrid_id).html("<table id='"+subgrid_table_id+"' class='scroll'></table><div id='"+subgrid_pager_id+"'></div><table id='"+tree_table_id+"' class='scroll'></table><div id='"+tree_pager_id+"'></div>");
+                subgrid_table_sec_id = subgrid_id+"_t_sec";
+                subgrid_pager_sec_id = subgrid_id+"_p_sec"
+                subgrid_table_scr_id = subgrid_id+"_t_scr";
+                subgrid_pager_scr_id = subgrid_id+"_p_scr"
+
+                jQuery("#"+subgrid_id).html("<table id='"+subgrid_table_id+"' class='scroll'></table><div id='"+subgrid_pager_id+"'></div><table id='"+subgrid_table_sec_id+"' class='scroll'></table><div id='"+subgrid_pager_sec_id+"'></div><table id='"+subgrid_table_scr_id+"' class='scroll'></table><div id='"+subgrid_pager_scr_id+"'></div>");
                 jQuery("#"+subgrid_table_id).jqGrid({
                     pager:subgrid_pager_id,
-                    url:"${pageContext.request.contextPath}/counterparts/agreements?ID="+row_id,
-                    editurl:"${pageContext.request.contextPath}/counterparts/editagreements?ID="+row_id,
+                    url:"${pageContext.request.contextPath}/documents/file_listing?document_id="+row_id,
+                    editurl:null,
+                    fileurl:"${pageContext.request.contextPath}/documents/editafile?document_id="+row_id,
                     datatype: "json",
                     mtype: 'POST',
                     width:800,
-                    caption:"<c:message code="label.counterparts.agreements.title"/>",
+                    caption:"<c:message code="label.documents.files.title"/>",
                     emptyrecords: "<c:message code="label.emptyrecords"/>",
                     styleUI : 'Bootstrap',
-                    colNames: ['<c:message code="label.id"/>','<c:message code="label.agreements.namber"/>','<c:message code="label.agreements.name"/>','<c:message code="label.agreements.startdate"/>','<c:message code="label.agreements.planendDate"/>','<c:message code="label.agreements.endDate"/>'],
                     colModel: [
-                        {name:"id",index:"id",width:80,hidden:true},
-                        {name:"number",index:"number",width:80,editable:true},
-                        {name:"name",index:"name",width:130,editable:true},
-                        {name:"startDate",index:"startDate",width:130,editable:true,editrules:{date:true},editoptions:{dataInit:function(el){
-                            $(el).datepicker({dateFormat:'dd-mm-yy'});
-                        }
-                        },datefmt:'dd-mm-yyyy'},
-                        {name:"planEndDate",index:"planEndDate",width:130,editable:true, editrules:{date:true},editoptions:{dataInit:function(el){
-                            $(el).datepicker({dateFormat:'dd-mm-yy'});
-                        }
-                        },datefmt:'dd-mm-yyyy'},
-                        {name:"endDate",index:"endDate",width:130,editable:true,editrules:{date:true},editoptions:{dataInit:function(el){
-                            $(el).datepicker({dateFormat:'dd-mm-yy'});
-                        }
-                        },datefmt:'dd-mm-yyyy'},
-
+                        {name:"id",index:"id",width:20,hidden:true,label:'<c:message code="label.id"/>'},
+                        {name:"fileName",index:"fileName",width:180,editable:false,label:'<c:message code="label.documents.files.filename"/>'},
+                        {name:"mimeType",index:"mimeType",width:70,editable:false,search:false,label:'<c:message code="label.documents.files.fileType"/>'},
+                        {name:"size",index:"size",width:50,editable:false,search:false,label:'<c:message code="label.documents.files.fileSize"/>'},
+                        {name:"creationDate",index:"startDate",width:70,editable:false,datefmt:'dd-mm-yyyy',label:'<c:message code="label.documents.files.creationDate"/>'},
+                        {name:"version",index:"version",width:20,hidden:true,label:'<c:message code="label.version"/>'},
+                        {name:"file",index:"file",width:50,label:'<c:message code="label.documents.files.file"/>',editable:true,edittype:'file'},
                     ],
                     id: "id",
                     height: '100%',
                     rowNum:20,
-                    sortname: 'name',
+                    sortname: 'fileName',
+                    dataProxy:$.jgrid.ext.ajaxFormProxy, //our charming dataProxy ^__^
                     sortorder: "asc"
-                });
+                }).jqGrid('extBindEvents');
                 $("#"+subgrid_table_id).jqGrid('navGrid','#'+subgrid_pager_id,
                         {edit:true, add:true, del:true, search:false},
                         {/*MOD PARAM*/},
@@ -331,95 +330,6 @@
                 );
 
 
-                jQuery("#"+tree_table_id).jqGrid({
-                    pager:tree_pager_id,
-                    url:"${pageContext.request.contextPath}/counterparts/persons?ID="+row_id,
-                    editurl:"${pageContext.request.contextPath}/counterparts/editpersons?ID="+row_id,
-                    datatype: "json",
-                    mtype: 'POST',
-                    width:800,
-                    caption:"<c:message code="label.counterparts.persons.title"/>",
-                    emptyrecords: "<c:message code="label.emptyrecords"/>",
-                    styleUI : 'Bootstrap',
-                    /**/
-                    colNames: ['<c:message code="label.id"/>','<c:message code="label.persons.surname"/>','<c:message code="label.persons.firstName"/>','<c:message code="label.persons.middleName"/>','<c:message code="label.persons.date_of_birth"/>','<c:message code="label.persons.head"/>','<c:message code="label.persons.head"/>','<c:message code="label.persons.head"/>'],
-                    colModel: [
-                        {name:"id",index:"id",width:80,hidden:true,key:true},
-                        {name:"surname",index:"surname",width:100,editable:true},
-                        {name:"firstName",index:"firstName",width:100,editable:true},
-                        {name:"middleName",index:"middleName",width:100,editable:true},
-                        {name:"date_of_birth",width:50,editable:true,editrules:{date:true},editoptions:{dataInit:function(el){
-                            $(el).datepicker({dateFormat:'dd-mm-yy'});
-                        }
-                        },datefmt:'dd-mm-yyyy'},
-                        {name:"head.surname",index:"head.surname",width:80,hidden:false,editable:false},
-                        {name:"headID_primary_key",width:80,hidden:false,editable:true},
-                        {name:"head.id",hidden:true,width:100,editrules:{edithidden:true},editable:true,editoptions:{
-                            /**/
-                            dataInit : function (elem) {
-                                var value_elem=$(elem).val();
-                                $(elem).wrap("<div></div>");
-                                $(elem).width='80px';
-                                $(elem).ajaxComboBox('${pageContext.request.contextPath}/persons/showList?firmID='+row_id,
-                                        {lang: 'en',
-                                            db_table: 'nation',
-                                            per_page: 20,
-                                            navi_num: 10,
-                                            select_only: true,
-                                            primary_key: 'id',
-                                            show_field: 'surname,middleName,firstName',
-                                            field:'surname',
-                                            //recalc_width:false,
-                                            button_img:'${pageContext.request.contextPath}/resources/images/btn.png',
-                                            init_record: [value_elem],
-                                            sub_info: true,
-                                            /**/
-                                            sub_as: {
-                                                surname: 'surname',
-                                                middleName: 'middleName',
-                                                firstName:'firstName'
-                                            }/**/
-                                        });
-                            }/**/
-                        }},
-                    ],/*
-                     colModel: [
-                     {name:"id",index:"id",width:80,hidden:true,key:true},
-                     {name:"surname",index:"surname",width:100},
-                     {name:"parentId",index:"parentId",width:80,hidden:true},
-                     ],/**/
-                    rowNum:20,
-                    "hoverrows":false,
-                    "viewrecords":false,
-                    "gridview":true,
-                    "height":"auto",
-                    "scrollrows":true,
-                    "loadonce":false,
-                    "treeGrid":true,
-                    "ExpandColumn":"surname",
-                    "treedatatype":"json",
-                    "treeGridModel":"adjacency",
-                    "treeReader":{
-                        "parent_id_field":"parentId",
-                        "level_field":"level",
-                        "leaf_field":"leaf",
-                        "expanded_field":"expanded",
-                        "loaded":"loaded",
-                    },
-                });
-                /**/
-                $("#"+tree_table_id).jqGrid('navGrid','#'+tree_pager_id,
-                        {edit:true, add:true, del:true, search:false},
-                        {},
-                        {
-                            closeOnEscape: true,
-                            closeAfterAdd: true,
-                            serializeEditData:function (data) {
-                                if(data.id=="_empty")data.id=null;
-                                return data;
-                            }
-                        }
-                );/**/
             }
 
         });

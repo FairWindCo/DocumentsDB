@@ -4,13 +4,14 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import ua.pp.fairwind.favorid.internalDB.model.Person;
 
 import javax.persistence.*;
+import java.util.Date;
 
 /**
- * Created by Сергей on 16.10.2015.
+ * Created by Сергей on 20.10.2015.
  */
 @Entity
-@Table(name = "DOCUMENTS_SECURITY")
-public class DocumentSecurity {
+@Table(name = "DOCUMENTS_SUBSCRIBE")
+public class DocumentSubscribe {
     @Id
     @GeneratedValue
     Long id;
@@ -18,14 +19,11 @@ public class DocumentSecurity {
     @JsonManagedReference
     @JoinColumn(name = "person_ID")
     Person person;
-
-    SECURITY_PERMISSION permission;
-    SECURITY_ACTION action;
-
     @ManyToOne
     @JsonManagedReference
-    @JoinColumn(name = "document_id")
+    @JoinColumn(name = "subscribed_document_ID")
     Document document;
+    Date subscribed;
     @Version
     long version;
 
@@ -45,34 +43,12 @@ public class DocumentSecurity {
         this.person = person;
     }
 
-    public SECURITY_PERMISSION getPermission() {
-        return permission;
+    public Date getSubscribed() {
+        return subscribed;
     }
 
-    public void setPermission(SECURITY_PERMISSION permission) {
-        this.permission = permission;
-    }
-
-    public SECURITY_ACTION getAction() {
-        return action;
-    }
-
-    public void setAction(SECURITY_ACTION action) {
-        this.action = action;
-    }
-
-    public Document getDocument() {
-        return document;
-    }
-
-    public void setDocument(Document document) {
-        if(this.document!=null){
-            this.document.securities.remove(this);
-        }
-        if(document!=null) {
-            this.document = document;
-            this.document.securities.add(this);
-        }
+    public void setSubscribed(Date subscribed) {
+        this.subscribed = subscribed;
     }
 
     public long getVersion() {
@@ -81,5 +57,19 @@ public class DocumentSecurity {
 
     public void setVersion(long version) {
         this.version = version;
+    }
+
+    public Document getDocument() {
+        return document;
+    }
+
+    public void setDocument(Document document) {
+        if(this.document!=null){
+            this.document.subscribes.remove(this);
+        }
+        if(document!=null) {
+            this.document = document;
+            this.document.subscribes.add(this);
+        }
     }
 }

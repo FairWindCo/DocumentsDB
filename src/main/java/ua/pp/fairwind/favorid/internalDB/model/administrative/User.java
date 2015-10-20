@@ -101,4 +101,23 @@ public class User {
     public void setVersionId(long versionId) {
         this.versionId = versionId;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        User user = (User) o;
+
+        if (versionId != user.versionId) return false;
+        return !(userID != null ? !userID.equals(user.userID) : user.userID != null);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = userID != null ? userID.hashCode() : 0;
+        result = 31 * result + (int) (versionId ^ (versionId >>> 32));
+        return result;
+    }
 }

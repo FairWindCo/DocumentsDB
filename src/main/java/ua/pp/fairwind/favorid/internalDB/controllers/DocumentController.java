@@ -1,6 +1,7 @@
 package ua.pp.fairwind.favorid.internalDB.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -10,27 +11,31 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import ua.pp.fairwind.favorid.internalDB.jgrid.JGridRowsResponse;
 import ua.pp.fairwind.favorid.internalDB.jgrid.JSComboExpenseResp;
 import ua.pp.fairwind.favorid.internalDB.jgrid.Utils;
 import ua.pp.fairwind.favorid.internalDB.model.Counterparty;
 import ua.pp.fairwind.favorid.internalDB.model.Person;
+import ua.pp.fairwind.favorid.internalDB.model.administrative.User;
 import ua.pp.fairwind.favorid.internalDB.model.directories.DocumentType;
 import ua.pp.fairwind.favorid.internalDB.model.document.Document;
+import ua.pp.fairwind.favorid.internalDB.model.document.DocumentFile;
+import ua.pp.fairwind.favorid.internalDB.model.document.DocumentSecurity;
+import ua.pp.fairwind.favorid.internalDB.model.document.DocumentSubscribe;
 import ua.pp.fairwind.favorid.internalDB.model.proxy.DocumentProxy;
-import ua.pp.fairwind.favorid.internalDB.repository.CounterpartyRepository;
-import ua.pp.fairwind.favorid.internalDB.repository.DocumentRepository;
-import ua.pp.fairwind.favorid.internalDB.repository.DocumentTypeRepository;
-import ua.pp.fairwind.favorid.internalDB.repository.PersonRepository;
+import ua.pp.fairwind.favorid.internalDB.repository.*;
 import ua.pp.fairwind.favorid.internalDB.security.UserDetailsAdapter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -47,6 +52,12 @@ public class DocumentController {
     PersonRepository personRepository;
     @Autowired
     CounterpartyRepository counterpartyRepository;
+    @Autowired
+    DocumentSecurityRepository documentSecurityRepository;
+    @Autowired
+    DocumentSubscribeRepository documentSubscribeRepository;
+    @Autowired
+    DocumentFileRepository documentFileRepository;
 
 
     @Secured("ROLE_USER")
@@ -88,6 +99,132 @@ public class DocumentController {
                 return new JGridRowsResponse<>(documentRepository.findByName(filterName));
             } else
                 return new JGridRowsResponse<>(documentRepository.findAll());
+        }
+    }
+
+    @Transactional(readOnly = true)
+    @RequestMapping(value = "/security_listing", method = RequestMethod.POST)
+    @ResponseBody
+    public JGridRowsResponse<DocumentSecurity> getSecurityTable(HttpServletRequest request,HttpServletResponse response,@RequestParam Long document_id){
+        PageRequest pageRequest=null;
+        if(request.getParameter("page")!=null){
+            int rows=10;
+            int page;
+            try {
+                page = Integer.parseInt(request.getParameter("page")) - 1;
+                rows = request.getParameter("rows") == null ? 10 : Integer.parseInt(request.getParameter("rows"));
+                if(request.getParameter("sidx")!=null && !request.getParameter("sidx").isEmpty()){
+                    String direction=request.getParameter("sord");
+                    pageRequest=new PageRequest(page,rows,"asc".equals(direction)? Sort.Direction.ASC: Sort.Direction.DESC,request.getParameter("sidx"));
+                } else {
+                    pageRequest=new PageRequest(page,rows);
+                }
+            }catch (NumberFormatException ex){
+                //do nothing
+            }
+
+        }/**/
+        Document document=documentRepository.findOne(document_id);
+        if(document!=null) {
+            String filterName = request.getParameter("surname");
+            if (pageRequest != null) {
+                if (filterName != null && !filterName.isEmpty()) {
+                    return new JGridRowsResponse<>(documentSecurityRepository.findByDocumentAndPersonSurname(document,filterName, pageRequest));
+                } else
+                    return new JGridRowsResponse<>(documentSecurityRepository.findByDocument(document,pageRequest));
+            } else {
+                if (filterName != null && !filterName.isEmpty()) {
+                    return new JGridRowsResponse<>(documentSecurityRepository.findByDocumentAndPersonSurname(document,filterName));
+                } else
+                    return new JGridRowsResponse<>(documentSecurityRepository.findByDocument(document));
+            }
+        } else {
+            response.setStatus(404);
+            return null;
+        }
+    }
+
+    @Transactional(readOnly = true)
+    @RequestMapping(value = "/subscriber_listing", method = RequestMethod.POST)
+    @ResponseBody
+    public JGridRowsResponse<DocumentSubscribe> getSubscriberTable(HttpServletRequest request,HttpServletResponse response,@RequestParam Long document_id){
+        PageRequest pageRequest=null;
+        if(request.getParameter("page")!=null){
+            int rows=10;
+            int page;
+            try {
+                page = Integer.parseInt(request.getParameter("page")) - 1;
+                rows = request.getParameter("rows") == null ? 10 : Integer.parseInt(request.getParameter("rows"));
+                if(request.getParameter("sidx")!=null && !request.getParameter("sidx").isEmpty()){
+                    String direction=request.getParameter("sord");
+                    pageRequest=new PageRequest(page,rows,"asc".equals(direction)? Sort.Direction.ASC: Sort.Direction.DESC,request.getParameter("sidx"));
+                } else {
+                    pageRequest=new PageRequest(page,rows);
+                }
+            }catch (NumberFormatException ex){
+                //do nothing
+            }
+
+        }/**/
+        Document document=documentRepository.findOne(document_id);
+        if(document!=null) {
+            String filterName = request.getParameter("surname");
+            if (pageRequest != null) {
+                if (filterName != null && !filterName.isEmpty()) {
+                    return new JGridRowsResponse<>(documentSubscribeRepository.findByDocumentAndPersonSurname(document,filterName, pageRequest));
+                } else
+                    return new JGridRowsResponse<>(documentSubscribeRepository.findByDocument(document,pageRequest));
+            } else {
+                if (filterName != null && !filterName.isEmpty()) {
+                    return new JGridRowsResponse<>(documentSubscribeRepository.findByDocumentAndPersonSurname(document,filterName));
+                } else
+                    return new JGridRowsResponse<>(documentSubscribeRepository.findByDocument(document));
+            }
+        } else {
+            response.setStatus(404);
+            return null;
+        }
+    }
+
+    @Transactional(readOnly = true)
+    @RequestMapping(value = "/file_listing", method = RequestMethod.POST)
+    @ResponseBody
+    public JGridRowsResponse<DocumentFile> getFiles(HttpServletRequest request,HttpServletResponse response,@RequestParam Long document_id){
+        PageRequest pageRequest=null;
+        if(request.getParameter("page")!=null){
+            int rows=10;
+            int page;
+            try {
+                page = Integer.parseInt(request.getParameter("page")) - 1;
+                rows = request.getParameter("rows") == null ? 10 : Integer.parseInt(request.getParameter("rows"));
+                if(request.getParameter("sidx")!=null && !request.getParameter("sidx").isEmpty()){
+                    String direction=request.getParameter("sord");
+                    pageRequest=new PageRequest(page,rows,"asc".equals(direction)? Sort.Direction.ASC: Sort.Direction.DESC,request.getParameter("sidx"));
+                } else {
+                    pageRequest=new PageRequest(page,rows);
+                }
+            }catch (NumberFormatException ex){
+                //do nothing
+            }
+
+        }/**/
+        Document document=documentRepository.findOne(document_id);
+        if(document!=null) {
+            String filterName = request.getParameter("fileName");
+            if (pageRequest != null) {
+                if (filterName != null && !filterName.isEmpty()) {
+                    return new JGridRowsResponse<>(documentFileRepository.findByDocumentAndFileName(document, filterName, pageRequest));
+                } else
+                    return new JGridRowsResponse<>(documentFileRepository.findByDocument(document,pageRequest));
+            } else {
+                if (filterName != null && !filterName.isEmpty()) {
+                    return new JGridRowsResponse<>(documentFileRepository.findByDocumentAndFileName(document, filterName));
+                } else
+                    return new JGridRowsResponse<>(documentFileRepository.findByDocument(document));
+            }
+        } else {
+            response.setStatus(404);
+            return null;
         }
     }
 
@@ -196,6 +333,101 @@ public class DocumentController {
         }
     }
 
+    @Transactional(readOnly = false)
+    @RequestMapping(value = "/editafile", method = {RequestMethod.POST,RequestMethod.GET})
+    public void fileEditor(@RequestParam String oper,@RequestParam Long document_id,@RequestParam Long id,@RequestParam MultipartFile file,HttpServletResponse response)throws IOException {
+        UserDetailsAdapter userDetail=(UserDetailsAdapter)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if(userDetail==null){
+            response.sendError(403, "FORBIDDEN!");
+            return;
+        }
+        Document document=documentRepository.findOne(document_id);
+        User creator=document.getCreationUser();
+        if(document==null) {
+            response.sendError(404, "NOT FOUND DOCUMENT ID:"+document_id);
+            return;
+        }
+        switch (oper){
+            case "add":
+                if(file==null){
+                    response.sendError(400, "BAD REQUEST! NO FILE SEND!");
+                }
+                if(userDetail.hasRole("ROLE_ADD_DOCUMENTS")||(creator!=null && creator.equals(userDetail.getUserP()))) {
+                        DocumentFile fileInfo=new DocumentFile();
+                        fileInfo.setFileName(file.getName());
+                        fileInfo.setMimeType(file.getContentType());
+                        fileInfo.setSize(file.getSize());
+                        fileInfo.setDocument(document);
+                        String path="e:/"+(document.getDocumentType()!=null?document.getDocumentType().getName()+"/":"")+file.getName();
+                        fileInfo.setFilePath(path);
+                        try(FileOutputStream stream=new FileOutputStream(path)) {
+                            stream.write(file.getBytes());
+                            stream.flush();
+                        }catch (IOException io){
+                            response.sendError(406, "ERROR: "+io.getLocalizedMessage());
+                            return;
+                        }
+                        documentFileRepository.save(fileInfo);
+                        documentRepository.save(document);
+                        response.setStatus(200);
+                } else {
+                    response.sendError(403, "FORBIDDEN!");
+                }
+                break;
+            case "edit":
+                if(userDetail.hasRole("ROLE_EDIT_DOCUMENTS")||(creator!=null && creator.equals(userDetail.getUserP()))) {
+                    DocumentFile oldFileInfo=documentFileRepository.findOne(id);
+                    if(oldFileInfo!=null) {
+                        File oldFile=new File(oldFileInfo.getFilePath());
+                        oldFileInfo.setDocument(null);
+                        documentFileRepository.delete(oldFileInfo);
+                        response.setStatus(200);
+                    } else {
+                        response.sendError(404, "NOT FOUND FILE ID:"+id);
+                        return;
+                    }
+                      DocumentFile fileInfo=new DocumentFile();
+                        fileInfo.setFileName(file.getName());
+                        fileInfo.setMimeType(file.getContentType());
+                        fileInfo.setSize(file.getSize());
+                        fileInfo.setDocument(document);
+                        String path="e:/"+(document.getDocumentType()!=null?document.getDocumentType().getName()+"/":"")+file.getName();
+                        fileInfo.setFilePath(path);
+                        try(FileOutputStream stream=new FileOutputStream(path)) {
+                            stream.write(file.getBytes());
+                            stream.flush();
+                        }catch (IOException io){
+                            response.sendError(406, "ERROR: "+io.getLocalizedMessage());
+                            return;
+                        }
+                        documentFileRepository.save(fileInfo);
+                        documentRepository.save(document);
+                        response.setStatus(200);
+                } else {
+                    response.sendError(403, "FORBIDDEN!");
+                }
+                break;
+            case "del":
+                if(userDetail.hasRole("ROLE_DELETE_DOCUMENTS")||(creator!=null && creator.equals(userDetail.getUserP()))) {
+                    DocumentFile fileInfo=documentFileRepository.findOne(id);
+                    if(fileInfo!=null) {
+                        fileInfo.setDocument(null);
+                        File oldFile=new File(fileInfo.getFilePath());
+                        oldFile.delete();
+                        documentFileRepository.delete(fileInfo);
+                        response.setStatus(200);
+                    } else {
+                        response.sendError(404, "NOT FOUND FILE ID:"+id);
+                    }
+                } else {
+                    response.sendError(403, "FORBIDDEN!");
+                }
+                break;
+            default:
+                response.sendError(406,"UNKNOWN OPERATION");
+        }
+    }
+
     @Transactional(readOnly = true)
     @RequestMapping(value = "/showList", method = RequestMethod.GET)
     @ResponseBody
@@ -233,5 +465,15 @@ public class DocumentController {
                 return new JSComboExpenseResp<>(page);
             }
         }
+    }
+
+    @InitBinder
+    private void dateBinder(WebDataBinder binder) {
+        //The date format to parse or output your dates
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+        //Create a new CustomDateEditor
+        CustomDateEditor editor = new CustomDateEditor(dateFormat, true);
+        //Register it as custom editor for the Date type
+        binder.registerCustomEditor(Date.class, editor);
     }
 }
