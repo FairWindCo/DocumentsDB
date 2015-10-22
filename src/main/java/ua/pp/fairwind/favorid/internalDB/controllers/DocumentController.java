@@ -34,6 +34,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -333,6 +336,20 @@ public class DocumentController {
         }
     }
 
+    private String form_file_path(MultipartFile file,Document document){
+        StringBuilder path_bulder=new StringBuilder("E:/DOCUMENTS/");
+        if(document.getDocumentType()!=null&&document.getDocumentType().getName()!=null&&!document.getDocumentType().getName().isEmpty()){
+            path_bulder.append(document.getDocumentType().getName());
+            path_bulder.append("/");
+        }
+        if(document.getName()!=null && !document.getName().isEmpty()){
+            path_bulder.append(document.getName());
+            path_bulder.append("/");
+        }
+        path_bulder.append(file.getOriginalFilename());
+        return path_bulder.toString();
+    }
+
     @Transactional(readOnly = false)
     @RequestMapping(value = "/editafile", method = {RequestMethod.POST,RequestMethod.GET})
     public void fileEditor(@RequestParam String oper,@RequestParam Long document_id,@RequestParam Long id,@RequestParam MultipartFile file,HttpServletResponse response)throws IOException {
@@ -354,12 +371,26 @@ public class DocumentController {
                 }
                 if(userDetail.hasRole("ROLE_ADD_DOCUMENTS")||(creator!=null && creator.equals(userDetail.getUserP()))) {
                         DocumentFile fileInfo=new DocumentFile();
-                        fileInfo.setFileName(file.getName());
+                        fileInfo.setFileName(file.getOriginalFilename());
                         fileInfo.setMimeType(file.getContentType());
                         fileInfo.setSize(file.getSize());
                         fileInfo.setDocument(document);
-                        String path="e:/"+(document.getDocumentType()!=null?document.getDocumentType().getName()+"/":"")+file.getName();
+                        String path=form_file_path(file,document);
                         fileInfo.setFilePath(path);
+                        File filesystem=new File(path);
+                        if(filesystem.exists()){
+                            response.sendError(406, "FILE EXIST: "+path);
+                            return;
+                        } else {
+                            try {
+                                Path pathToFile = Paths.get(path);
+                                Files.createDirectories(pathToFile.getParent());
+                                Files.createFile(pathToFile);
+                            }catch (IOException ioe){
+                                response.sendError(406, "ERROR: "+ioe.getLocalizedMessage());
+                                return;
+                            }
+                        }
                         try(FileOutputStream stream=new FileOutputStream(path)) {
                             stream.write(file.getBytes());
                             stream.flush();
@@ -387,12 +418,26 @@ public class DocumentController {
                         return;
                     }
                       DocumentFile fileInfo=new DocumentFile();
-                        fileInfo.setFileName(file.getName());
+                        fileInfo.setFileName(file.getOriginalFilename());
                         fileInfo.setMimeType(file.getContentType());
                         fileInfo.setSize(file.getSize());
                         fileInfo.setDocument(document);
-                        String path="e:/"+(document.getDocumentType()!=null?document.getDocumentType().getName()+"/":"")+file.getName();
+                        String path=form_file_path(file,document);
                         fileInfo.setFilePath(path);
+                        File filesystem=new File(path);
+                        if(filesystem.exists()){
+                            response.sendError(406, "FILE EXIST: "+path);
+                            return;
+                        } else {
+                            try {
+                                Path pathToFile = Paths.get(path);
+                                Files.createDirectories(pathToFile.getParent());
+                                Files.createFile(pathToFile);
+                            }catch (IOException ioe){
+                                response.sendError(406, "ERROR: "+ioe.getLocalizedMessage());
+                                return;
+                            }
+                        }
                         try(FileOutputStream stream=new FileOutputStream(path)) {
                             stream.write(file.getBytes());
                             stream.flush();

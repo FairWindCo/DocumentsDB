@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import ua.pp.fairwind.favorid.internalDB.jgrid.JGridRowsResponse;
 import ua.pp.fairwind.favorid.internalDB.jgrid.JSComboExpenseResp;
-import ua.pp.fairwind.favorid.internalDB.model.storehouses.Nomenclature;
+import ua.pp.fairwind.favorid.internalDB.model.storehouses.Safekeeping;
 import ua.pp.fairwind.favorid.internalDB.model.storehouses.Storehouse;
 import ua.pp.fairwind.favorid.internalDB.repository.StoreHouseRepository;
 
@@ -49,6 +49,7 @@ public class StorehouseController {
             int page;
             try {
                 page = Integer.parseInt(request.getParameter("page")) - 1;
+                page= page<0?0:page;
                 rows = request.getParameter("rows") == null ? 10 : Integer.parseInt(request.getParameter("rows"));
                 if(request.getParameter("sidx")!=null && !request.getParameter("sidx").isEmpty()){
                     String direction=request.getParameter("sord");
@@ -72,6 +73,43 @@ public class StorehouseController {
                 return new JGridRowsResponse<>(storehouseRepository.find(filterName));
             } else
                 return new JGridRowsResponse<>(storehouseRepository.findAll());
+        }
+    }
+
+    @Transactional(readOnly = true)
+    @RequestMapping(value = "/state", method = RequestMethod.POST)
+    @ResponseBody
+    public JGridRowsResponse<Safekeeping> getStates(HttpServletRequest request,@RequestParam long id){
+        PageRequest pageRequest=null;
+        if(request.getParameter("page")!=null){
+            int rows=10;
+            int page;
+            try {
+                page = Integer.parseInt(request.getParameter("page")) - 1;
+                page= page<0?0:page;
+                rows = request.getParameter("rows") == null ? 10 : Integer.parseInt(request.getParameter("rows"));
+                if(request.getParameter("sidx")!=null && !request.getParameter("sidx").isEmpty()){
+                    String direction=request.getParameter("sord");
+                    pageRequest=new PageRequest(page,rows,"asc".equals(direction)? Sort.Direction.ASC: Sort.Direction.DESC,request.getParameter("sidx"));
+                } else {
+                    pageRequest=new PageRequest(page,rows);
+                }
+            }catch (NumberFormatException ex){
+                //do nothing
+            }
+
+        }/**/
+        String filterName=request.getParameter("name");
+        if(pageRequest!=null){
+            if(filterName!=null && !filterName.isEmpty()){
+                return new JGridRowsResponse<>(storehouseRepository.getState(id, filterName, pageRequest));
+            } else
+                return new JGridRowsResponse<>(storehouseRepository.getState(id, pageRequest));
+        } else {
+            if(filterName!=null && !filterName.isEmpty()){
+                return new JGridRowsResponse<>(storehouseRepository.getState(id, filterName));
+            } else
+                return new JGridRowsResponse<>(storehouseRepository.getState(id));
         }
     }
 
@@ -124,6 +162,7 @@ public class StorehouseController {
         Sort sort=new Sort(Sort.Direction.ASC,"name");
         PageRequest pager=null;
         if(page_num!=null && per_page!=null) {
+            page_num= page_num<1?1:page_num;
             pager = new PageRequest(page_num - 1, per_page, sort);
         }
         if(pager!=null) {

@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import ua.pp.fairwind.favorid.internalDB.jgrid.JGridRowsResponse;
 import ua.pp.fairwind.favorid.internalDB.jgrid.JSComboExpenseResp;
-import ua.pp.fairwind.favorid.internalDB.model.directories.Position;
 import ua.pp.fairwind.favorid.internalDB.model.directories.TaskType;
 import ua.pp.fairwind.favorid.internalDB.repository.TaskTypeRepository;
 
@@ -59,6 +58,7 @@ public class TaskTypeController {
             int page;
             try {
                 page = Integer.parseInt(request.getParameter("page")) - 1;
+                page= page<0?0:page;
                 rows = request.getParameter("rows") == null ? 10 : Integer.parseInt(request.getParameter("rows"));
                 if(request.getParameter("sidx")!=null && !request.getParameter("sidx").isEmpty()){
                     String direction=request.getParameter("sord");
@@ -131,6 +131,7 @@ public class TaskTypeController {
         Sort sort=new Sort(Sort.Direction.ASC,"surname");
         PageRequest pager=null;
         if(page_num!=null && per_page!=null) {
+            page_num= page_num<1?1:page_num;
             pager = new PageRequest(page_num - 1, per_page, sort);
         }
         if(pager!=null) {

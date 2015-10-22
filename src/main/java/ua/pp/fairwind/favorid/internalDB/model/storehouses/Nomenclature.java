@@ -20,6 +20,7 @@ public class Nomenclature {
     String name;
     String manufacturer;
     String country;
+    String description;
     boolean combined=false;
     @OneToMany(mappedBy = "parent")
     @JsonIgnore
@@ -107,5 +108,13 @@ public class Nomenclature {
 
     public void setVersion(long version) {
         this.version = version;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

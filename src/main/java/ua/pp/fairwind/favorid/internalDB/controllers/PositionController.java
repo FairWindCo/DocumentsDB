@@ -58,6 +58,7 @@ public class PositionController {
             int page;
             try {
                 page = Integer.parseInt(request.getParameter("page")) - 1;
+                page= page<0?0:page;
                 rows = request.getParameter("rows") == null ? 10 : Integer.parseInt(request.getParameter("rows"));
                 if(request.getParameter("sidx")!=null && !request.getParameter("sidx").isEmpty()){
                     String direction=request.getParameter("sord");
@@ -129,6 +130,7 @@ public class PositionController {
         Sort sort=new Sort(Sort.Direction.ASC,"surname");
         PageRequest pager=null;
         if(page_num!=null && per_page!=null) {
+            page_num= page_num<1?1:page_num;
             pager = new PageRequest(page_num - 1, per_page, sort);
         }
         if(pager!=null) {

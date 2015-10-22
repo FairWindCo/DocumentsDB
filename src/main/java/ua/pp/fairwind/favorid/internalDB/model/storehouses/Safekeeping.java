@@ -1,5 +1,8 @@
 package ua.pp.fairwind.favorid.internalDB.model.storehouses;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 import javax.persistence.*;
 import java.util.Date;
 
@@ -14,9 +17,11 @@ public class Safekeeping {
     Long id;
     @ManyToOne
     @JoinColumn(name = "storehouse_ID")
+    @JsonIgnore
     Storehouse storehouse;
     @ManyToOne
     @JoinColumn(name = "nomenclature_ID")
+    @JsonIgnore
     Nomenclature nomenclature;
     long count;
     Units  units;
@@ -30,6 +35,22 @@ public class Safekeeping {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+
+    @JsonSerialize
+    public String getNomenclatureName(){
+        return nomenclature==null?"":nomenclature.getName();
+    }
+
+    @JsonSerialize
+    public String getNomenclatureCode(){
+        return nomenclature==null?"":nomenclature.getCode();
+    }
+
+    @JsonSerialize
+    public String getNomenclatureManufacturer(){
+        return nomenclature==null?"":nomenclature.getManufacturer();
     }
 
 

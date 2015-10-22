@@ -47,6 +47,7 @@ public class PersonController {
         Sort sort=new Sort(Sort.Direction.ASC,"surname");
         PageRequest pager=null;
         if(page_num!=null && per_page!=null) {
+            page_num= page_num<1?1:page_num;
             pager = new PageRequest(page_num - 1, per_page, sort);
         }
         if(pager!=null) {

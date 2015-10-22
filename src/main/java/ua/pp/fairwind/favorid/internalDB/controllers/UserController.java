@@ -55,6 +55,7 @@ public class UserController {
             int page;
             try {
                 page = Integer.parseInt(request.getParameter("page")) - 1;
+                page= page<0?0:page;
                 rows = request.getParameter("rows") == null ? 10 : Integer.parseInt(request.getParameter("rows"));
                 if(request.getParameter("sidx")!=null && !request.getParameter("sidx").isEmpty()){
                     String direction=request.getParameter("sord");

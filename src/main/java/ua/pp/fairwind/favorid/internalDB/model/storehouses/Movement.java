@@ -39,6 +39,11 @@ public class Movement {
     Units  units;
     String comments;
 
+    @ManyToOne
+    @JoinColumn(name = "approved_person_ID")
+    Person approvedPerson;
+    Date approvedDate;
+
 
     public Long getId() {
         return id;
@@ -118,5 +123,29 @@ public class Movement {
 
     public void setUnits(Units units) {
         this.units = units;
+    }
+
+    public Person getApprovedPerson() {
+        return approvedPerson;
+    }
+
+    public void setApprovedPerson(Person approvedPerson) {
+        this.approvedPerson = approvedPerson;
+    }
+
+    public Date getApprovedDate() {
+        return approvedDate;
+    }
+
+    public void setApprovedDate(Date approvedDate) {
+        this.approvedDate = approvedDate;
+    }
+
+    public String getComments() {
+        return comments;
+    }
+
+    public void setComments(String comments) {
+        this.comments = comments;
     }
 }
