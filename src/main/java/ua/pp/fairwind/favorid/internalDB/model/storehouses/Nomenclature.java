@@ -28,6 +28,10 @@ public class Nomenclature {
     @OneToMany
     @JsonIgnore
     final Set<Safekeeping> safekeeping=new HashSet<>();
+    @ManyToMany
+    @JsonIgnore
+    final Set<NomenclatureTypes> nomenclatureTypes=new HashSet<>();
+
     @Version
     long version=0;
 
@@ -90,8 +94,28 @@ public class Nomenclature {
         }
     }
 
+    public void addTypes(NomenclatureTypes types){
+        if(types!=null) {
+            if (this.nomenclatureTypes.add(types)) {
+                types.nomenclature.add(this);
+            }
+        }
+    }
+
+    public void removeTypes(NomenclatureTypes types){
+        if(types!=null) {
+            if (this.safekeeping.remove(types)) {
+                types.nomenclature.remove(this);
+            }
+        }
+    }
+
     public Set<Safekeeping> getSafekeeping() {
         return Collections.unmodifiableSet(safekeeping);
+    }
+
+    public Set<NomenclatureTypes> getTypes() {
+        return Collections.unmodifiableSet(nomenclatureTypes);
     }
 
     public boolean isCombined() {

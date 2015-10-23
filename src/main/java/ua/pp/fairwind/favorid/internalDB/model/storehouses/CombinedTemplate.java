@@ -17,6 +17,9 @@ public class CombinedTemplate {
     @ManyToOne
     @JoinColumn(name = "nomenclature_id")
     Nomenclature nomenclature;
+    @ManyToOne
+    @JoinColumn(name = "nomenclature_type_id")
+    NomenclatureTypes nomenclatureType;
     long count=1;
     @Version
     long version=0;
@@ -70,5 +73,13 @@ public class CombinedTemplate {
 
     public void setVersion(long version) {
         this.version = version;
+    }
+
+    public NomenclatureTypes getNomenclatureType() {
+        return nomenclatureType;
+    }
+
+    public void setNomenclatureType(NomenclatureTypes nomenclatureType) {
+        this.nomenclatureType = nomenclatureType;
     }
 }

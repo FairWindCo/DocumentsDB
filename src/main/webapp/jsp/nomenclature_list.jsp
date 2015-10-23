@@ -52,9 +52,6 @@
 </body>
 <script type="text/javascript">
     $(document).ready(function () {
-        var nomenclature_id;
-        var GridData={nomenclature_id:function(){return nomenclature_id},
-        };
         $("#grid").jqGrid({
             url:'${pageContext.request.contextPath}/nomenclature/listing',
             editurl:'${pageContext.request.contextPath}/nomenclature/edit',
@@ -102,10 +99,25 @@
                 // here we can easy construct the following
                 var subgrid_table_id;
                 var subgrid_pager_id;
+                var subgrid_table_type_id;
+                var subgrid_pager_types_id;
+
+                var nomenclature_id;
+                var nomenclature_type_id;
+                var nomenclature_type_id2;
+
+                var GridData={nomenclature_id:function(){return nomenclature_id},
+                    nomenclature_type_id:function(){return nomenclature_type_id},
+                };
+                var typesData={
+                    nomenclature_type_id:function(){return nomenclature_type_id2},
+                };
                 subgrid_table_id = subgrid_id+"_t";
                 subgrid_pager_id = subgrid_id+"_p"
+                subgrid_table_type_id = subgrid_id+"_typet";
+                subgrid_pager_types_id = subgrid_id+"_typep"
 
-                jQuery("#"+subgrid_id).html("<table id='"+subgrid_table_id+"' class='scroll'></table><div id='"+subgrid_pager_id+"'></div>");
+                jQuery("#"+subgrid_id).html("<table id='"+subgrid_table_id+"' class='scroll'></table><div id='"+subgrid_pager_id+"'></div><table id='"+subgrid_table_type_id+"' class='scroll'></table><div id='"+subgrid_pager_types_id+"'></div>");
                 jQuery("#"+subgrid_table_id).jqGrid({
                     pager:subgrid_pager_id,
                     url:"${pageContext.request.contextPath}/nomenclature/tamplates?id="+row_id,
@@ -150,6 +162,38 @@
                             return $(element).attr('pkey');
                         }
                         },
+                        {name:'nomenclaturetype',index:'nomenclatureType.name', width:500, editable:true, editrules:{required:true},search:true,label:'<c:message code="label.nomenclature.template.type"/>',jsonmap:'nomenclatureType',search:false,editoptions:{
+                            /**/
+                            dataInit : function (elem) {
+                                var value_elem=$(elem).val();
+                                $(elem).wrap("<div></div>");
+                                $(elem).width='80px';
+                                $(elem).ajaxComboBox('${pageContext.request.contextPath}/nomenclaturetypes/showList',
+                                        {lang: 'en',
+                                            db_table: 'nation',
+                                            per_page: 20,
+                                            navi_num: 10,
+                                            select_only: true,
+                                            primary_key: 'id',
+                                            show_field: 'name',
+                                            field:'name',
+                                            //recalc_width:false,
+                                            button_img:'${pageContext.request.contextPath}/resources/images/btn.png',
+                                            init_record: [value_elem],
+                                            bind_to:'setupkey',
+                                        }).bind('setupkey', function() {
+                                            //$('#documentType_key').val($('#documentType_name_primary_key').val());
+                                            nomenclature_type_id=$('#nomenclaturetype_primary_key').val();
+                                        });
+                            }/**/
+                        },formatter:function(cellvalue, options, rowObject ){
+                            if(cellvalue===null || cellvalue===undefined)return '';
+                            return '<p pkey='+cellvalue.id+'>'+cellvalue.name+'</p>'
+                        },unformat:function(cellvalue, options, cellObject ){
+                            var element=$(cellObject).html();
+                            return $(element).attr('pkey');
+                        }
+                        },
                         {name:'count',index:'count', width:100, editable:true, editrules:{required:true}, editoptions:{defaultValue:'1'},search:false,label:'<c:message code="label.nomenclature.template.count"/>'},
                         {name:'version',index:'version', width:100, editable:true, editrules:{readonly:true}, editoptions:{defaultValue:'0'}, hidden:true,label:'<c:message code="label.version"/>'},
                     ],
@@ -176,6 +220,74 @@
                         }
                 );
 
+                jQuery("#"+subgrid_table_type_id).jqGrid({
+                    pager:subgrid_pager_types_id,
+                    url:"${pageContext.request.contextPath}/nomenclature/types?id="+row_id,
+                    editurl:"${pageContext.request.contextPath}/nomenclature/types?nmid="+row_id,
+                    datatype: "json",
+                    mtype: 'POST',
+                    width:800,
+                    caption:"<c:message code="label.documents.files.title"/>",
+                    emptyrecords: "<c:message code="label.emptyrecords"/>",
+                    styleUI : 'Bootstrap',
+                    colModel: [
+                        {name:'id',index:'id', width:55, editable:false, editoptions:{readonly:true, size:10}, hidden:true,label:'<c:message code="label.id"/>'},
+                        {name:'nomenclaturetype',index:'nomenclatureType.name', width:500, editable:true, editrules:{required:true},search:true,label:'<c:message code="label.nomenclature.template.type"/>',jsonmap:'nomenclatureType',search:false,editoptions:{
+                            /**/
+                            dataInit : function (elem) {
+                                var value_elem=$(elem).val();
+                                $(elem).wrap("<div></div>");
+                                $(elem).width='80px';
+                                $(elem).ajaxComboBox('${pageContext.request.contextPath}/nomenclaturetypes/showList',
+                                        {lang: 'en',
+                                            db_table: 'nation',
+                                            per_page: 20,
+                                            navi_num: 10,
+                                            select_only: true,
+                                            primary_key: 'id',
+                                            show_field: 'name',
+                                            field:'name',
+                                            //recalc_width:false,
+                                            button_img:'${pageContext.request.contextPath}/resources/images/btn.png',
+                                            init_record: [value_elem],
+                                            bind_to:'setupkey',
+                                        }).bind('setupkey', function() {
+                                            //$('#documentType_key').val($('#documentType_name_primary_key').val());
+                                            nomenclature_type_id2=$('#nomenclaturetype_primary_key').val();
+                                        });
+                            }/**/
+                        },formatter:function(cellvalue, options, rowObject ){
+                            if(cellvalue===null || cellvalue===undefined)return '';
+                            return '<p pkey='+cellvalue.id+'>'+cellvalue.name+'</p>'
+                        },unformat:function(cellvalue, options, cellObject ){
+                            var element=$(cellObject).html();
+                            return $(element).attr('pkey');
+                        }
+                        },
+                        {name:'version',index:'version', width:100, editable:true, editrules:{readonly:true}, editoptions:{defaultValue:'0'}, hidden:true,label:'<c:message code="label.version"/>'},
+                    ],
+                    id: "id",
+                    height: '100%',
+                    rowNum:20,
+                    sortname: 'nomenclatureType.name',
+                    sortorder: "asc"
+                });
+                $("#"+subgrid_table_type_id).jqGrid('navGrid','#'+subgrid_pager_types_id,
+                        {edit:true, add:true, del:true, search:false},
+                        {/*MOD PARAM*/
+                            editData:typesData,
+                            closeAfterEdit: true,
+                        },
+                        {/*ADD PARAM*/
+                            editData:typesData,
+                            closeOnEscape: true,
+                            closeAfterAdd: true,
+                            serializeEditData:function (data) {
+                                if(data.id=="_empty")data.id=null;
+                                return data;
+                            }
+                        }
+                );
 
             }
 
