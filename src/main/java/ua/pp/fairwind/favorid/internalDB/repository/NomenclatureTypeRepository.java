@@ -20,14 +20,14 @@ public interface NomenclatureTypeRepository extends JpaRepository<NomenclatureTy
     List<NomenclatureTypes> findByNameContains(String name);
     List<NomenclatureTypes> findByNameContains(String name, Sort sort);
 
-    @Query("select ct from NomenclatureTypes ct where :nomenclature in ct.nomenclature and ct.name like %:search%")
+    @Query("select ct from NomenclatureTypes ct where :nomenclature member ct.nomenclature and ct.name like %:search%")
     Page<NomenclatureTypes> find(@Param(value = "search") String name,@Param(value = "nomenclature")Nomenclature nm, Pageable pager);
-    @Query("select ct from NomenclatureTypes ct where :nomenclature in ct.nomenclature")
+    @Query("select ct from NomenclatureTypes ct where :nomenclature member ct.nomenclature")
     Page<NomenclatureTypes> find(@Param(value = "nomenclature")Nomenclature nm, Pageable pager);
-    @Query("select ct from NomenclatureTypes ct where :nomenclature in ct.nomenclature and ct.name like %:search%")
+    @Query("select ct from NomenclatureTypes ct where :nomenclature member ct.nomenclature and ct.name like %:search%")
     List<NomenclatureTypes> find(@Param(value = "search") String name,@Param(value = "nomenclature")Nomenclature nm);
-    @Query("select ct from NomenclatureTypes ct where :nomenclature in ct.nomenclature")
+    @Query("select ct from NomenclatureTypes ct where :nomenclature member ct.nomenclature")
     List<NomenclatureTypes> find(@Param(value = "nomenclature")Nomenclature nm);
-    @Query("select ct from NomenclatureTypes ct where :nomenclature in ct.nomenclature and ct.name like %:search%")
+    @Query("select ct from NomenclatureTypes ct where :nomenclature member ct.nomenclature and ct.name like %:search%")
     List<NomenclatureTypes> find(@Param(value = "search") String name,@Param(value = "nomenclature")Nomenclature nm, Sort sort);
 }

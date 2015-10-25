@@ -16,6 +16,7 @@ public class NomenclatureTypes {
     @GeneratedValue
     Long id;
     String name;
+    String description;
     @Version
     long version=0;
 

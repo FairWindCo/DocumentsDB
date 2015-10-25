@@ -121,14 +121,20 @@ public class NomenlatureController {
 
     @Transactional(readOnly = false)
     @RequestMapping(value = "/edittamplate", method = {RequestMethod.POST,RequestMethod.GET})
-    public void editorTemplate(@RequestParam String oper,@RequestParam long nmid,@RequestParam(required = false) Long nomenclature_id,@RequestParam(required = false) Long version,@RequestParam(required = false) Long count,@RequestParam(required = false) Long id,HttpServletResponse response)throws IOException {
+    public void editorTemplate(@RequestParam String oper,@RequestParam long nmid,@RequestParam(required = false) Long nomenclature_id,@RequestParam(required = false) Long nomenclaturetype_id,@RequestParam(required = false) Long version,@RequestParam(required = false) Long count,@RequestParam(required = false) Long id,HttpServletResponse response)throws IOException {
         Nomenclature nomenclature=nomenclatureRepository.findOne(nmid);
+        if(nomenclature==null){
+            response.sendError(404, "NOMENCLATURE WITH ID " + nmid + " NOT FOUND!");
+            return;
+        }
         switch (oper) {
             case "add": {
                 Nomenclature nomenclature_for_constract = nomenclature_id != null ? nomenclatureRepository.findOne(nomenclature_id) : null;
+                NomenclatureTypes nomenclaturetype_for_constract = nomenclaturetype_id != null ? nomenclatureTypeRepository.findOne(nomenclaturetype_id) : null;
                 CombinedTemplate combined = new CombinedTemplate();
                 combined.setCount(count == null ? 0 : count);
                 combined.setNomenclature(nomenclature_for_constract);
+                combined.setNomenclatureType(nomenclaturetype_for_constract);
                 combined.setParent(nomenclature);
                 combinedTemplatesRepository.save(combined);
                 nomenclatureRepository.save(nomenclature);
@@ -138,10 +144,12 @@ public class NomenlatureController {
             case "edit": {
                 CombinedTemplate combined = combinedTemplatesRepository.findOne(id);
                 Nomenclature nomenclature_for_constract = nomenclature_id != null ? nomenclatureRepository.findOne(nomenclature_id) : null;
+                NomenclatureTypes nomenclaturetype_for_constract = nomenclaturetype_id != null ? nomenclatureTypeRepository.findOne(nomenclaturetype_id) : null;
                 if (combined != null) {
                     if (combined.getVersion() <= version) {
                         combined.setCount(count == null ? 0 : count);
                         combined.setNomenclature(nomenclature_for_constract);
+                        combined.setNomenclatureType(nomenclaturetype_for_constract);
                         combinedTemplatesRepository.save(combined);
                         response.setStatus(200);
                     } else {
@@ -287,6 +295,44 @@ public class NomenlatureController {
                 return new JGridRowsResponse<>(nomenclatureTypeRepository.find(filterName,nm));
             } else
                 return new JGridRowsResponse<>(nomenclatureTypeRepository.find(nm));
+        }
+    }
+
+    @Transactional(readOnly = false)
+    @RequestMapping(value = "/edittype", method = {RequestMethod.POST,RequestMethod.GET})
+    public void editorType(@RequestParam String oper,@RequestParam long nmid,@RequestParam Long type_id,HttpServletResponse response)throws IOException {
+        Nomenclature nomenclature=nomenclatureRepository.findOne(nmid);
+        if(nomenclature==null){
+            response.sendError(404, "NOMENCLATURE WITH ID " + nmid + " NOT FOUND!");
+            return;
+        }
+        switch (oper) {
+            case "add": {
+                NomenclatureTypes nomenclatureType = nomenclatureTypeRepository.findOne(type_id);
+                if(nomenclatureType!=null) {
+                    nomenclature.addTypes(nomenclatureType);
+                    nomenclatureRepository.save(nomenclature);
+                    response.setStatus(200);
+                }else{
+                    response.sendError(404, "NOMENCLATURE TYPE WITH ID " + type_id + " NOT FOUND!");
+                    return;
+                }
+            }
+            break;
+            case "del": {
+                NomenclatureTypes nomenclatureType = nomenclatureTypeRepository.findOne(type_id);
+                if(nomenclatureType!=null) {
+                    nomenclature.removeTypes(nomenclatureType);
+                    nomenclatureRepository.save(nomenclature);
+                    response.setStatus(200);
+                }else{
+                    response.sendError(404, "NOMENCLATURE TYPE WITH ID " + type_id + " NOT FOUND!");
+                    return;
+                }
+            }
+            break;
+            default:
+                response.sendError(406, "UNKNOWN OPERATION");
         }
     }
 }

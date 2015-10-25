@@ -25,7 +25,7 @@
 <div id="page-wrapper">
     <ol class="breadcrumb">
         <li><a href="${pageContext.request.contextPath}/"><c:message code="label.main"/></a></li>
-        <li><a href="#"><c:message code="label.documents"/></a></li>
+        <li><a href="#"><c:message code="label.nomenclaure"/></a></li>
     </ol>
     <div class="row">
 
@@ -33,7 +33,7 @@
 
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title"><c:message code="label.document.title"/></h3>
+                    <h3 class="panel-title"><c:message code="label.nomenclature.title"/></h3>
                 </div>
                 <div class="panel-body">
                     <div>
@@ -76,7 +76,7 @@
             sortname: 'id',
             viewrecords: true,
             sortorder: "asc",
-            caption:"<c:message code="label.user.title"/>",
+            caption:"<c:message code="label.nomenclature.title"/>",
             emptyrecords: "<c:message code="label.emptyrecords"/>",
             loadonce: false,
             loadComplete: function() {},
@@ -106,11 +106,11 @@
                 var nomenclature_type_id;
                 var nomenclature_type_id2;
 
-                var GridData={nomenclature_id:function(){return nomenclature_id},
-                    nomenclature_type_id:function(){return nomenclature_type_id},
+                var GridData={nomenclature_id:function(){return nomenclature_id===undefined?'':nomenclature_id},
+                    nomenclaturetype_id:function(){return nomenclature_type_id===undefined?'':nomenclature_type_id},
                 };
                 var typesData={
-                    nomenclature_type_id:function(){return nomenclature_type_id2},
+                    type_id:function(){return nomenclature_type_id2===undefined?'':nomenclature_type_id2},
                 };
                 subgrid_table_id = subgrid_id+"_t";
                 subgrid_pager_id = subgrid_id+"_p"
@@ -125,12 +125,12 @@
                     datatype: "json",
                     mtype: 'POST',
                     width:800,
-                    caption:"<c:message code="label.documents.files.title"/>",
+                    caption:"<c:message code="label.nomenclature.templates"/>",
                     emptyrecords: "<c:message code="label.emptyrecords"/>",
                     styleUI : 'Bootstrap',
                     colModel: [
                         {name:'id',index:'id', width:55, editable:false, editoptions:{readonly:true, size:10}, hidden:true,label:'<c:message code="label.id"/>'},
-                        {name:'nomenclature',index:'nomenclature', width:500, editable:true, editrules:{required:true},search:true,label:'<c:message code="label.nomenclature.template.name"/>',jsonmap:'nomenclature',search:false,editoptions:{
+                        {name:'nomenclature',index:'nomenclature', width:500, editable:true, editrules:{required:false},search:true,label:'<c:message code="label.nomenclature.template.name"/>',jsonmap:'nomenclature',search:false,editoptions:{
                             /**/
                             dataInit : function (elem) {
                                 var value_elem=$(elem).val();
@@ -200,7 +200,7 @@
                     id: "id",
                     height: '100%',
                     rowNum:20,
-                    sortname: 'nomenclature.name',
+                    sortname: 'nomenclature',
                     sortorder: "asc"
                 });
                 $("#"+subgrid_table_id).jqGrid('navGrid','#'+subgrid_pager_id,
@@ -208,12 +208,17 @@
                         {/*MOD PARAM*/
                             editData:GridData,
                             closeAfterEdit: true,
+                            serializeEditData:function (data) {
+                                if(data.nomenclature_id==undefined)data.nomenclature_id=null;
+                                return data;
+                            }
                         },
                         {/*ADD PARAM*/
                             editData:GridData,
                             closeOnEscape: true,
                             closeAfterAdd: true,
                             serializeEditData:function (data) {
+                                if(data.nomenclature_id==undefined)data.nomenclature_id=null;
                                 if(data.id=="_empty")data.id=null;
                                 return data;
                             }
@@ -223,16 +228,16 @@
                 jQuery("#"+subgrid_table_type_id).jqGrid({
                     pager:subgrid_pager_types_id,
                     url:"${pageContext.request.contextPath}/nomenclature/types?id="+row_id,
-                    editurl:"${pageContext.request.contextPath}/nomenclature/types?nmid="+row_id,
+                    editurl:"${pageContext.request.contextPath}/nomenclature/edittype?nmid="+row_id,
                     datatype: "json",
                     mtype: 'POST',
                     width:800,
-                    caption:"<c:message code="label.documents.files.title"/>",
+                    caption:"<c:message code="label.nomenclature.types"/>",
                     emptyrecords: "<c:message code="label.emptyrecords"/>",
                     styleUI : 'Bootstrap',
                     colModel: [
                         {name:'id',index:'id', width:55, editable:false, editoptions:{readonly:true, size:10}, hidden:true,label:'<c:message code="label.id"/>'},
-                        {name:'nomenclaturetype',index:'nomenclatureType.name', width:500, editable:true, editrules:{required:true},search:true,label:'<c:message code="label.nomenclature.template.type"/>',jsonmap:'nomenclatureType',search:false,editoptions:{
+                        {name:'nomenclaturetype',index:'nomenclatureType.name', width:500, editable:true, editrules:{required:true},search:true,label:'<c:message code="label.nomenclature.template.type"/>',jsonmap:'name',search:false,editoptions:{
                             /**/
                             dataInit : function (elem) {
                                 var value_elem=$(elem).val();
@@ -256,24 +261,17 @@
                                             nomenclature_type_id2=$('#nomenclaturetype_primary_key').val();
                                         });
                             }/**/
-                        },formatter:function(cellvalue, options, rowObject ){
-                            if(cellvalue===null || cellvalue===undefined)return '';
-                            return '<p pkey='+cellvalue.id+'>'+cellvalue.name+'</p>'
-                        },unformat:function(cellvalue, options, cellObject ){
-                            var element=$(cellObject).html();
-                            return $(element).attr('pkey');
-                        }
-                        },
+                        }},
                         {name:'version',index:'version', width:100, editable:true, editrules:{readonly:true}, editoptions:{defaultValue:'0'}, hidden:true,label:'<c:message code="label.version"/>'},
                     ],
                     id: "id",
                     height: '100%',
                     rowNum:20,
-                    sortname: 'nomenclatureType.name',
+                    sortname: 'name',
                     sortorder: "asc"
                 });
                 $("#"+subgrid_table_type_id).jqGrid('navGrid','#'+subgrid_pager_types_id,
-                        {edit:true, add:true, del:true, search:false},
+                        {edit:false, add:true, del:true, search:false},
                         {/*MOD PARAM*/
                             editData:typesData,
                             closeAfterEdit: true,

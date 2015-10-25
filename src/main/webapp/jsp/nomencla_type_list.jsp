@@ -56,6 +56,7 @@
             colModel:[
                 {name:'id',index:'id', width:55, editable:false, editoptions:{readonly:true, size:10}, hidden:true},
                 {name:'name',index:'name', width:100, editable:true, editrules:{required:true}, editoptions:{size:10}},
+                {name:'description',index:'description', width:100, editable:true, editrules:{required:false}, editoptions:{size:10}},
                 {name:'version',index:'version', width:100, editable:true, editrules:{readonly:true}, editoptions:{size:10,defaultValue:'0'}, hidden:true}
             ],
             rowNum:10,
