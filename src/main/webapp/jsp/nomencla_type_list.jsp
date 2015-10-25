@@ -52,7 +52,7 @@
             datatype: 'json',
             mtype: 'POST',
             styleUI : 'Bootstrap',
-            colNames:['Id', 'Name', 'Version'],
+            colNames:['<c:message code="label.id"/>', '<c:message code="label.name"/>', '<c:message code="label.description"/>', '<c:message code="label.version"/>'],
             colModel:[
                 {name:'id',index:'id', width:55, editable:false, editoptions:{readonly:true, size:10}, hidden:true},
                 {name:'name',index:'name', width:100, editable:true, editrules:{required:true}, editoptions:{size:10}},
@@ -68,8 +68,8 @@
             sortname: 'id',
             viewrecords: true,
             sortorder: "asc",
-            caption:"<c:message code="label.globaldirectory.nuomanlature_types"/>",
-            emptyrecords: "Empty records",
+            caption:"<c:message code="label.globaldirectory.nomanklature_types"/>",
+            emptyrecords: "<c:message code="label.emptyrecords"/>",
             loadonce: false,
             loadComplete: function() {},
             jsonReader : {

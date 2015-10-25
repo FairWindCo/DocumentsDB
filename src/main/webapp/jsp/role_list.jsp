@@ -71,7 +71,7 @@
             viewrecords: true,
             sortorder: "asc",
             caption:"Records",
-            emptyrecords: "Empty records",
+            emptyrecords: "<c:message code="label.emptyrecords"/>",
             loadonce: false,
             loadComplete: function() {},
             jsonReader : {

@@ -20,8 +20,7 @@
 <div id="page-wrapper">
     <ol class="breadcrumb">
         <li><a href="${pageContext.request.contextPath}/"><c:message code="label.main"/></a></li>
-        <li><a href="#"><c:message code="label.globaldirectory"/></a></li>
-        <li class="active"><c:message code="label.globaldirectory.relativies"/></li>
+        <li class="active"><c:message code="label.menu.globaldirectory.contacttype"/></li>
     </ol>
     <div class="row">
 
@@ -29,7 +28,7 @@
 
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title"><c:message code="label.globaldirectory.relativies.title"/></h3>
+                    <h3 class="panel-title"><c:message code="label.globaldirectory.contacttypes.title"/></h3>
                 </div>
                 <div class="panel-body">
                     <div>
@@ -53,7 +52,7 @@
             datatype: 'json',
             mtype: 'POST',
             styleUI : 'Bootstrap',
-            colNames:['Id', 'Name', 'Format', 'Version'],
+            colNames:['<c:message code="label.id"/>', '<c:message code="label.name"/>', '<c:message code="label.format"/>', '<c:message code="label.version"/>'],
             colModel:[
                 {name:'id',index:'id', width:55, editable:false, editoptions:{readonly:true, size:10}, hidden:true},
                 {name:'name',index:'name', width:100, editable:true, editrules:{required:true}, editoptions:{size:10}},
@@ -69,8 +68,8 @@
             sortname: 'id',
             viewrecords: true,
             sortorder: "asc",
-            caption:"Records",
-            emptyrecords: "Empty records",
+            caption:"<c:message code="label.globaldirectory.contacttypes.title"/>",
+            emptyrecords: "<c:message code="label.emptyrecords"/>",
             loadonce: false,
             loadComplete: function() {},
             jsonReader : {

@@ -75,7 +75,10 @@
               <a href="${pageContext.request.contextPath}/task/list"><c:message code="label.tasks.task"/></a>
             </li>
             <li>
-              <a href="${pageContext.request.contextPath}/task/active"><c:message code="label.tasks.task"/></a>
+              <a href="${pageContext.request.contextPath}/tasks/controlledTask"><c:message code="label.tasks.controltask"/></a>
+            </li>
+            <li>
+              <a href="${pageContext.request.contextPath}/task/active"><c:message code="label.tasks.activetask"/></a>
             </li>
             <sec:authorize ifAnyGranted="ROLE_TASK_CREATE">
             <li>
@@ -85,6 +88,21 @@
           </ul>
           <!-- /.nav-second-level -->
         </li>
+      <li>
+        <a href="#"><i class="fa fa-inbox fa-fw"></i><c:message code="label.organizational_elements"/><span class="fa arrow"></span></a>
+        <ul class="nav nav-second-level">
+          <li>
+            <a href="${pageContext.request.contextPath}/nomenclature/list/"><c:message code="label.nomenclature.title"/></a>
+          </li>
+          <li>
+            <a href="${pageContext.request.contextPath}/nomenclaturetypes/list/"><c:message code="label.nomenclaturetype.title"/></a>
+          </li>
+          <li>
+            <a href="${pageContext.request.contextPath}/counterparts/list/"><c:message code="label.counterparts.title"/></a>
+          </li>
+        </ul>
+        <!-- /.nav-second-level -->
+      </li>
       <sec:authorize ifAnyGranted="ROLE_VIEW_DOCUMENTS, ROLE_EDIT_DOCUMENTS, ROLE_ADD_DOCUMENTS, ROLE_DELETE_DOCUMENTS">
       <li>
         <a href="#"><i class="fa fa-inbox fa-fw"></i><c:message code="label.documents"/><span class="fa arrow"></span></a>
@@ -109,9 +127,6 @@
             <li>
               <a href="${pageContext.request.contextPath}/roles/list"> <c:message code="label.administrate.roles"/></a>
             </li>
-            <li>
-              <a href="subdivisions/"> <c:message code="label.administrate.subdivisions"/></a>
-            </li>
           </ul>
         </li>
       </sec:authorize>
@@ -120,16 +135,16 @@
           <a href=""><i class="fa fa-sitemap fa-fw"></i><c:message code="label.menu.globaldirectory"/><span class="fa arrow"></span></a>
           <ul class="nav nav-second-level">
             <li>
-              <a href="${pageContext.request.contextPath}/tasktypes/list"> <c:message code="label.menu.globaldirectory.filetype"/></a>
+              <a href="${pageContext.request.contextPath}/tasktypes/list"> <c:message code="label.menu.globaldirectory.tasktypes"></c:message></a>
             </li>
             <li>
-              <a href="${pageContext.request.contextPath}/documenttypes/list"> <c:message code="label.menu.globaldirectory.activity"/></a>
+              <a href="${pageContext.request.contextPath}/documenttypes/list"> <c:message code="label.menu.globaldirectory.documentstypes"></c:message></a>
             </li>
             <li>
               <a href="${pageContext.request.contextPath}/contacttypes/list"> <c:message code="label.menu.globaldirectory.contacttype"/></a>
             </li>
             <li>
-              <a href="${pageContext.request.contextPath}/positions/list"> <c:message code="label.menu.globaldirectory.hobbi"/></a>
+              <a href="${pageContext.request.contextPath}/positions/list"> <c:message code="label.menu.globaldirectory.positions"/></a>
             </li>
           </ul>
           <!-- /.nav-second-level -->
