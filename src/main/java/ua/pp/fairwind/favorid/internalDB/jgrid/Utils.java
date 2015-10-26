@@ -10,6 +10,7 @@ public class Utils {
         Long val=null;
         String value=request.getParameter(name);
         if(value!=null && !value.isEmpty()){
+            if("null".equals(value)||"undifined".equals(value))return null;
             try {
                 val = Long.parseLong(value);
             }catch (NumberFormatException e){

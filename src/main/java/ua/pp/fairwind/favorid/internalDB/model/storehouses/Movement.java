@@ -1,10 +1,14 @@
 package ua.pp.fairwind.favorid.internalDB.model.storehouses;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import ua.pp.fairwind.favorid.internalDB.model.Counterparty;
 import ua.pp.fairwind.favorid.internalDB.model.Person;
+import ua.pp.fairwind.favorid.internalDB.model.document.Document;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by Сергей on 13.10.2015.
@@ -29,21 +33,27 @@ public class Movement {
     @ManyToOne
     @JoinColumn(name = "to_storehouse_ID")
     Storehouse toStorehouse;
-    @ManyToOne
-    @JoinColumn(name = "nomenclature_ID")
-    Nomenclature nomenclature;
-    @ManyToOne
-    @JoinColumn(name = "created_nomenclature_ID")
-    Nomenclature nomenclature_created;
-    long count;
-    Units  units;
+    String requestNumber;
     String comments;
 
+    @OneToMany(mappedBy = "movement")
+    @JsonIgnore
+    Set<MovementElements> nomenclatute=new HashSet<>();
+    @JsonIgnore
+    @OneToMany(mappedBy = "movement")
+    Set<MovementElements> nomenclatuteCreated=new HashSet<>();
+    @OneToMany
+    @JsonIgnore
+    Set<Document> documents=new HashSet<>();
+
+    @ManyToOne
+    @JoinColumn(name = "acknowledgement_person_ID")
+    Person acknowledgementPerson;
+    Date acknowledgementDate;
     @ManyToOne
     @JoinColumn(name = "approved_person_ID")
     Person approvedPerson;
     Date approvedDate;
-
 
     public Long getId() {
         return id;
@@ -101,29 +111,6 @@ public class Movement {
         this.toStorehouse = toStorehouse;
     }
 
-    public Nomenclature getNomenclature() {
-        return nomenclature;
-    }
-
-    public void setNomenclature(Nomenclature nomenclature) {
-        this.nomenclature = nomenclature;
-    }
-
-    public long getCount() {
-        return count;
-    }
-
-    public void setCount(long count) {
-        this.count = count;
-    }
-
-    public Units getUnits() {
-        return units;
-    }
-
-    public void setUnits(Units units) {
-        this.units = units;
-    }
 
     public Person getApprovedPerson() {
         return approvedPerson;
@@ -148,4 +135,73 @@ public class Movement {
     public void setComments(String comments) {
         this.comments = comments;
     }
+
+    public Person getAcknowledgementPerson() {
+        return acknowledgementPerson;
+    }
+
+    public void setAcknowledgementPerson(Person acknowledgementPerson) {
+        this.acknowledgementPerson = acknowledgementPerson;
+    }
+
+    public Date getAcknowledgementDate() {
+        return acknowledgementDate;
+    }
+
+    public void setAcknowledgementDate(Date acknowledgementDate) {
+        this.acknowledgementDate = acknowledgementDate;
+    }
+
+    public String getRequestNumber() {
+        return requestNumber;
+    }
+
+    public void setRequestNumber(String requestNumber) {
+        this.requestNumber = requestNumber;
+    }
+
+    public void addNomenclatureElement(MovementElements element){
+        if(element!=null){
+            if(element.movement!=null){
+                element.movement.removeNomenclatureElement(element);
+            }
+            if(element.created){
+                if (this.nomenclatuteCreated.add(element)) {
+                    element.movement = this;
+                }
+            } else {
+                if (this.nomenclatute.add(element)) {
+                    element.movement = this;
+                }
+            }
+        }
+    }
+
+    public void removeNomenclatureElement(MovementElements element){
+        if(element!=null){
+            element.movement=null;
+            if(element.created){
+                this.nomenclatuteCreated.remove(element);
+            } else {
+                this.nomenclatute.remove(element);
+            }
+        }
+    }
+
+    public void addDocument(Document document){
+        if(document!=null){
+            this.documents.add(document);
+        }
+    }
+
+    public void removeDocument(Document document){
+        if(document!=null){
+            this.documents.remove(document);
+        }
+    }
+
+    public boolean isApproved(){
+        return approvedDate!=null||approvedPerson!=null;
+    }
+
 }
