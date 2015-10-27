@@ -56,17 +56,32 @@
             <!-- /.nav-second-level -->
           </li>
         </sec:authorize>
-        <sec:authorize ifAnyGranted="ROLE_STOREHOUSE, ROLE_STOREHOUSE_MASTER, ROLE_STOREHOUSE_VIEW">
-          <li>
-            <a href="#"><i class="fa fa-inbox fa-fw"></i><c:message code="label.storehouse"/><span class="fa arrow"></span></a>
-            <ul class="nav nav-second-level">
-              <li>
-                <a href="${pageContext.request.contextPath}/documents/list/"><c:message code="label.storehouse.view"/></a>
-              </li>
-            </ul>
-            <!-- /.nav-second-level -->
-          </li>
-        </sec:authorize>
+      </sec:authorize>
+      <sec:authorize ifAnyGranted="ROLE_STOREHOUSE, ROLE_STOREHOUSE_MASTER, ROLE_STOREHOUSE_VIEW">
+        <li>
+          <a href="#"><i class="fa fa-inbox fa-fw"></i><c:message code="label.storehouse"/><span class="fa arrow"></span></a>
+          <ul class="nav nav-second-level">
+            <li>
+              <a href="${pageContext.request.contextPath}/storehouses/list"><c:message code="label.storehouse.view"/></a>
+            </li>
+            <li>
+              <a href="${pageContext.request.contextPath}/storehouse_operation/list"><c:message code="label.storehouse.operation"/></a>
+            </li>
+            <li>
+              <a href="${pageContext.request.contextPath}/storehouse_operation/list_arrival"><c:message code="label.storehouse.operation.ARRIVAL"/></a>
+            </li>
+            <li>
+              <a href="${pageContext.request.contextPath}/storehouse_operation/list_shipment"><c:message code="label.storehouse.operation.SHIPMENT"/></a>
+            </li>
+            <li>
+              <a href="${pageContext.request.contextPath}/storehouse_operation/list_move"><c:message code="label.storehouse.operation.MOVE"/></a>
+            </li>
+            <li>
+              <a href="${pageContext.request.contextPath}/storehouse_operation/list_utilization"><c:message code="label.storehouse.operation.UTILIZATION"/></a>
+            </li>
+          </ul>
+          <!-- /.nav-second-level -->
+        </li>
       </sec:authorize>
         <li>
           <a href="#"><i class="fa fa-inbox fa-fw"></i><c:message code="label.tasks"/><span class="fa arrow"></span></a>

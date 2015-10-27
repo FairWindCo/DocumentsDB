@@ -15,10 +15,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import ua.pp.fairwind.favorid.internalDB.jgrid.JGridRowsResponse;
 import ua.pp.fairwind.favorid.internalDB.jgrid.Utils;
 import ua.pp.fairwind.favorid.internalDB.model.Counterparty;
-import ua.pp.fairwind.favorid.internalDB.model.storehouses.MOVEMENT_TYPES;
-import ua.pp.fairwind.favorid.internalDB.model.storehouses.Movement;
-import ua.pp.fairwind.favorid.internalDB.model.storehouses.MovementElements;
-import ua.pp.fairwind.favorid.internalDB.model.storehouses.Storehouse;
+import ua.pp.fairwind.favorid.internalDB.model.document.Document;
+import ua.pp.fairwind.favorid.internalDB.model.storehouses.*;
 import ua.pp.fairwind.favorid.internalDB.repository.*;
 import ua.pp.fairwind.favorid.internalDB.security.UserDetailsAdapter;
 
@@ -52,6 +50,37 @@ public class StorehouseOperation {
         return "storehouse_operation_list";
     }
 
+    @Secured("ROLE_USER")
+    @RequestMapping(value = "/list_special", method = RequestMethod.GET)
+    public String list_special(Model model) {
+        return "storehouse_operation_list_special";
+    }
+
+    @Secured("ROLE_USER")
+    @RequestMapping(value = "/list_arrival", method = RequestMethod.GET)
+    public String list_arrival(Model model) {
+        return "storehouse_operation_list_arrival";
+    }
+
+    @Secured("ROLE_USER")
+    @RequestMapping(value = "/list_shipment", method = RequestMethod.GET)
+    public String list_shipment(Model model) {
+        return "storehouse_operation_list_shipment";
+    }
+
+    @Secured("ROLE_USER")
+    @RequestMapping(value = "/list_move", method = RequestMethod.GET)
+    public String list_move(Model model) {
+        return "storehouse_operation_list_move";
+    }
+
+    @Secured("ROLE_USER")
+    @RequestMapping(value = "/list_utilization", method = RequestMethod.GET)
+    public String list_utilization(Model model) {
+        return "storehouse_operation_list_utilization";
+    }
+
+
     @Transactional(readOnly = true)
     @RequestMapping(value = "/listing", method = RequestMethod.POST)
     @ResponseBody
@@ -80,6 +109,61 @@ public class StorehouseOperation {
         } else {
                 return new JGridRowsResponse<>(movementRepository.findAll());
         }
+    }
+
+    private JGridRowsResponse<Movement> getOperations(HttpServletRequest request,MOVEMENT_TYPES type){
+        PageRequest pageRequest=null;
+        if(request.getParameter("page")!=null){
+            int rows=10;
+            int page;
+            try {
+                page = Integer.parseInt(request.getParameter("page")) - 1;
+                page= page<0?0:page;
+                rows = request.getParameter("rows") == null ? 10 : Integer.parseInt(request.getParameter("rows"));
+                if(request.getParameter("sidx")!=null && !request.getParameter("sidx").isEmpty()){
+                    String direction=request.getParameter("sord");
+                    pageRequest=new PageRequest(page,rows,"asc".equals(direction)? Sort.Direction.ASC: Sort.Direction.DESC,request.getParameter("sidx"));
+                } else {
+                    pageRequest=new PageRequest(page,rows);
+                }
+            }catch (NumberFormatException ex){
+                //do nothing
+            }
+
+        }/**/
+        if(pageRequest!=null){
+            return new JGridRowsResponse<>(movementRepository.findByTypeMovement(type, pageRequest));
+        } else {
+            return new JGridRowsResponse<>(movementRepository.findByTypeMovement(type));
+        }
+    }
+
+    @Transactional(readOnly = true)
+    @RequestMapping(value = "/arrivallisting", method = RequestMethod.POST)
+    @ResponseBody
+    public JGridRowsResponse<Movement> getArrivalTable(HttpServletRequest request){
+        return getOperations(request,MOVEMENT_TYPES.ARRIVAL);
+    }
+
+    @Transactional(readOnly = true)
+    @RequestMapping(value = "/shipmentlisting", method = RequestMethod.POST)
+    @ResponseBody
+    public JGridRowsResponse<Movement> getShipmentTable(HttpServletRequest request){
+        return getOperations(request,MOVEMENT_TYPES.SHIPMENT);
+    }
+
+    @Transactional(readOnly = true)
+    @RequestMapping(value = "/movelisting", method = RequestMethod.POST)
+    @ResponseBody
+    public JGridRowsResponse<Movement> getMoveTable(HttpServletRequest request){
+        return getOperations(request,MOVEMENT_TYPES.MOVE);
+    }
+
+    @Transactional(readOnly = true)
+    @RequestMapping(value = "/utilizzationlisting", method = RequestMethod.POST)
+    @ResponseBody
+    public JGridRowsResponse<Movement> getUtilizTable(HttpServletRequest request){
+        return getOperations(request,MOVEMENT_TYPES.UTILIZATION);
     }
 
     @Transactional(readOnly = true)
@@ -304,6 +388,118 @@ public class StorehouseOperation {
                 }
             }
                 break;
+            case "del":
+                Long id= Utils.getLongParameter("id", request);
+                if(id==null){
+                    response.sendError(406,"UNKNOWN OPERATION");
+                    return;
+                }
+                Movement fromDB = movementRepository.getOne(id);
+                if(fromDB!=null) {
+                    if (!fromDB.isApproved()) {
+                        movementRepository.delete(id);
+                        response.setStatus(200);
+                    } else {
+                        response.sendError(403, "FORBIDDEN!");
+                    }
+                } else {
+                    response.sendError(404, "MOVEMENT WIDTH ID="+id+" mot found!");
+                }
+
+                break;
+            default:
+                response.sendError(406,"UNKNOWN OPERATION");
+        }
+    }
+
+    @Transactional(readOnly = true)
+    @RequestMapping(value = "/documents", method = RequestMethod.POST)
+    @ResponseBody
+    public JGridRowsResponse<Document> getDocumentsTable(HttpServletRequest request,@RequestParam long id){
+        PageRequest pageRequest=null;
+        if(request.getParameter("page")!=null){
+            int rows=10;
+            int page;
+            try {
+                page = Integer.parseInt(request.getParameter("page")) - 1;
+                page= page<0?0:page;
+                rows = request.getParameter("rows") == null ? 10 : Integer.parseInt(request.getParameter("rows"));
+                if(request.getParameter("sidx")!=null && !request.getParameter("sidx").isEmpty()){
+                    String direction=request.getParameter("sord");
+                    pageRequest=new PageRequest(page,rows,"asc".equals(direction)? Sort.Direction.ASC: Sort.Direction.DESC,request.getParameter("sidx"));
+                } else {
+                    pageRequest=new PageRequest(page,rows);
+                }
+            }catch (NumberFormatException ex){
+                //do nothing
+            }
+
+        }/**/
+        if(pageRequest!=null){
+            return new JGridRowsResponse<>(movementRepository.documents(id, pageRequest));
+        } else {
+            return new JGridRowsResponse<>(movementRepository.documents(id));
+        }
+    }
+
+    @Transactional(readOnly = false)
+    @RequestMapping(value = "/edit", method = {RequestMethod.POST,RequestMethod.GET})
+    public void nomenclatureeditor(@RequestParam String oper,@RequestParam long moveid,HttpServletRequest request,HttpServletResponse response)throws IOException {
+        Movement movement=movementRepository.findOne(moveid);
+        if(movement==null){
+            response.sendError(404,"Movement not found!");
+            return;
+        }
+        switch (oper){
+            case "add": {
+                MovementElements element=new MovementElements();
+                Long nomenclid=Utils.getLongParameter("nomenclature_id",request);
+                if(nomenclid==null) {
+                    response.sendError(404,"Nomenclature not found!");
+                    return;
+                }
+                Nomenclature nom=nomenclatureRepository.findOne(nomenclid);
+                if(nom==null) {
+                    response.sendError(404,"Nomenclature not found!");
+                    return;
+                }
+                Long cnt=Utils.getLongParameter("count",request);
+                if(cnt==null){
+                    response.sendError(400,"NO COUNT!");
+                    return;
+                }
+                element.setNomenclature(nom);
+                element.setComments(request.getParameter("comments"));
+                element.setCount(cnt);
+                element.setMovement(movement);
+                //TO-DO: need units
+                //element.setUnits();
+                movementElementRepository.save(element);
+                movementRepository.save(movement);
+            }
+            break;
+            case "edit": {
+                Long id= Utils.getLongParameter("id",request);
+                MOVEMENT_TYPES types = getMovementType(request);
+                if (types == null || id==null) {
+                    response.sendError(406, "UNKNOWN OPERATION");
+                    return;
+                }
+                Movement fromDB = movementRepository.getOne(id);
+                if(fromDB!=null) {
+                    if (!fromDB.isApproved()) {
+                        if(updateMovement(fromDB,request,types,response)) {
+                            movementRepository.save(fromDB);
+                            response.setStatus(200);
+                        }
+                    } else {
+                        response.sendError(403, "FORBIDDEN!");
+                    }
+                } else {
+                    response.sendError(404, "MOVEMENT WIDTH ID="+id+" mot found!");
+                }
+            }
+            break;
             case "del":
                 Long id= Utils.getLongParameter("id", request);
                 if(id==null){

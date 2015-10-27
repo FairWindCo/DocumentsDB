@@ -25,7 +25,7 @@
 <div id="page-wrapper">
     <ol class="breadcrumb">
         <li><a href="${pageContext.request.contextPath}/"><c:message code="label.main"/></a></li>
-        <li><a href="#"><c:message code="label.documents"/></a></li>
+        <li><a href="#"><c:message code="label.storehouse"/></a></li>
     </ol>
     <div class="row">
 
@@ -33,7 +33,7 @@
 
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title"><c:message code="label.document.title"/></h3>
+                    <h3 class="panel-title"><c:message code="label.storehouse.view"/></h3>
                 </div>
                 <div class="panel-body">
                     <div>
@@ -74,7 +74,7 @@
                 {name:'number',index:'number', width:100, editable:true, editrules:{required:true},search:true,label:'<c:message code="label.storehouse.code"/>'},
                 {name:'name',index:'name', width:100, editable:true, editrules:{required:true},search:true,label:'<c:message code="label.storehouse.name"/>'},
                 {name:'location',index:'location', width:100, editable:true, editrules:{required:false}, search:false,label:'<c:message code="label.storehouse.location"/>'},
-                {name:'responsiblePerson',index:'responsiblePerson', width:100, editable:true, editrules:{required:false}, search:false,label:'<c:message code="label.storehouse.responsiblePerson"/>'},
+                {name:'responsiblePerson',index:'responsiblePerson', width:100, editable:true, editrules:{required:false}, search:false,label:'<c:message code="label.storehouse.responsiblePerson"/>',jsonmap:'responsiblePerson.surname'},
                 {name:'comments',index:'comments', width:100, editable:true, editrules:{required:false}, search:false,edittype:'textarea',label:'<c:message code="label.storehouse.comments"/>'},
                 {name:'version',index:'version', width:100, editable:true, editrules:{readonly:true}, editoptions:{defaultValue:'0'}, hidden:true,label:'<c:message code="label.version"/>'},
             ],
@@ -87,7 +87,7 @@
             sortname: 'id',
             viewrecords: true,
             sortorder: "asc",
-            caption:"<c:message code="label.user.title"/>",
+            caption:"<c:message code="label.storehouse.view"/>",
             emptyrecords: "<c:message code="label.emptyrecords"/>",
             loadonce: false,
             loadComplete: function() {},
@@ -120,7 +120,7 @@
                     datatype: "json",
                     mtype: 'POST',
                     width:800,
-                    caption:"<c:message code="label.documents.files.title"/>",
+                    caption:"<c:message code="label.storehouse.nomenclature_list"/>",
                     emptyrecords: "<c:message code="label.emptyrecords"/>",
                     styleUI : 'Bootstrap',
                     colModel: [
@@ -146,13 +146,9 @@
         });
         $("#grid").jqGrid('navGrid','#pager',
                 {
-                    <sec:authorize ifAnyGranted="ROLE_ADD_DOCUMENTS">
+                    <sec:authorize ifAnyGranted="ROLE_STOREHOUSE_MASTER">
                     edit:true,
-                    </sec:authorize>
-                    <sec:authorize ifAnyGranted="ROLE_EDIT_DOCUMENTS">
                     add:true,
-                    </sec:authorize>
-                    <sec:authorize ifAnyGranted="ROLE_DELETE_DOCUMENTS">
                     del:true,
                     </sec:authorize>
                     search:false},
