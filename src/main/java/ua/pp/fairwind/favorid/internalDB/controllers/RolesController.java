@@ -29,7 +29,7 @@ public class RolesController {
     @Secured("ROLE_USER")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     public String list(Model model) {
-        return "role_list";
+        return "directoryes/role_list";
     }
 
     @Transactional(readOnly = true)

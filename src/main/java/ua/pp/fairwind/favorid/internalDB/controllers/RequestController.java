@@ -52,31 +52,31 @@ public class RequestController {
     @Secured("ROLE_USER")
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public String list(Model model) {
-        return "request_list";
+        return "requests/request_list";
     }
 
     @Secured("ROLE_USER")
     @RequestMapping(value = "/list_purchase", method = RequestMethod.GET)
     public String listPurchase(Model model) {
-        return "request_list_purchase";
+        return "requests/request_list_purchase";
     }
 
     @Secured("ROLE_USER")
     @RequestMapping(value = "/list_shipment", method = RequestMethod.GET)
     public String listShipment(Model model) {
-        return "request_list_shipment";
+        return "requests/request_list_shipment";
     }
 
     @Secured("ROLE_USER")
     @RequestMapping(value = "/list_production", method = RequestMethod.GET)
     public String listProdaction(Model model) {
-        return "request_list_prodaction";
+        return "requests/request_list_prodaction";
     }
 
     @Secured("ROLE_USER")
     @RequestMapping(value = "/list_repair", method = RequestMethod.GET)
     public String listRepair(Model model) {
-        return "request_list_repair";
+        return "requests/request_list_repair";
     }
 
     @Transactional(readOnly = true)
@@ -358,7 +358,7 @@ public class RequestController {
     public boolean updateItem(HttpServletRequest req,RequestItems item,Request parent){
         UserDetailsAdapter userDetail=(UserDetailsAdapter) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        Long nomenclature_id=Utils.getLongParameter("counterparty_id",req);
+        Long nomenclature_id=Utils.getLongParameter("nomenclature_id",req);
         Long unittype=Utils.getLongParameter("unit",req);
         Long count=Utils.getLongParameter("count", req);
 
@@ -399,7 +399,7 @@ public class RequestController {
             case "add": {
                 RequestItems item = new RequestItems();
                 updateItem(req, item, request);
-                requestRepository.save(request);
+                requestItemRepository.save(item);
                 requestRepository.save(request);
                 response.setStatus(200);
                 }break;

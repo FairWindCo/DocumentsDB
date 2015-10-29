@@ -21,6 +21,24 @@
 </style>
 
 <script>
+  var select_object={};
+
+  create_select_column=function(fieldname,url_short_path,label,sendObject,options){
+     var _option={
+         post_element_name:fieldname+'_id',
+         post_internal_field:fieldname+'_id',
+         select_object:select_object,
+     }
+     _option= $.extend(_option,options);
+
+     if(sendObject[_option.post_element_name]===null && sendObject[_option.post_element_name]===undefined){
+         sendObject[_option.post_element_name]=function(){
+             return _option.select_object[_option.post_internal_field];
+         }
+     }
+
+      return fairwind_select_column(fieldname,url_short_path,label,_option.select_object,_option);
+  }
 
   var fairwind_select_column=function(fieldname,url_short_path,label,modification_object,options){
     var _def_param = {
@@ -30,20 +48,23 @@
       search:true,
       width:100,
     }
-
-    if(options.post_parameter_name!==null && options.post_parameter_name!==undefined){
-      if(options.master_select_element===null || options.master_select_element===undefined){
-        options.master_select_element=opt.post_parameter_name;
-      }
-      _def_param.postdata_function={};
-      _def_param.postdata_function[options.post_parameter_name]=function(){
-          if(modification_object[options.master_select_element]!==null && modification_object[options.master_select_element]!==undefined) {
-              return modification_object[options.master_select_element];
-          } else {
-              return '';
+      if(options!==null && options!==undefined){
+        if(options.post_parameter_name!==null && options.post_parameter_name!==undefined){
+          if(options.master_select_element===null || options.master_select_element===undefined){
+            options.master_select_element=opt.post_parameter_name;
           }
+          _def_param.postdata_function={};
+          _def_param.postdata_function[options.post_parameter_name]=function(){
+              if(modification_object[options.master_select_element]!==null && modification_object[options.master_select_element]!==undefined) {
+                  return modification_object[options.master_select_element];
+              } else {
+                  return '';
+              }
+          }
+        }
+      } else {
+          options={};
       }
-    }
 
     var opt=$.extend(_def_param,options);
     if(opt.select_params===null || opt.select_params===undefined){

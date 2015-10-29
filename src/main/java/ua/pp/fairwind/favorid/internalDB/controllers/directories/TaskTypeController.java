@@ -36,7 +36,7 @@ public class TaskTypeController {
     @Secured("ROLE_USER")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     public String list(Model model) {
-        return "task_type_list";
+        return "directoryes/task_type_list";
     }
 
     @Transactional(readOnly = true)

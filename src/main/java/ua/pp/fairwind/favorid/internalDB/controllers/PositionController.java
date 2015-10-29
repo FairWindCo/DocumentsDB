@@ -36,7 +36,7 @@ public class PositionController {
     @Secured("ROLE_USER")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     public String list(Model model) {
-        return "position_list";
+        return "directoryes/position_list";
     }
 
     @Transactional(readOnly = true)

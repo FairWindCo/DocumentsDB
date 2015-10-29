@@ -217,6 +217,86 @@ public class NomenlatureController {
     }
 
     @Transactional(readOnly = true)
+    @RequestMapping(value = "/showCreated", method = RequestMethod.GET)
+    @ResponseBody
+    public Object createdList(@RequestParam(required = false) Integer page_num, @RequestParam(required = false) Integer per_page,@RequestParam(value = "pkey_val[]",required = false) String pkey,@RequestParam(value = "q_word[]",required = false) String[] qword) {
+        // Retrieve all persons by delegating the call to PersonService
+        //Sort sort= FormSort.formSortFromSortDescription(orderby);
+        Sort sort=new Sort(Sort.Direction.ASC,"name");
+        PageRequest pager=null;
+        if(page_num!=null && per_page!=null) {
+            page_num= page_num<1?1:page_num;
+            pager = new PageRequest(page_num - 1, per_page, sort);
+        }
+        if(pager!=null) {
+            Page<Nomenclature> page;
+            if (qword != null && qword.length > 0) {
+                page = nomenclatureRepository.findCreated(qword[0], pager);
+            } else {
+                page = nomenclatureRepository.findCreated(pager);
+            }
+            return new JSComboExpenseResp<>(page);
+        } else {
+            if(pkey!=null && !pkey.isEmpty()){
+                Long key=Long.valueOf(pkey);
+                Nomenclature ft=null;
+                if(key!=null) {
+                    ft = nomenclatureRepository.findOne(key);
+                }
+                return ft;
+            } else {
+                List<Nomenclature> page;
+                if (qword != null && qword.length > 0) {
+                    page = nomenclatureRepository.findCreated(qword[0], sort);
+                } else {
+                    page = nomenclatureRepository.findCreated(sort);
+                }
+                return new JSComboExpenseResp<>(page);
+            }
+        }
+    }
+
+    @Transactional(readOnly = true)
+    @RequestMapping(value = "/showArrival", method = RequestMethod.GET)
+    @ResponseBody
+    public Object arrivalList(@RequestParam(required = false) Integer page_num, @RequestParam(required = false) Integer per_page,@RequestParam(value = "pkey_val[]",required = false) String pkey,@RequestParam(value = "q_word[]",required = false) String[] qword) {
+        // Retrieve all persons by delegating the call to PersonService
+        //Sort sort= FormSort.formSortFromSortDescription(orderby);
+        Sort sort=new Sort(Sort.Direction.ASC,"name");
+        PageRequest pager=null;
+        if(page_num!=null && per_page!=null) {
+            page_num= page_num<1?1:page_num;
+            pager = new PageRequest(page_num - 1, per_page, sort);
+        }
+        if(pager!=null) {
+            Page<Nomenclature> page;
+            if (qword != null && qword.length > 0) {
+                page = nomenclatureRepository.findArrival(qword[0], pager);
+            } else {
+                page = nomenclatureRepository.findArrival(pager);
+            }
+            return new JSComboExpenseResp<>(page);
+        } else {
+            if(pkey!=null && !pkey.isEmpty()){
+                Long key=Long.valueOf(pkey);
+                Nomenclature ft=null;
+                if(key!=null) {
+                    ft = nomenclatureRepository.findOne(key);
+                }
+                return ft;
+            } else {
+                List<Nomenclature> page;
+                if (qword != null && qword.length > 0) {
+                    page = nomenclatureRepository.findArrival(qword[0], sort);
+                } else {
+                    page = nomenclatureRepository.findArrival(sort);
+                }
+                return new JSComboExpenseResp<>(page);
+            }
+        }
+    }
+
+    @Transactional(readOnly = true)
     @RequestMapping(value = "/tamplates", method = RequestMethod.POST)
     @ResponseBody
     public JGridRowsResponse<CombinedTemplate> getTemplates(HttpServletRequest request,@RequestParam long id){

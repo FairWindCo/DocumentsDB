@@ -47,37 +47,37 @@ public class StorehouseOperation {
     @Secured("ROLE_USER")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     public String list(Model model) {
-        return "storehouse_operation_list";
+        return "storehouses/storehouse_operation_list";
     }
 
     @Secured("ROLE_USER")
     @RequestMapping(value = "/list_special", method = RequestMethod.GET)
     public String list_special(Model model) {
-        return "storehouse_operation_list_special";
+        return "storehouses/storehouse_operation_list_special";
     }
 
     @Secured("ROLE_USER")
     @RequestMapping(value = "/list_arrival", method = RequestMethod.GET)
     public String list_arrival(Model model) {
-        return "storehouse_operation_list_arrival";
+        return "storehouses/storehouse_operation_list_arrival";
     }
 
     @Secured("ROLE_USER")
     @RequestMapping(value = "/list_shipment", method = RequestMethod.GET)
     public String list_shipment(Model model) {
-        return "storehouse_operation_list_shipment";
+        return "storehouses/storehouse_operation_list_shipment";
     }
 
     @Secured("ROLE_USER")
     @RequestMapping(value = "/list_move", method = RequestMethod.GET)
     public String list_move(Model model) {
-        return "storehouse_operation_list_move";
+        return "storehouses/storehouse_operation_list_move";
     }
 
     @Secured("ROLE_USER")
     @RequestMapping(value = "/list_utilization", method = RequestMethod.GET)
     public String list_utilization(Model model) {
-        return "storehouse_operation_list_utilization";
+        return "storehouses/storehouse_operation_list_utilization";
     }
 
 

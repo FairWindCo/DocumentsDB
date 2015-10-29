@@ -33,7 +33,7 @@ public class ContactTypeController {
     @Secured("ROLE_USER")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     public String list(Model model) {
-        return "contact_type_list";
+        return "directoryes/contact_type_list";
     }
 
     @Transactional(readOnly = true)

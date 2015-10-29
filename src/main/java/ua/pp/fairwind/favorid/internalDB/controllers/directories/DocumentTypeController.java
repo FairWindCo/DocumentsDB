@@ -36,7 +36,7 @@ public class DocumentTypeController {
     @Secured("ROLE_USER")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     public String list(Model model) {
-        return "document_type_list";
+        return "directoryes/document_type_list";
     }
 
     @Transactional(readOnly = true)

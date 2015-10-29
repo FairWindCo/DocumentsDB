@@ -22,7 +22,6 @@ public class RequestItems {
     Request request;
     @ManyToOne
     @JoinColumn(name = "nomenclature_ID")
-    @JsonIgnore
     Nomenclature nomenclature;
     long count;
     Units units;

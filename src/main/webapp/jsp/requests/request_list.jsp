@@ -8,7 +8,7 @@
     <!-- Bootstrap Core JavaScript -->
     <%@include file="/include/bootstrup_include.jsp" %>
     <%-- JQGrid --%>
-    <%@include file="/include/jgrid_include.jsp" %>
+    <%@include file="/include/jgrid_include_ex.jsp" %>
     <%-- jquery.ajax-combobox --%>
     <%@include file="/include/select_include.jsp" %>
 
@@ -52,6 +52,16 @@
 </body>
 <script type="text/javascript">
     $(document).ready(function () {
+        var getColumnIndexByName = function(grid,columnName) {
+            var cm = grid.jqGrid('getGridParam','colModel'), i=0,l=cm.length;
+            for (; i<l; i+=1) {
+                if (cm[i].name===columnName) {
+                    return i; // return the index
+                }
+            }
+            return -1;
+        };
+
         var select_object={
 
         }
@@ -60,6 +70,7 @@
             counterpart_id:function(){return select_object.counterparty_id},
             agreement_id:function(){return select_object.agreement_id},
         };
+
         $("#grid").jqGrid({
             url:'${pageContext.request.contextPath}/requests/listing',
             editurl:'${pageContext.request.contextPath}/requests/edit',
@@ -67,6 +78,7 @@
             mtype: 'POST',
             styleUI : 'Bootstrap',
             colModel:[
+                {name: "act", width: 20,label:'', editable:false,search:false},
                 {name:'id',index:'id', width:55, editable:false, editoptions:{readonly:true, size:10}, hidden:true,label:'<c:message code="label.id"/>'},
                 {name:'typeRequest',index:'typeRequest', width:100, editable:true, editrules:{required:true}, search:true,edittype:'select',label:'<c:message code="label.requests.type"/>',
                     editoptions:{value:{0:'<c:message code="label.PURCHASE"/>',
@@ -104,7 +116,33 @@
             caption:"<c:message code="label.storehouse.view"/>",
             emptyrecords: "<c:message code="label.emptyrecords"/>",
             loadonce: false,
-            loadComplete: function() {},
+            loadComplete: function() {
+                var grid = $(this),
+                        iCol = getColumnIndexByName(grid,'act'); // 'act' - name of the actions column
+                grid.children("tbody")
+                        .children("tr.jqgrow")
+                        .children("td:nth-child("+(iCol+1)+")")
+                        .each(function() {
+                            $("<div>",
+                                    {
+                                        title: "Custom",
+                                        mouseover: function() {
+                                            $(this).addClass('ui-state-hover');
+                                        },
+                                        mouseout: function() {
+                                            $(this).removeClass('ui-state-hover');
+                                        },
+                                        click: function(e) {
+                                            alert("'Custom' button is clicked in the rowis="+
+                                                    $(e.target).closest("tr.jqgrow").attr("id") +" !");
+                                        }
+                                    }
+                            ).css({"margin-left": "5px", float:"left"})
+                                    .addClass("ui-pg-div ui-inline-custom")
+                                    .append('<span class="ui-icon ui-icon-document"></span>')
+                                    .appendTo($(this));
+                        });
+            },
             jsonReader : {
                 root: "rows",
                 page: "page",
@@ -124,6 +162,15 @@
                 // here we can easy construct the following
                 var subgrid_table_id;
                 var subgrid_pager_id;
+
+                var sub_select_obj={};
+
+                var subGrisData={
+                    'nomenclature_id':function(){
+                        return sub_select_obj.nomenclature_id;
+                    }
+                }
+
                 subgrid_table_id = subgrid_id+"_t";
                 subgrid_pager_id = subgrid_id+"_p"
 
@@ -131,6 +178,7 @@
                 jQuery("#"+subgrid_table_id).jqGrid({
                     pager:subgrid_pager_id,
                     url:"${pageContext.request.contextPath}/requests/state?id="+row_id,
+                    editurl:"${pageContext.request.contextPath}/requests/editItem?requestid="+row_id,
                     datatype: "json",
                     mtype: 'POST',
                     width:800,
@@ -138,12 +186,28 @@
                     emptyrecords: "<c:message code="label.emptyrecords"/>",
                     styleUI : 'Bootstrap',
                     colModel: [
-                        {name:'id',index:'id', width:55, editable:false, editoptions:{readonly:true, size:10}, hidden:true,label:'<c:message code="label.id"/>'},
-                        {name:'nomenclature',index:'nomenclature', width:500, editable:true, editrules:{required:true},search:true,label:'<c:message code="label.nomenclature.template.code"/>'},
-                        {name:'nomenclature',index:'nomenclature', width:500, editable:true, editrules:{required:true},search:true,label:'<c:message code="label.nomenclature.template.name"/>'},
-                        {name:'nomenclature',index:'nomenclature', width:500, editable:true, editrules:{required:true},search:true,label:'<c:message code="label.nomenclature.template.manufactured"/>'},
-                        {name:'count',index:'count', width:100, editable:true, editrules:{required:true}, editoptions:{defaultValue:'1'},search:false,label:'<c:message code="label.nomenclature.template.count"/>'},
-                        {name:'version',index:'version', width:100, editable:true, editrules:{readonly:true}, editoptions:{defaultValue:'0'}, hidden:true,label:'<c:message code="label.version"/>'},
+                        {name:'id',index:'id', width:50, editable:false, editoptions:{readonly:true, size:10}, hidden:true,label:'<c:message code="label.id"/>'},
+                        {name:'nomenclature',index:'nomenclature',jsonmap:'nomenclature.code', width:70, editable:false, search:true,label:'<c:message code="label.nomenclature.template.code"/>'},
+                        //{name:'nomenclature',index:'nomenclature', width:500, editable:false, search:true,label:'<c:message code="label.nomenclature.template.name"/>'},
+                        fairwind_select_column('nomenclature','/nomenclature/showList','<c:message code="label.requests.nomenclature"/>',select_object),
+                        {name:'nomenclature',index:'nomenclature',jsonmap:'nomenclature.manufacturer', width:100, editable:false, search:true,label:'<c:message code="label.nomenclature.template.manufactured"/>'},
+                        {name:'count',index:'count', width:30, editable:true, editrules:{required:true}, editoptions:{defaultValue:'1'},search:false,label:'<c:message code="label.nomenclature.template.count"/>'},
+                        {name:'units',index:'units', width:50, editable:true, editrules:{required:true}, search:true,edittype:'select',label:'<c:message code="label.requests.type"/>',
+                            editoptions:{
+                                defaultValue:3,
+                                value:{
+                                0:'<c:message code="label.KILOGRAMS"/>',
+                                1:'<c:message code="label.GRAMS"/>',
+                                2:'<c:message code="label.TONS"/>',
+                                3:'<c:message code="label.COUNT"/>',
+                                4:'<c:message code="label.LITRES"/>',
+                                5:'<c:message code="label.MILLILITRES"/>',
+                                6:'<c:message code="label.METERS"/>',
+                                7:'<c:message code="label.MILLIMETERS"/>',
+                                },
+                            }
+                        },
+                        {name:'comments',index:'comments', width:100, editable:true, label:'<c:message code="label.requests.items.comments"/>'},
                     ],
                     id: "id",
                     height: '100%',
@@ -152,7 +216,21 @@
                     sortorder: "asc"
                 });
                 $("#"+subgrid_table_id).jqGrid('navGrid','#'+subgrid_pager_id,
-                        {edit:false, add:false, del:false, search:false}
+                        {edit:true, add:true, del:true, search:false},
+                        {/*MOD PARAM*/
+                            editData:subGrisData,
+                                    closeAfterEdit: true,
+                        },
+                        {/*ADD PARAM*/
+                            editData:subGrisData,
+                                    closeOnEscape: true,
+                                closeAfterAdd: true,
+                                serializeEditData:function (data) {
+                                    if(data.id=="_empty")data.id=null;
+                                        return data;
+                                }
+                        }
+
                 );
 
             }

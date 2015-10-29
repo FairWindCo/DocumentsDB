@@ -36,7 +36,7 @@ public class StorehouseController {
     @Secured("ROLE_USER")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     public String list(Model model) {
-        return "storehouse_list";
+        return "storehouses/storehouse_list";
     }
 
     @Transactional(readOnly = true)
