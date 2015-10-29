@@ -52,13 +52,13 @@
 </body>
 <script type="text/javascript">
     $(document).ready(function () {
-        var documentType_id;
-        var counterpart_id;
-        var agreement_id;
+        var select_object={
 
-        var GridData={documentType_key:function(){return documentType_id},
-            counterpart_id:function(){return counterpart_id},
-            agreement_id:function(){return agreement_id},
+        }
+
+        var GridData={documentType_key:function(){return select_object.documentType_key},
+            counterpart_id:function(){return select_object.counterparty_id},
+            agreement_id:function(){return select_object.agreement_id},
         };
         $("#grid").jqGrid({
             url:'${pageContext.request.contextPath}/requests/listing',
@@ -68,7 +68,7 @@
             styleUI : 'Bootstrap',
             colModel:[
                 {name:'id',index:'id', width:55, editable:false, editoptions:{readonly:true, size:10}, hidden:true,label:'<c:message code="label.id"/>'},
-                {name:'typeMovement',index:'typeMovement', width:100, editable:true, editrules:{required:true}, search:true,edittype:'select',label:'<c:message code="label.storehouseoperation.type"/>',
+                {name:'typeRequest',index:'typeRequest', width:100, editable:true, editrules:{required:true}, search:true,edittype:'select',label:'<c:message code="label.requests.type"/>',
                     editoptions:{value:{0:'<c:message code="label.PURCHASE"/>',
                         1:'<c:message code="label.RSHIPMENT"/>',
                         2:'<c:message code="label.PRODUCTION"/>',
@@ -76,78 +76,19 @@
                     },
                         dataEvents: [
                             { type: 'click', data: { i: 7 }, fn: function(e) {
-                                movementtype_id=e.currentTarget.value;
+                                select_object.documentType_key=e.currentTarget.value;
                             } },
                         ]
                     }
                 },
-                {name:'counterparty',index:'counterparty', width:100, editable:true, editrules:{required:true}, search:true,edittype:'text',label:'<c:message code="label.storehouseoperation.counterparty"/>',editoptions:{
-                    /**/
-                    dataInit : function (elem) {
-                        var value_elem=$(elem).val();
-                        $(elem).wrap("<div id='counterparty_box'></div>");
-                        $(elem).width='80px';
-                        $(elem).ajaxComboBox('${pageContext.request.contextPath}/counterparts/showList',
-                                {lang: 'en',
-                                    db_table: 'nation',
-                                    per_page: 20,
-                                    navi_num: 10,
-                                    select_only: true,
-                                    primary_key: 'id',
-                                    show_field: 'shortName',
-                                    field:'shortName',
-                                    //recalc_width:false,
-                                    button_img:'${pageContext.request.contextPath}/resources/images/btn.png',
-                                    init_record: [value_elem],
-                                    bind_to:'setupkey',
-                                }).bind('setupkey', function() {
-                                    //$('#documentType_key').val($('#documentType_name_primary_key').val());
-                                    counterprty_id=$('#counterparty_primary_key').val();
-                                });
-                    }},formatter:function(cellvalue, options, rowObject ){
-                    if(cellvalue===null || cellvalue===undefined)return '';
-                    return '<p pkey='+cellvalue.id+'>'+cellvalue.shortName+'</p>'
-                },unformat:function(cellvalue, options, cellObject ){
-                    var element=$(cellObject).html();
-                    return $(element).attr('pkey');
-                }
-                },
-                {name:'agreement',index:'agreement', width:100, editable:true, editrules:{required:true}, search:true,edittype:'text',label:'<c:message code="label.storehouseoperation.counterparty"/>',editoptions:{
-                    /**/
-                    dataInit : function (elem) {
-                        var value_elem=$(elem).val();
-                        var sunid='';
-                        if(counterpart_id!==null && counterpart_id!==undefined){
-                            sunid='?counterpart_id='+counterpart_id;
-                        }
-                        $(elem).wrap("<div id='counterparty_box'></div>");
-                        $(elem).width='80px';
-                        $(elem).ajaxComboBox('${pageContext.request.contextPath}/counterparts/showListAgreements'+sunid,
-                                {lang: 'en',
-                                    db_table: 'nation',
-                                    per_page: 20,
-                                    navi_num: 10,
-                                    select_only: true,
-                                    primary_key: 'id',
-                                    show_field: 'shortName',
-                                    field:'shortName',
-                                    //recalc_width:false,
-                                    button_img:'${pageContext.request.contextPath}/resources/images/btn.png',
-                                    init_record: [value_elem],
-                                    bind_to:'setupkey',
-                                }).bind('setupkey', function() {
-                                    //$('#documentType_key').val($('#documentType_name_primary_key').val());
-                                    agreement_id=$('#counterparty_primary_key').val();
-                                });
-                    }},formatter:function(cellvalue, options, rowObject ){
-                    if(cellvalue===null || cellvalue===undefined)return '';
-                    return '<p pkey='+cellvalue.id+'>'+cellvalue.name+'</p>'
-                },unformat:function(cellvalue, options, cellObject ){
-                    var element=$(cellObject).html();
-                    return $(element).attr('pkey');
-                }
-                },
-                {name:'responsiblePerson',index:'responsiblePerson', width:100, editable:true, editrules:{required:false}, search:false,label:'<c:message code="label.storehouse.responsiblePerson"/>',jsonmap:'responsiblePerson.surname'},
+                fairwind_select_column('counterparty','/counterparts/showList','<c:message code="label.requests.counterparty"/>',select_object,{
+                    show_field:'shortName'
+                }),
+                fairwind_select_column('agreement','/counterparts/showListAgreements','<c:message code="label.requests.agreements"/>',select_object,{
+                    post_parameter_name:'counterpart_id',
+                    master_select_element:'counterparty_id'
+                }),
+                {name:'responsiblePerson',index:'responsiblePerson', width:100, editable:false, editrules:{required:false}, search:false,label:'<c:message code="label.storehouse.responsiblePerson"/>',jsonmap:'responsiblePerson.surname'},
                 {name:'comments',index:'comments', width:100, editable:true, editrules:{required:false}, search:false,edittype:'textarea',label:'<c:message code="label.storehouse.comments"/>'},
                 {name:'version',index:'version', width:100, editable:true, editrules:{readonly:true}, editoptions:{defaultValue:'0'}, hidden:true,label:'<c:message code="label.version"/>'},
             ],

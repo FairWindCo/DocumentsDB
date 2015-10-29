@@ -453,7 +453,7 @@ public class ConterpartyController {
     @ResponseBody
     public Object simpleAgrimentsList(@RequestParam(required = false) Integer page_num, @RequestParam(required = false) Integer per_page,@RequestParam(value = "pkey_val[]",required = false) String pkey,@RequestParam(value = "q_word[]",required = false) String[] qword,@RequestParam(required = false) Long counterpart_id) {
         //Sort sort= FormSort.formSortFromSortDescription(orderby);
-        Sort sort=new Sort(Sort.Direction.ASC,"shortName");
+        Sort sort=new Sort(Sort.Direction.ASC,"name");
         PageRequest pager=null;
         if(page_num!=null && per_page!=null) {
             page_num= page_num<1?1:page_num;

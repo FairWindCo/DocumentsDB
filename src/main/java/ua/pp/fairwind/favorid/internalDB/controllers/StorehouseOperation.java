@@ -443,7 +443,7 @@ public class StorehouseOperation {
     }
 
     @Transactional(readOnly = false)
-    @RequestMapping(value = "/edit", method = {RequestMethod.POST,RequestMethod.GET})
+    @RequestMapping(value = "/edit_nomenclature", method = {RequestMethod.POST,RequestMethod.GET})
     public void nomenclatureeditor(@RequestParam String oper,@RequestParam long moveid,HttpServletRequest request,HttpServletResponse response)throws IOException {
         Movement movement=movementRepository.findOne(moveid);
         if(movement==null){

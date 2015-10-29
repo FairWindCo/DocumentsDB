@@ -23,25 +23,25 @@ public interface RequestRepository extends JpaRepository<Request,Long>{
     @Query("select r from RequestItems r where r.request.id=:requestId")
     Page<RequestItems> getState(@Param(value = "requestId") long requestId, Pageable pager);
     @Query("select r from RequestItems r where r.request.id=:requestId")
-    List<RequestItems> getState(@Param(value = "storehouseId") long requestId);
+    List<RequestItems> getState(@Param(value = "requestId") long requestId);
     @Query("select r from RequestItems r where r.request.id=:requestId")
-    List<RequestItems> getState(@Param(value = "storehouseId") long requestId, Sort sort);
+    List<RequestItems> getState(@Param(value = "requestId") long requestId, Sort sort);
 
 
     @Query("select r from RequestItems r where r.request.id=:requestId and r.nomenclature.name like %:name%")
     Page<RequestItems> getState(@Param(value = "requestId") long requestId,@Param(value = "name")String name, Pageable pager);
     @Query("select r from RequestItems r where r.request.id=:requestId and r.nomenclature.name like %:name%")
-    List<RequestItems> getState(@Param(value = "storehouseId") long requestId,@Param(value = "name")String name);
+    List<RequestItems> getState(@Param(value = "requestId") long requestId,@Param(value = "name")String name);
     @Query("select r from RequestItems r where r.request.id=:requestId and r.nomenclature.name like %:name%")
-    List<RequestItems> getState(@Param(value = "storehouseId") long requestId,@Param(value = "name")String name, Sort sort);
+    List<RequestItems> getState(@Param(value = "requestId") long requestId,@Param(value = "name")String name, Sort sort);
 
 
     @Query("select r from Request r where r.id = :requestId or r.counterparty.shortName like %:requestId% or r.agreement.name like %:requestId%")
     Page<Request> find(@Param(value = "requestId") String requestId, Pageable pager);
     @Query("select r from Request r where r.id = :requestId or r.counterparty.shortName like %:requestId% or r.agreement.name like %:requestId%")
-    List<Request> find(@Param(value = "storehouseId") String requestId);
+    List<Request> find(@Param(value = "requestId") String requestId);
     @Query("select r from Request r where r.id = :requestId or r.counterparty.shortName like %:requestId% or r.agreement.name like %:requestId%")
-    List<Request> find(@Param(value = "storehouseId") String requestId, Sort sort);
+    List<Request> find(@Param(value = "requestId") String requestId, Sort sort);
 
 
 }

@@ -189,13 +189,13 @@ public class RequestController {
             }
         }
         UserDetailsAdapter userDetail=(UserDetailsAdapter) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if(userDetail==null){
+        if(userDetail!=null){
             request.setResponsiblePerson(userDetail.getUserPerson());
         } else {
             return false;
         }
         Long counterparty_id=Utils.getLongParameter("counterpart_id",req);
-        Long requesttype=Utils.getLongParameter("requesttype",req);
+        Long requesttype=Utils.getLongParameter("typeRequest",req);
         Long agreement_id=Utils.getLongParameter("agreement_id", req);
         Long parent_request_id=Utils.getLongParameter("parent_request_id", req);
         if(counterparty_id!=null){
@@ -204,7 +204,9 @@ public class RequestController {
         }
         if(agreement_id!=null){
             Agreement agreement=agrimentRepository.findOne(agreement_id);
-            request.setCounterparty(agreement.getCounterparty());
+            if(agreement!=null) {
+                request.setCounterparty(agreement.getCounterparty());
+            }
             request.setAgreement(agreement);
         }
         if(parent_request_id!=null){
@@ -290,7 +292,7 @@ public class RequestController {
     }
 
     @Transactional(readOnly = false)
-    @RequestMapping(value = "/edit", method = {RequestMethod.POST,RequestMethod.GET})
+    @RequestMapping(value = "/subscribe", method = {RequestMethod.POST,RequestMethod.GET})
     public void subscribe(@RequestParam long id,HttpServletResponse response)throws IOException {
         UserDetailsAdapter userDetail=(UserDetailsAdapter) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Request request = requestRepository.findOne(id);
@@ -309,7 +311,7 @@ public class RequestController {
 
     @Transactional(readOnly = false)
     @RequestMapping(value = "/edit", method = {RequestMethod.POST,RequestMethod.GET})
-    public void editor(@RequestParam String oper,@RequestParam long id,HttpServletRequest req,HttpServletResponse response)throws IOException {
+    public void editor(@RequestParam String oper,@RequestParam Long id,HttpServletRequest req,HttpServletResponse response)throws IOException {
         switch (oper){
             case "add":
                 Request request=new Request();
@@ -319,6 +321,10 @@ public class RequestController {
                 }
                 break;
             case "edit":
+                if(id==null){
+                    response.sendError(406,"NO REQUEST FOUND");
+                    return;
+                }
                 Request fromDB= requestRepository.getOne(id);
                 if(fromDB.isExecuted() || fromDB.getApprovedPerson()!=null){
                     response.sendError(403,"FORBIDDEN!");
@@ -337,6 +343,10 @@ public class RequestController {
 
                 break;
             case "del":
+                if(id==null){
+                    response.sendError(406,"NO REQUEST FOUND");
+                    return;
+                }
                 requestRepository.delete(id);
                 response.setStatus(200);
                 break;
@@ -375,7 +385,7 @@ public class RequestController {
 
     @Transactional(readOnly = false)
     @RequestMapping(value = "/editItem", method = {RequestMethod.POST,RequestMethod.GET})
-    public void itemEditor(@RequestParam String oper,@RequestParam long id,@RequestParam long requestid,HttpServletRequest req,HttpServletResponse response)throws IOException {
+    public void itemEditor(@RequestParam String oper,@RequestParam Long id,@RequestParam long requestid,HttpServletRequest req,HttpServletResponse response)throws IOException {
         Request request = requestRepository.findOne(requestid);
         if (request == null) {
             response.sendError(404, "REQUEST NOT FOUND!");
@@ -394,6 +404,10 @@ public class RequestController {
                 response.setStatus(200);
                 }break;
             case "edit": {
+                if(id==null){
+                    response.sendError(406,"NO REQUEST ITEM FOUND");
+                    return;
+                }
                 RequestItems item=requestItemRepository.findOne(id);
                 if (item != null) {
                     if(!updateItem(req, item, request)){
@@ -408,6 +422,10 @@ public class RequestController {
 
             }break;
             case "del":
+                if(id==null){
+                    response.sendError(406,"NO REQUEST ITEM FOUND");
+                    return;
+                }
                 requestRepository.delete(id);
                 requestRepository.save(request);
                 response.setStatus(200);
