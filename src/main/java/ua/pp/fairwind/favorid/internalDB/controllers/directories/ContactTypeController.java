@@ -1,4 +1,4 @@
-package ua.pp.fairwind.favorid.internalDB.controllers;
+package ua.pp.fairwind.favorid.internalDB.controllers.directories;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

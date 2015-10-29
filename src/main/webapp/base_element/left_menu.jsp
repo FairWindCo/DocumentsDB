@@ -57,6 +57,29 @@
           </li>
         </sec:authorize>
       </sec:authorize>
+      <sec:authorize ifAnyGranted="ROLE_REQUEST_VIEW, ROLE_REQUEST_EDIT">
+        <li>
+          <a href="#"><i class="fa fa-inbox fa-fw"></i><c:message code="label.requests"/><span class="fa arrow"></span></a>
+          <ul class="nav nav-second-level">
+            <li>
+              <a href="${pageContext.request.contextPath}/requests/"><c:message code="label.requests.view"/></a>
+            </li>
+            <li>
+              <a href="${pageContext.request.contextPath}/requests/list_production"><c:message code="label.requests.operation.production"/></a>
+            </li>
+            <li>
+              <a href="${pageContext.request.contextPath}/requests/list_purchase"><c:message code="label.requests.operation.purchase"/></a>
+            </li>
+            <li>
+              <a href="${pageContext.request.contextPath}/requests/list_shipment"><c:message code="label.requests.operation.shipment"/></a>
+            </li>
+            <li>
+              <a href="${pageContext.request.contextPath}/requests/list_repair"><c:message code="label.requests.operation.reparir"/></a>
+            </li>
+          </ul>
+          <!-- /.nav-second-level -->
+        </li>
+      </sec:authorize>
       <sec:authorize ifAnyGranted="ROLE_STOREHOUSE, ROLE_STOREHOUSE_MASTER, ROLE_STOREHOUSE_VIEW">
         <li>
           <a href="#"><i class="fa fa-inbox fa-fw"></i><c:message code="label.storehouse"/><span class="fa arrow"></span></a>

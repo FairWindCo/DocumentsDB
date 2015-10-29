@@ -360,6 +360,22 @@ INSERT INTO `NOMENCLATURE` (`id`, `code`, `country`, `manufacturer`, `name`, `co
 /*!40000 ALTER TABLE `NOMENCLATURE` ENABLE KEYS */;
 
 
+-- Dumping structure for таблиця favorit.NOMENCLATURE_NOMENCLATURE_TYPES
+DROP TABLE IF EXISTS `NOMENCLATURE_NOMENCLATURE_TYPES`;
+CREATE TABLE IF NOT EXISTS `NOMENCLATURE_NOMENCLATURE_TYPES` (
+  `NOMENCLATURE_id` bigint(20) NOT NULL,
+  `nomenclatureTypes_id` bigint(20) NOT NULL,
+  PRIMARY KEY (`NOMENCLATURE_id`,`nomenclatureTypes_id`),
+  KEY `FK_tnei3w5f9qxt1q6fvsrolvpuf` (`nomenclatureTypes_id`),
+  CONSTRAINT `FK_32t734d05gl4ibwt5nb11xo5h` FOREIGN KEY (`NOMENCLATURE_id`) REFERENCES `NOMENCLATURE` (`id`),
+  CONSTRAINT `FK_tnei3w5f9qxt1q6fvsrolvpuf` FOREIGN KEY (`nomenclatureTypes_id`) REFERENCES `NOMENCLATURE_TYPES` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- Dumping data for table favorit.NOMENCLATURE_NOMENCLATURE_TYPES: ~0 rows (приблизно)
+/*!40000 ALTER TABLE `NOMENCLATURE_NOMENCLATURE_TYPES` DISABLE KEYS */;
+/*!40000 ALTER TABLE `NOMENCLATURE_NOMENCLATURE_TYPES` ENABLE KEYS */;
+
+
 -- Dumping structure for таблиця favorit.NOMENCLATURE_SAFEKEEPING
 DROP TABLE IF EXISTS `NOMENCLATURE_SAFEKEEPING`;
 CREATE TABLE IF NOT EXISTS `NOMENCLATURE_SAFEKEEPING` (
@@ -385,20 +401,54 @@ CREATE TABLE IF NOT EXISTS `NOMENCLATURE_TAMPLATES` (
   `parent_id` bigint(20) DEFAULT NULL,
   `parent_nomenclature_id` bigint(20) DEFAULT NULL,
   `nomenclature_id` bigint(20) DEFAULT NULL,
+  `nomenclature_type_id` bigint(20) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_ls6w4ltxvhihl3ij630be3ny9` (`parent_id`),
   KEY `FK_jhaokbslocilc5vx7clgadxsa` (`parent_nomenclature_id`),
   KEY `FK_j8eipymwysdwy9k5ug548altr` (`nomenclature_id`),
+  KEY `FK_2mxe2c68a6t15jcl35s06cg6p` (`nomenclature_type_id`),
+  CONSTRAINT `FK_2mxe2c68a6t15jcl35s06cg6p` FOREIGN KEY (`nomenclature_type_id`) REFERENCES `NOMENCLATURE_TYPES` (`id`),
   CONSTRAINT `FK_j8eipymwysdwy9k5ug548altr` FOREIGN KEY (`nomenclature_id`) REFERENCES `NOMENCLATURE` (`id`),
   CONSTRAINT `FK_jhaokbslocilc5vx7clgadxsa` FOREIGN KEY (`parent_nomenclature_id`) REFERENCES `NOMENCLATURE` (`id`),
   CONSTRAINT `FK_ls6w4ltxvhihl3ij630be3ny9` FOREIGN KEY (`parent_id`) REFERENCES `NOMENCLATURE` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 
 -- Dumping data for table favorit.NOMENCLATURE_TAMPLATES: ~1 rows (приблизно)
 /*!40000 ALTER TABLE `NOMENCLATURE_TAMPLATES` DISABLE KEYS */;
-INSERT INTO `NOMENCLATURE_TAMPLATES` (`id`, `count`, `version`, `parent_id`, `parent_nomenclature_id`, `nomenclature_id`) VALUES
-	(6, 2, 0, NULL, 5, 3);
+INSERT INTO `NOMENCLATURE_TAMPLATES` (`id`, `count`, `version`, `parent_id`, `parent_nomenclature_id`, `nomenclature_id`, `nomenclature_type_id`) VALUES
+	(6, 2, 0, NULL, 5, 3, NULL);
 /*!40000 ALTER TABLE `NOMENCLATURE_TAMPLATES` ENABLE KEYS */;
+
+
+-- Dumping structure for таблиця favorit.NOMENCLATURE_TYPES
+DROP TABLE IF EXISTS `NOMENCLATURE_TYPES`;
+CREATE TABLE IF NOT EXISTS `NOMENCLATURE_TYPES` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) DEFAULT NULL,
+  `version` bigint(20) NOT NULL,
+  `description` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- Dumping data for table favorit.NOMENCLATURE_TYPES: ~0 rows (приблизно)
+/*!40000 ALTER TABLE `NOMENCLATURE_TYPES` DISABLE KEYS */;
+/*!40000 ALTER TABLE `NOMENCLATURE_TYPES` ENABLE KEYS */;
+
+
+-- Dumping structure for таблиця favorit.NOMENCLATURE_TYPES_NOMENCLATURE
+DROP TABLE IF EXISTS `NOMENCLATURE_TYPES_NOMENCLATURE`;
+CREATE TABLE IF NOT EXISTS `NOMENCLATURE_TYPES_NOMENCLATURE` (
+  `NOMENCLATURE_TYPES_id` bigint(20) NOT NULL,
+  `nomenclature_id` bigint(20) NOT NULL,
+  PRIMARY KEY (`NOMENCLATURE_TYPES_id`,`nomenclature_id`),
+  KEY `FK_oettxvv0hrbtxay1lj8g7h2jx` (`nomenclature_id`),
+  CONSTRAINT `FK_8240p2betiqygx2og86xvbivr` FOREIGN KEY (`NOMENCLATURE_TYPES_id`) REFERENCES `NOMENCLATURE_TYPES` (`id`),
+  CONSTRAINT `FK_oettxvv0hrbtxay1lj8g7h2jx` FOREIGN KEY (`nomenclature_id`) REFERENCES `NOMENCLATURE` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- Dumping data for table favorit.NOMENCLATURE_TYPES_NOMENCLATURE: ~0 rows (приблизно)
+/*!40000 ALTER TABLE `NOMENCLATURE_TYPES_NOMENCLATURE` DISABLE KEYS */;
+/*!40000 ALTER TABLE `NOMENCLATURE_TYPES_NOMENCLATURE` ENABLE KEYS */;
 
 
 -- Dumping structure for таблиця favorit.PERSONS
@@ -605,8 +655,8 @@ CREATE TABLE IF NOT EXISTS `STOREHOUSES_SAFEKEEPING` (
   `safekeeping_id` bigint(20) NOT NULL,
   PRIMARY KEY (`STOREHOUSES_id`,`safekeeping_id`),
   UNIQUE KEY `UK_gobu2jpwlpp6ntdprl558jhbr` (`safekeeping_id`),
-  CONSTRAINT `FK_s56ts6tp8tsbuah6ql25lr9ay` FOREIGN KEY (`STOREHOUSES_id`) REFERENCES `STOREHOUSES` (`id`),
-  CONSTRAINT `FK_gobu2jpwlpp6ntdprl558jhbr` FOREIGN KEY (`safekeeping_id`) REFERENCES `SAFEKEEPING` (`id`)
+  CONSTRAINT `FK_gobu2jpwlpp6ntdprl558jhbr` FOREIGN KEY (`safekeeping_id`) REFERENCES `SAFEKEEPING` (`id`),
+  CONSTRAINT `FK_s56ts6tp8tsbuah6ql25lr9ay` FOREIGN KEY (`STOREHOUSES_id`) REFERENCES `STOREHOUSES` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Dumping data for table favorit.STOREHOUSES_SAFEKEEPING: ~0 rows (приблизно)
@@ -618,39 +668,78 @@ CREATE TABLE IF NOT EXISTS `STOREHOUSES_SAFEKEEPING` (
 DROP TABLE IF EXISTS `STOREHOUSE_MOVEMENT`;
 CREATE TABLE IF NOT EXISTS `STOREHOUSE_MOVEMENT` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `count` bigint(20) NOT NULL,
   `operationDate` datetime DEFAULT NULL,
   `typeMovement` int(11) DEFAULT NULL,
-  `units` varchar(255) DEFAULT NULL,
   `counterparty_id` bigint(20) DEFAULT NULL,
   `from_storehouse_ID` bigint(20) DEFAULT NULL,
-  `nomenclature_ID` bigint(20) DEFAULT NULL,
   `responsible_person_ID` bigint(20) DEFAULT NULL,
   `to_storehouse_ID` bigint(20) DEFAULT NULL,
   `comments` varchar(255) DEFAULT NULL,
-  `created_nomenclature_ID` bigint(20) DEFAULT NULL,
   `approvedDate` datetime DEFAULT NULL,
   `approved_person_ID` bigint(20) DEFAULT NULL,
+  `acknowledgementDate` datetime DEFAULT NULL,
+  `requestNumber` varchar(255) DEFAULT NULL,
+  `acknowledgement_person_ID` bigint(20) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_cyptvs5urycc421jqcogu4qlb` (`counterparty_id`),
   KEY `FK_cs9r5jao91y2tty0xkfcox59p` (`from_storehouse_ID`),
-  KEY `FK_6miimxrdcfk5unwf8gygyww2e` (`nomenclature_ID`),
   KEY `FK_caq6tuljghn8b9rmrqus9561i` (`responsible_person_ID`),
   KEY `FK_c4hxr9qw79g9lanof45yiaxe9` (`to_storehouse_ID`),
-  KEY `FK_j84q7q1i79ebdb4euffjtepwe` (`created_nomenclature_ID`),
   KEY `FK_6vtwllotl9edya7fcvphfrr8k` (`approved_person_ID`),
+  KEY `FK_8xn0350joypnncepj8jjfuivs` (`acknowledgement_person_ID`),
   CONSTRAINT `FK_6vtwllotl9edya7fcvphfrr8k` FOREIGN KEY (`approved_person_ID`) REFERENCES `PERSONS` (`id`),
-  CONSTRAINT `FK_6miimxrdcfk5unwf8gygyww2e` FOREIGN KEY (`nomenclature_ID`) REFERENCES `NOMENCLATURE` (`id`),
+  CONSTRAINT `FK_8xn0350joypnncepj8jjfuivs` FOREIGN KEY (`acknowledgement_person_ID`) REFERENCES `PERSONS` (`id`),
   CONSTRAINT `FK_c4hxr9qw79g9lanof45yiaxe9` FOREIGN KEY (`to_storehouse_ID`) REFERENCES `STOREHOUSES` (`id`),
   CONSTRAINT `FK_caq6tuljghn8b9rmrqus9561i` FOREIGN KEY (`responsible_person_ID`) REFERENCES `PERSONS` (`id`),
   CONSTRAINT `FK_cs9r5jao91y2tty0xkfcox59p` FOREIGN KEY (`from_storehouse_ID`) REFERENCES `STOREHOUSES` (`id`),
-  CONSTRAINT `FK_cyptvs5urycc421jqcogu4qlb` FOREIGN KEY (`counterparty_id`) REFERENCES `Counterparty` (`id`),
-  CONSTRAINT `FK_j84q7q1i79ebdb4euffjtepwe` FOREIGN KEY (`created_nomenclature_ID`) REFERENCES `NOMENCLATURE` (`id`)
+  CONSTRAINT `FK_cyptvs5urycc421jqcogu4qlb` FOREIGN KEY (`counterparty_id`) REFERENCES `Counterparty` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+
+-- Dumping data for table favorit.STOREHOUSE_MOVEMENT: ~2 rows (приблизно)
+/*!40000 ALTER TABLE `STOREHOUSE_MOVEMENT` DISABLE KEYS */;
+INSERT INTO `STOREHOUSE_MOVEMENT` (`id`, `operationDate`, `typeMovement`, `counterparty_id`, `from_storehouse_ID`, `responsible_person_ID`, `to_storehouse_ID`, `comments`, `approvedDate`, `approved_person_ID`, `acknowledgementDate`, `requestNumber`, `acknowledgement_person_ID`) VALUES
+	(1, '2015-10-26 15:00:02', 0, 2, NULL, 4, 3, 'R142', NULL, NULL, NULL, NULL, NULL),
+	(2, '2015-10-27 09:09:28', 0, 2, NULL, 4, 2, 'На рмент', NULL, NULL, NULL, 'S23423', NULL);
+/*!40000 ALTER TABLE `STOREHOUSE_MOVEMENT` ENABLE KEYS */;
+
+
+-- Dumping structure for таблиця favorit.STOREHOUSE_MOVEMENT_DOCUMENTS
+DROP TABLE IF EXISTS `STOREHOUSE_MOVEMENT_DOCUMENTS`;
+CREATE TABLE IF NOT EXISTS `STOREHOUSE_MOVEMENT_DOCUMENTS` (
+  `STOREHOUSE_MOVEMENT_id` bigint(20) NOT NULL,
+  `documents_id` bigint(20) NOT NULL,
+  PRIMARY KEY (`STOREHOUSE_MOVEMENT_id`,`documents_id`),
+  UNIQUE KEY `UK_2yrdltwsgmpxclr1ri406n8b` (`documents_id`),
+  CONSTRAINT `FK_2yrdltwsgmpxclr1ri406n8b` FOREIGN KEY (`documents_id`) REFERENCES `DOCUMENTS` (`id`),
+  CONSTRAINT `FK_od1yay90xi8roq2vhc37bget8` FOREIGN KEY (`STOREHOUSE_MOVEMENT_id`) REFERENCES `STOREHOUSE_MOVEMENT` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- Dumping data for table favorit.STOREHOUSE_MOVEMENT: ~0 rows (приблизно)
-/*!40000 ALTER TABLE `STOREHOUSE_MOVEMENT` DISABLE KEYS */;
-/*!40000 ALTER TABLE `STOREHOUSE_MOVEMENT` ENABLE KEYS */;
+-- Dumping data for table favorit.STOREHOUSE_MOVEMENT_DOCUMENTS: ~0 rows (приблизно)
+/*!40000 ALTER TABLE `STOREHOUSE_MOVEMENT_DOCUMENTS` DISABLE KEYS */;
+/*!40000 ALTER TABLE `STOREHOUSE_MOVEMENT_DOCUMENTS` ENABLE KEYS */;
+
+
+-- Dumping structure for таблиця favorit.STOREHOUSE_MOVEMENT_ELEMENTS
+DROP TABLE IF EXISTS `STOREHOUSE_MOVEMENT_ELEMENTS`;
+CREATE TABLE IF NOT EXISTS `STOREHOUSE_MOVEMENT_ELEMENTS` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `comments` varchar(255) DEFAULT NULL,
+  `count` bigint(20) NOT NULL,
+  `created` bit(1) NOT NULL,
+  `serialNumber` varchar(255) DEFAULT NULL,
+  `units` int(11) DEFAULT NULL,
+  `movement_ID` bigint(20) DEFAULT NULL,
+  `nomenclature_ID` bigint(20) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FK_ds6aw2f3ia391yes9jscdihvm` (`movement_ID`),
+  KEY `FK_be4udmp1opm6i1sxangvgjgwu` (`nomenclature_ID`),
+  CONSTRAINT `FK_be4udmp1opm6i1sxangvgjgwu` FOREIGN KEY (`nomenclature_ID`) REFERENCES `NOMENCLATURE` (`id`),
+  CONSTRAINT `FK_ds6aw2f3ia391yes9jscdihvm` FOREIGN KEY (`movement_ID`) REFERENCES `STOREHOUSE_MOVEMENT` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- Dumping data for table favorit.STOREHOUSE_MOVEMENT_ELEMENTS: ~0 rows (приблизно)
+/*!40000 ALTER TABLE `STOREHOUSE_MOVEMENT_ELEMENTS` DISABLE KEYS */;
+/*!40000 ALTER TABLE `STOREHOUSE_MOVEMENT_ELEMENTS` ENABLE KEYS */;
 
 
 -- Dumping structure for таблиця favorit.TASKS
@@ -735,7 +824,7 @@ INSERT INTO `USERS` (`USER_ID`, `ENABLED`, `PASSWORD`, `USERNAME`, `versionId`, 
 	(1, b'1', '123', 'adminus', 0, 4),
 	(2, b'1', 'volmiko', 'volmiko', 0, 3),
 	(3, b'1', 'manenok', 'manenok', 2, 4),
-	(4, b'1', 'pass', 'admin', 0, 4);
+	(4, b'1', 'pass', 'admin', 3, 4);
 /*!40000 ALTER TABLE `USERS` ENABLE KEYS */;
 
 
@@ -750,7 +839,7 @@ CREATE TABLE IF NOT EXISTS `USERS_USER_ROLES` (
   CONSTRAINT `FK_kf2rdklx3gojnnhpig08yun6t` FOREIGN KEY (`USERS_USER_ID`) REFERENCES `USERS` (`USER_ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- Dumping data for table favorit.USERS_USER_ROLES: ~8 rows (приблизно)
+-- Dumping data for table favorit.USERS_USER_ROLES: ~11 rows (приблизно)
 /*!40000 ALTER TABLE `USERS_USER_ROLES` DISABLE KEYS */;
 INSERT INTO `USERS_USER_ROLES` (`USERS_USER_ID`, `userRoles_id`) VALUES
 	(4, 1),
@@ -760,6 +849,9 @@ INSERT INTO `USERS_USER_ROLES` (`USERS_USER_ID`, `userRoles_id`) VALUES
 	(4, 3),
 	(3, 4),
 	(4, 6),
+	(4, 8),
+	(4, 9),
+	(4, 10),
 	(4, 14);
 /*!40000 ALTER TABLE `USERS_USER_ROLES` ENABLE KEYS */;
 
@@ -772,7 +864,7 @@ CREATE TABLE IF NOT EXISTS `USER_ROLES` (
   `name` varchar(255) DEFAULT NULL,
   `version` bigint(20) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=utf8;
 
 -- Dumping data for table favorit.USER_ROLES: ~15 rows (приблизно)
 /*!40000 ALTER TABLE `USER_ROLES` DISABLE KEYS */;
@@ -791,7 +883,20 @@ INSERT INTO `USER_ROLES` (`id`, `description`, `name`, `version`) VALUES
 	(12, 'Создание информации о ремонтах', 'ROLE_REPAIR_ADD', 0),
 	(13, 'Изменение информации о ремонте', 'ROLE_REPAIR_MANAGE', 0),
 	(14, 'Просмотр информации о продуктах', 'ROLE_PRODUCT_VIEW', 0),
-	(15, 'Отправка сообщений', 'ROLE_MESSAGE_ADD', 0);
+	(15, 'Отправка сообщений', 'ROLE_MESSAGE_ADD', 0),
+	(16, 'Право просмотра запросов', 'ROLE_REQUEST_VIEW', 0),
+	(17, 'Право создания и редактирования запросов', 'ROLE_REQUEST_EDIT', 0),
+	(18, 'Право утверждения запросов на покупку', 'ROLE_SUBSCRIBE_REQUEST_PURCHASE', 0),
+	(19, 'Право утверждения запросов на отгрузку', 'ROLE_SUBSCRIBE_REQUEST_SHIPMENT', 0),
+	(20, 'Право утверждения запросов на производство', 'ROLE_SUBSCRIBE_REQUEST_PRODUCTION', 0),
+	(21, 'Право утверждения запросов на ремонт', 'ROLE_SUBSCRIBE_REQUEST_REPAIR', 0),
+	(22, 'Право утверждения получения на склад', 'ROLE_SUBSCRIBE_STOREHOUSE_ARRIVAL', 0),
+	(23, 'Право утверждения отгрузки со склада', 'ROLE_SUBSCRIBE_STOREHOUSE_SHIPMENT', 0),
+	(24, 'Право утверждения передачи между складами', 'ROLE_SUBSCRIBE_STOREHOUSE_MOVE', 0),
+	(25, 'Право утверждения производства', 'ROLE_SUBSCRIBE_STOREHOUSE_COMBINED', 0),
+	(26, 'Право утверждения утилизации', 'ROLE_SUBSCRIBE_STOREHOUSE_UTILIZATION', 0),
+	(27, 'Право утверждения забраковки', 'ROLE_SUBSCRIBE_STOREHOUSE_DEFECTIVE', 0),
+	(28, 'Право утверждения документов', 'ROLE_SUBSCRIBE_DOCUMENT', 0);
 /*!40000 ALTER TABLE `USER_ROLES` ENABLE KEYS */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;

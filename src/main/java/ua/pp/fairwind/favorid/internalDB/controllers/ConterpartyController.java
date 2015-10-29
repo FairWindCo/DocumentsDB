@@ -448,6 +448,61 @@ public class ConterpartyController {
         }
     }
 
+    @Transactional(readOnly = true)
+    @RequestMapping(value = "/showListAgreements", method = RequestMethod.GET)
+    @ResponseBody
+    public Object simpleAgrimentsList(@RequestParam(required = false) Integer page_num, @RequestParam(required = false) Integer per_page,@RequestParam(value = "pkey_val[]",required = false) String pkey,@RequestParam(value = "q_word[]",required = false) String[] qword,@RequestParam(required = false) Long counterpart_id) {
+        //Sort sort= FormSort.formSortFromSortDescription(orderby);
+        Sort sort=new Sort(Sort.Direction.ASC,"shortName");
+        PageRequest pager=null;
+        if(page_num!=null && per_page!=null) {
+            page_num= page_num<1?1:page_num;
+            pager = new PageRequest(page_num - 1, per_page, sort);
+        }
+        if(pager!=null) {
+            Page<Agreement> page;
+            if (qword != null && qword.length > 0) {
+                if(counterpart_id!=null) {
+                    page = agreementRepository.findAgreement(counterpart_id,qword[0], pager);
+                } else {
+                    page = agreementRepository.findAgreement(qword[0], pager);
+                }
+            } else {
+                if(counterpart_id!=null) {
+                    page = agreementRepository.findAgreement(counterpart_id,pager);
+                } else {
+                    page = agreementRepository.findAgreement(pager);
+                }
+            }
+            return new JSComboExpenseResp<>(page);
+        } else {
+            if(pkey!=null && !pkey.isEmpty()){
+                Long key=Long.valueOf(pkey);
+                Agreement ft=null;
+                if(key!=null) {
+                    ft = agreementRepository.findOne(key);
+                }
+                return ft;
+            } else {
+                List<Agreement> page;
+                if (qword != null && qword.length > 0) {
+                    if(counterpart_id!=null) {
+                        page = agreementRepository.findAgreement(counterpart_id,qword[0], sort);
+                    } else {
+                        page = agreementRepository.findAgreement(qword[0], sort);
+                    }
+                } else {
+                    if(counterpart_id!=null) {
+                        page = agreementRepository.findAgreement(counterpart_id,sort);
+                    } else {
+                        page = agreementRepository.findAgreement(sort);
+                    }
+                }
+                return new JSComboExpenseResp<>(page);
+            }
+        }
+    }
+
     @InitBinder
     private void dateBinder(WebDataBinder binder) {
         //The date format to parse or output your dates

@@ -21,6 +21,7 @@ public class CombinedTemplate {
     @JoinColumn(name = "nomenclature_type_id")
     NomenclatureTypes nomenclatureType;
     long count=1;
+    Units  units=Units.COUNT;
     @Version
     long version=0;
 
@@ -81,5 +82,13 @@ public class CombinedTemplate {
 
     public void setNomenclatureType(NomenclatureTypes nomenclatureType) {
         this.nomenclatureType = nomenclatureType;
+    }
+
+    public Units getUnits() {
+        return units;
+    }
+
+    public void setUnits(Units units) {
+        this.units = units;
     }
 }

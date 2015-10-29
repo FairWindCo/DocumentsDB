@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import ua.pp.fairwind.favorid.internalDB.model.Counterparty;
 import ua.pp.fairwind.favorid.internalDB.model.Person;
 import ua.pp.fairwind.favorid.internalDB.model.document.Document;
+import ua.pp.fairwind.favorid.internalDB.model.requests.Request;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -35,6 +36,10 @@ public class Movement {
     Storehouse toStorehouse;
     String requestNumber;
     String comments;
+
+    @ManyToOne
+    @JoinColumn(name = "request_ID")
+    Request request;
 
     @OneToMany(mappedBy = "movement")
     @JsonIgnore
@@ -204,4 +209,12 @@ public class Movement {
         return approvedDate!=null||approvedPerson!=null;
     }
 
+
+    public Request getRequest() {
+        return request;
+    }
+
+    public void setRequest(Request request) {
+        this.request = request;
+    }
 }

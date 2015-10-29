@@ -118,6 +118,10 @@ public class Nomenclature {
         return Collections.unmodifiableSet(nomenclatureTypes);
     }
 
+    public Set<CombinedTemplate> getTemplates() {
+        return Collections.unmodifiableSet(templates);
+    }
+
     public boolean isCombined() {
         return combined;
     }

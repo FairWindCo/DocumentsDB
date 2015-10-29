@@ -1,4 +1,4 @@
-package ua.pp.fairwind.favorid.internalDB.controllers;
+package ua.pp.fairwind.favorid.internalDB.controllers.directories;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -9,11 +9,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import ua.pp.fairwind.favorid.internalDB.jgrid.JGridRowsResponse;
 import ua.pp.fairwind.favorid.internalDB.jgrid.JSComboExpenseResp;
-import ua.pp.fairwind.favorid.internalDB.model.storehouses.NomenclatureTypes;
-import ua.pp.fairwind.favorid.internalDB.repository.NomenclatureTypeRepository;
+import ua.pp.fairwind.favorid.internalDB.model.directories.TaskType;
+import ua.pp.fairwind.favorid.internalDB.repository.TaskTypeRepository;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -22,24 +25,24 @@ import java.util.List;
 
 
 /**
- * Created by пїЅпїЅпїЅпїЅпїЅпїЅ on 07.10.2015.
+ * Created by Сергей on 07.10.2015.
  */
 @Controller
-@RequestMapping("/nomenclaturetypes")
-public class NomenclatureTypeController {
+@RequestMapping("/tasktypes")
+public class TaskTypeController {
     @Autowired
-    NomenclatureTypeRepository repositoryNomenclatureType;
+    TaskTypeRepository repositoryTaskType;
 
     @Secured("ROLE_USER")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     public String list(Model model) {
-        return "nomenclature_type_list";
+        return "task_type_list";
     }
 
     @Transactional(readOnly = true)
     @RequestMapping(value = "/listing", method = RequestMethod.POST)
     @ResponseBody
-    public JGridRowsResponse<NomenclatureTypes> getTable(HttpServletRequest request){
+    public JGridRowsResponse<TaskType> getTable(HttpServletRequest request){
         //Pegeable
         /*
         nd:1444413790954
@@ -71,46 +74,36 @@ public class NomenclatureTypeController {
         String filterName=request.getParameter("name");
         if(pageRequest!=null){
             if(filterName!=null && !filterName.isEmpty()){
-                return new JGridRowsResponse<NomenclatureTypes>(repositoryNomenclatureType.findByNameContains(filterName, pageRequest));
+                return new JGridRowsResponse<>(repositoryTaskType.findByNameContains(filterName, pageRequest));
             } else
-            return new JGridRowsResponse<NomenclatureTypes>(repositoryNomenclatureType.findAll(pageRequest));
+            return new JGridRowsResponse<>(repositoryTaskType.findAll(pageRequest));
         } else {
             if(filterName!=null && !filterName.isEmpty()){
-                return new JGridRowsResponse<NomenclatureTypes>(repositoryNomenclatureType.findByNameContains(filterName));
+                return new JGridRowsResponse<>(repositoryTaskType.findByNameContains(filterName));
             } else
-            return new JGridRowsResponse<NomenclatureTypes>(repositoryNomenclatureType.findAll());
+            return new JGridRowsResponse<>(repositoryTaskType.findAll());
         }
     }
 
-    @Transactional(readOnly = false)
-    @RequestMapping(value = "/add", method = RequestMethod.POST)
-    @ResponseBody
-    public String add(@ModelAttribute NomenclatureTypes nomenclatureType, BindingResult result){
-        if(result.hasErrors()){
-            return "ERROR:"+result.toString();
-        }
-        repositoryNomenclatureType.save(nomenclatureType);
-        return "Success";
-    }
 
     @Transactional(readOnly = false)
     @RequestMapping(value = "/edit", method = {RequestMethod.POST,RequestMethod.GET})
-    public void editor(@RequestParam String oper,NomenclatureTypes nomenclatureType,BindingResult result,HttpServletResponse response)throws IOException{
+    public void editor(@RequestParam String oper,TaskType taskType,BindingResult result,HttpServletResponse response)throws IOException{
         if(result.hasErrors()){
             response.sendError(400,result.toString());
             return;
         }
         switch (oper){
             case "add":
-                repositoryNomenclatureType.save(nomenclatureType);
+                repositoryTaskType.save(taskType);
                 response.setStatus(200);
                 break;
             case "edit":
-                NomenclatureTypes fromDB= repositoryNomenclatureType.getOne(nomenclatureType.getId());
+                TaskType fromDB= repositoryTaskType.getOne(taskType.getId());
                 if(fromDB!=null) {
-                    repositoryNomenclatureType.save(nomenclatureType);
-                    if(nomenclatureType.getVersion()>=fromDB.getVersion()) {
-                        repositoryNomenclatureType.save(nomenclatureType);
+                    repositoryTaskType.save(taskType);
+                    if(taskType.getVersion()>=fromDB.getVersion()) {
+                        repositoryTaskType.save(taskType);
                         response.setStatus(200);
                     } else {
                         response.sendError(406,"ANOTHER TRANSACTION MODIFICATION");
@@ -121,7 +114,7 @@ public class NomenclatureTypeController {
 
                 break;
             case "del":
-                repositoryNomenclatureType.delete(nomenclatureType.getId());
+                repositoryTaskType.delete(taskType.getId());
                 response.setStatus(200);
                 break;
             default:
@@ -132,37 +125,37 @@ public class NomenclatureTypeController {
     @Transactional(readOnly = true)
     @RequestMapping(value = "/showList", method = RequestMethod.GET)
     @ResponseBody
-    public Object simpleClientList(@RequestParam(required = false) Integer page_num, @RequestParam(required = false) Integer per_page,@RequestParam(value = "pkey_val[]",required = false) String pkey,@RequestParam(value = "q_word[]",required = false) String[] qword) {
+    public Object simpleClientList(@RequestParam(required = false) Integer page_num, @RequestParam(required = false) Integer per_page,@RequestParam(value = "pkey_val[]",required = false) String pkey,@RequestParam(value = "q_word[]",required = false) String[] qword,@RequestParam long firmID) {
         // Retrieve all persons by delegating the call to PersonService
         //Sort sort= FormSort.formSortFromSortDescription(orderby);
-        Sort sort=new Sort(Sort.Direction.ASC,"name");
+        Sort sort=new Sort(Sort.Direction.ASC,"surname");
         PageRequest pager=null;
         if(page_num!=null && per_page!=null) {
             page_num= page_num<1?1:page_num;
             pager = new PageRequest(page_num - 1, per_page, sort);
         }
         if(pager!=null) {
-            Page<NomenclatureTypes> page;
+            Page<TaskType> page;
             if (qword != null && qword.length > 0) {
-                page = repositoryNomenclatureType.findByNameContains(qword[0], pager);
+                page = repositoryTaskType.findByNameContains(qword[0], pager);
             } else {
-                page = repositoryNomenclatureType.findAll(pager);
+                page = repositoryTaskType.findAll(pager);
             }
             return new JSComboExpenseResp<>(page);
         } else {
             if(pkey!=null && !pkey.isEmpty()){
                 Long key=Long.valueOf(pkey);
-                NomenclatureTypes ft=null;
+                TaskType ft=null;
                 if(key!=null) {
-                    ft = repositoryNomenclatureType.findOne(key);
+                    ft = repositoryTaskType.findOne(key);
                 }
                 return ft;
             } else {
-                List<NomenclatureTypes> page;
+                List<TaskType> page;
                 if (qword != null && qword.length > 0) {
-                    page = repositoryNomenclatureType.findByNameContains(qword[0],sort);
+                    page = repositoryTaskType.findByNameContains(qword[0],sort);
                 } else {
-                    page = repositoryNomenclatureType.findAll(sort);
+                    page = repositoryTaskType.findAll(sort);
                 }
                 return new JSComboExpenseResp<>(page);
             }
