@@ -233,7 +233,7 @@ public class NomenlatureController {
             if (qword != null && qword.length > 0) {
                 page = nomenclatureRepository.findCreated(qword[0], pager);
             } else {
-                page = nomenclatureRepository.findCreated(pager);
+                page = nomenclatureRepository.findByCombined(true, pager);
             }
             return new JSComboExpenseResp<>(page);
         } else {
@@ -249,7 +249,7 @@ public class NomenlatureController {
                 if (qword != null && qword.length > 0) {
                     page = nomenclatureRepository.findCreated(qword[0], sort);
                 } else {
-                    page = nomenclatureRepository.findCreated(sort);
+                    page = nomenclatureRepository.findByCombined(true, sort);
                 }
                 return new JSComboExpenseResp<>(page);
             }
@@ -273,7 +273,7 @@ public class NomenlatureController {
             if (qword != null && qword.length > 0) {
                 page = nomenclatureRepository.findArrival(qword[0], pager);
             } else {
-                page = nomenclatureRepository.findArrival(pager);
+                page = nomenclatureRepository.findByCombined(false,pager);
             }
             return new JSComboExpenseResp<>(page);
         } else {
@@ -289,7 +289,7 @@ public class NomenlatureController {
                 if (qword != null && qword.length > 0) {
                     page = nomenclatureRepository.findArrival(qword[0], sort);
                 } else {
-                    page = nomenclatureRepository.findArrival(sort);
+                    page = nomenclatureRepository.findByCombined(false,sort);
                 }
                 return new JSComboExpenseResp<>(page);
             }

@@ -33,7 +33,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Created by Сергей on 19.10.2015.
+ * Created by пїЅпїЅпїЅпїЅпїЅпїЅ on 19.10.2015.
  */
 @Controller
 @RequestMapping("/requests")
@@ -53,6 +53,20 @@ public class RequestController {
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public String list(Model model) {
         return "requests/request_list";
+    }
+
+    @Secured("ROLE_USER")
+    @RequestMapping(value = "/detail", method = RequestMethod.GET)
+    public String list(Model model,@RequestParam long id) throws IOException {
+        Request request=requestRepository.findOne(id);
+        if(request==null) {
+            return "error404";
+        }
+        //Set<RequestItems> items=request.getItems();
+        //model.addAttribute("itemsObject",items);
+        model.addAttribute("requestObject",request);
+
+        return "requests/request_detail";
     }
 
     @Secured("ROLE_USER")
@@ -300,12 +314,31 @@ public class RequestController {
             response.sendError(404, "REQUEST NOT FOUND!");
             return;
         }
-        if (request.isExecuted() || request.getApprovedPerson() != null) {
+        if (request.isSubscribed() || request.getApprovedPerson() != null) {
             response.sendError(403, "FORBIDDEN!");
             return;
         }
         request.setApprovedDate(new Date());
         request.setApprovedPerson(userDetail.getUserPerson());
+        requestRepository.save(request);
+    }
+
+    @Transactional(readOnly = false)
+    @RequestMapping(value = "/commite", method = {RequestMethod.POST,RequestMethod.GET})
+    public void commite(@RequestParam long id,HttpServletResponse response)throws IOException {
+        UserDetailsAdapter userDetail=(UserDetailsAdapter) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Request request = requestRepository.findOne(id);
+        if (request == null) {
+            response.sendError(404, "REQUEST NOT FOUND!");
+            return;
+        }
+        if (request.isExecuted() || request.getApprovedPerson() != null) {
+            response.sendError(403, "FORBIDDEN!");
+            return;
+        }
+        request.setExecuted(true);
+        request.setExecutedDate(new Date());
+        request.setExecutedPerson(userDetail.getUserPerson());
         requestRepository.save(request);
     }
 

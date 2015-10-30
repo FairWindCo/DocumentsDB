@@ -25,7 +25,7 @@
 <div id="page-wrapper">
     <ol class="breadcrumb">
         <li><a href="${pageContext.request.contextPath}/"><c:message code="label.main"/></a></li>
-        <li><a href="#"><c:message code="label.requests.operation.purchase"/></a></li>
+        <li><a href="#"><c:message code="label.requests"/></a></li>
     </ol>
     <div class="row">
 
@@ -72,24 +72,26 @@
         };
 
         $("#grid").jqGrid({
-            url:'${pageContext.request.contextPath}/requests/listing_type?type=0',
+            url:'${pageContext.request.contextPath}/requests/listing',
             editurl:'${pageContext.request.contextPath}/requests/edit',
             datatype: 'json',
             mtype: 'POST',
             styleUI : 'Bootstrap',
             colModel:[
-                {name: "act1", width: 20,label:'&nbsp', editable:false,search:false,
-                    formatter:fairwind_subscribe_create('/requests/subscribe'),
-                },
-                {name: "act2", width: 20,label:'&nbsp', editable:false,search:false,
-                    formatter:fairwind_commite_create('/requests/commite'),
-                },
-                {name: "act3", width: 20,label:'&nbsp', editable:false,search:false,
-                    formatter:fairwind_detail_create('/requests/detail'),
-                },
+                {name: "act", width: 20,label:'', editable:false,search:false},
                 {name:'id',index:'id', width:55, editable:false, editoptions:{readonly:true, size:10}, hidden:true,label:'<c:message code="label.id"/>'},
-                {name:'typeRequest',index:'typeRequest', width:100, editable:true, editrules:{required:true}, hidden:true, search:false,edittype:'text',label:'<c:message code="label.requests.type"/>',
-                    editoptions:{defaultValue:2},
+                {name:'typeRequest',index:'typeRequest', width:100, editable:true, editrules:{required:true}, search:true,edittype:'select',label:'<c:message code="label.requests.type"/>',
+                    editoptions:{value:{0:'<c:message code="label.PURCHASE"/>',
+                        1:'<c:message code="label.RSHIPMENT"/>',
+                        2:'<c:message code="label.PRODUCTION"/>',
+                        3:'<c:message code="label.REPAIR"/>',
+                    },
+                        dataEvents: [
+                            { type: 'click', data: { i: 7 }, fn: function(e) {
+                                select_object.documentType_key=e.currentTarget.value;
+                            } },
+                        ]
+                    }
                 },
                 fairwind_select_column('counterparty','/counterparts/showList','<c:message code="label.requests.counterparty"/>',select_object,{
                     show_field:'shortName'
@@ -101,30 +103,52 @@
                 {name:'responsiblePerson',index:'responsiblePerson', width:100, editable:false, editrules:{required:false}, search:false,label:'<c:message code="label.storehouse.responsiblePerson"/>',jsonmap:'responsiblePerson.surname'},
                 {name:'comments',index:'comments', width:100, editable:true, editrules:{required:false}, search:false,edittype:'textarea',label:'<c:message code="label.storehouse.comments"/>'},
                 {name:'version',index:'version', width:100, editable:true, editrules:{readonly:true}, editoptions:{defaultValue:'0'}, hidden:true,label:'<c:message code="label.version"/>'},
-                {name:'subscribed',editable:false, hidden:true},
-                {name:'canSubscribe',editable:false, hidden:true},
-                {name:'canCommite',editable:false, hidden:true},
             ],
             rowNum:10,
             rowList:[10,20,40,60],
             height: 240,
             autowidth: true,
-            rownumbers: false,
+            rownumbers: true,
             pager: '#pager',
             sortname: 'id',
             viewrecords: true,
             sortorder: "asc",
-            caption:"<c:message code="label.requests.view"/>",
+            caption:"<c:message code="label.storehouse.view"/>",
             emptyrecords: "<c:message code="label.emptyrecords"/>",
             loadonce: false,
-            loadComplete: function() {},
+            loadComplete: function() {
+                var grid = $(this),
+                        iCol = getColumnIndexByName(grid,'act'); // 'act' - name of the actions column
+                grid.children("tbody")
+                        .children("tr.jqgrow")
+                        .children("td:nth-child("+(iCol+1)+")")
+                        .each(function() {
+                            $("<div>",
+                                    {
+                                        title: "Custom",
+                                        mouseover: function() {
+                                            $(this).addClass('ui-state-hover');
+                                        },
+                                        mouseout: function() {
+                                            $(this).removeClass('ui-state-hover');
+                                        },
+                                        click: function(e) {
+                                            alert("'Custom' button is clicked in the rowis="+
+                                                    $(e.target).closest("tr.jqgrow").attr("id") +" !");
+                                        }
+                                    }
+                            ).css({"margin-left": "5px", float:"left"})
+                                    .addClass("ui-pg-div ui-inline-custom")
+                                    .append('<span class="ui-icon ui-icon-document"></span>')
+                                    .appendTo($(this));
+                        });
+            },
             jsonReader : {
                 root: "rows",
                 page: "page",
                 total: "total",
                 records: "records",
                 repeatitems: false,
-                //userdata:"rows", установка для записи в userdata копии всех данных
                 cell: "cell",
                 id: "id"
             },
@@ -146,21 +170,6 @@
                         return sub_select_obj.nomenclature_id;
                     }
                 }
-                //GET USERDATA JSON
-                //var global_user=jQuery("#grid").getGridParam("userData");
-                //GET local data if set localdata
-                //var global_object=jQuery("#grid").jqGrid('getGridParam', 'data');
-                //get all rowdata (но не полные данные от json
-                //var grid_array=jQuery("#grid").jqGrid("getRowData");
-                var parent_data=jQuery("#grid").jqGrid("getRowData",row_id);
-                var can_edit=true;
-                if(parent_data!==undefined && parent_data!==null){
-                    if(parent_data.subscribed!==undefined && parent_data.subscribed!==null){
-                        if($.parseJSON(parent_data.subscribed)) {
-                            can_edit =false;
-                        }
-                    }
-                }
 
                 subgrid_table_id = subgrid_id+"_t";
                 subgrid_pager_id = subgrid_id+"_p"
@@ -180,21 +189,21 @@
                         {name:'id',index:'id', width:50, editable:false, editoptions:{readonly:true, size:10}, hidden:true,label:'<c:message code="label.id"/>'},
                         {name:'nomenclature',index:'nomenclature',jsonmap:'nomenclature.code', width:70, editable:false, search:true,label:'<c:message code="label.nomenclature.template.code"/>'},
                         //{name:'nomenclature',index:'nomenclature', width:500, editable:false, search:true,label:'<c:message code="label.nomenclature.template.name"/>'},
-                        fairwind_select_column('nomenclature','/nomenclature/showArrival','<c:message code="label.requests.nomenclature"/>',select_object),
+                        fairwind_select_column('nomenclature','/nomenclature/showList','<c:message code="label.requests.nomenclature"/>',select_object),
                         {name:'nomenclature',index:'nomenclature',jsonmap:'nomenclature.manufacturer', width:100, editable:false, search:true,label:'<c:message code="label.nomenclature.template.manufactured"/>'},
                         {name:'count',index:'count', width:30, editable:true, editrules:{required:true}, editoptions:{defaultValue:'1'},search:false,label:'<c:message code="label.nomenclature.template.count"/>'},
                         {name:'units',index:'units', width:50, editable:true, editrules:{required:true}, search:true,edittype:'select',label:'<c:message code="label.requests.type"/>',
                             editoptions:{
                                 defaultValue:3,
                                 value:{
-                                    0:'<c:message code="label.KILOGRAMS"/>',
-                                    1:'<c:message code="label.GRAMS"/>',
-                                    2:'<c:message code="label.TONS"/>',
-                                    3:'<c:message code="label.COUNT"/>',
-                                    4:'<c:message code="label.LITRES"/>',
-                                    5:'<c:message code="label.MILLILITRES"/>',
-                                    6:'<c:message code="label.METERS"/>',
-                                    7:'<c:message code="label.MILLIMETERS"/>',
+                                0:'<c:message code="label.KILOGRAMS"/>',
+                                1:'<c:message code="label.GRAMS"/>',
+                                2:'<c:message code="label.TONS"/>',
+                                3:'<c:message code="label.COUNT"/>',
+                                4:'<c:message code="label.LITRES"/>',
+                                5:'<c:message code="label.MILLILITRES"/>',
+                                6:'<c:message code="label.METERS"/>',
+                                7:'<c:message code="label.MILLIMETERS"/>',
                                 },
                             }
                         },
@@ -207,19 +216,19 @@
                     sortorder: "asc"
                 });
                 $("#"+subgrid_table_id).jqGrid('navGrid','#'+subgrid_pager_id,
-                        {edit:can_edit, add:can_edit, del:can_edit, search:false},
+                        {edit:true, add:true, del:true, search:false},
                         {/*MOD PARAM*/
                             editData:subGrisData,
-                            closeAfterEdit: true,
+                                    closeAfterEdit: true,
                         },
                         {/*ADD PARAM*/
                             editData:subGrisData,
-                            closeOnEscape: true,
-                            closeAfterAdd: true,
-                            serializeEditData:function (data) {
-                                if(data.id=="_empty")data.id=null;
-                                return data;
-                            }
+                                    closeOnEscape: true,
+                                closeAfterAdd: true,
+                                serializeEditData:function (data) {
+                                    if(data.id=="_empty")data.id=null;
+                                        return data;
+                                }
                         }
 
                 );
@@ -259,6 +268,28 @@
         );
 
         jQuery("#grid").jqGrid('filterToolbar',{stringResult: false,searchOnEnter:true});
+
+        /*
+         jQuery("#test").ajaxComboBox('${pageContext.request.contextPath}/persons/showList?firmID=1',
+         {lang: 'en',
+         db_table: 'nation',
+         per_page: 20,
+         navi_num: 10,
+         sub_info: true,
+         select_only: true,
+         primary_key: 'id',
+         field:'surname',
+         show_field: 'surname',
+         search_field: 'surname',
+         button_img:'${pageContext.request.contextPath}/resources/images/btn.png',
+         init_record: [1],
+         sub_as: {
+         surname: 'surname',
+         middleName: 'middleName',
+         firstName:'firstName'
+         }
+         });
+         /**/
     });
 </script>
 </html>

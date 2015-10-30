@@ -21,24 +21,145 @@
 </style>
 
 <script>
-  var select_object={};
+    function fairwind_check_boolean(value){
+        if(value===undefined || value===null) return false;
+        if(value==='true'|value==='TRUE') return true;
+        if(value==='false'|value==='FALSE') return false;
+        return value.valueOf()&true;
+    }
 
-  create_select_column=function(fieldname,url_short_path,label,sendObject,options){
-     var _option={
-         post_element_name:fieldname+'_id',
-         post_internal_field:fieldname+'_id',
-         select_object:select_object,
-     }
-     _option= $.extend(_option,options);
-
-     if(sendObject[_option.post_element_name]===null && sendObject[_option.post_element_name]===undefined){
-         sendObject[_option.post_element_name]=function(){
-             return _option.select_object[_option.post_internal_field];
-         }
-     }
-
-      return fairwind_select_column(fieldname,url_short_path,label,_option.select_object,_option);
+  function fairwind_subscribe_click_handler(event,id,url,elemtn){
+        event = event || window.event;
+        if(url!==null && url!==undefined && id!==null && id!==undefined){
+            $.ajax(url,{
+                data:{
+                    id:id
+                },
+                method:'POST',
+                success:function(data,status,jqXHR){
+                    $(elemtn).html='<div class="panel center-block bg-success" style="height: 100%;text-align: center;"><span class="glyphicon glyphicon-flag" style="position: relative;top: 0;transform: translateY(50%);"></span></div>';
+                },
+                error:function(jqXHR,status,errorThrown){
+                    alert(errorThrown);
+                }
+            })
+        }
+        //alert('ID='+id+' URL:'+url);
   }
+  function fairwind_commite_click_handler(event,id,url,elemtn){
+      event = event || window.event;
+      if(url!==null && url!==undefined && id!==null && id!==undefined){
+          $.ajax(url,{
+              data:{
+                  id:id
+              },
+              method:'POST',
+              success:function(data,status,jqXHR){
+                  $(elemtn).html='<div class="panel center-block bg-success" style="height: 100%;text-align: center;"><span class="glyphicon glyphicon-check" style="position: relative;top: 0;transform: translateY(50%);"></span></div>';
+              },
+              error:function(jqXHR,status,errorThrown){
+                  alert(errorThrown);
+              }
+          })
+      }
+      //alert('ID='+id+' URL:'+url);
+  }
+  function fairwind_detail_click_handler(event,id,url,elemtn){
+      event = event || window.event;
+      if(url!==null && url!==undefined && id!==null && id!==undefined){
+          $.ajax(url,{
+              data:{
+                  id:id
+              },
+              method:'GET',
+              success:function(data,status,jqXHR){
+                  var dd=$("<div/>");
+                  var content=$("<div/>");
+                  content.html(data);
+                  content.appendTo(dd);
+                  dd.dialog({
+                      modal:true,
+                      closeOnEscape: true,
+                      autoResize:true,
+                      height:'auto',
+                      width:'auto',
+                  }).dialog('open');
+              },
+              error:function(jqXHR,status,errorThrown){
+                  alert(errorThrown);
+              }
+          })
+      }
+      //alert('ID='+id+' URL:'+url);
+  }
+  function fairwind_subscribe_create(url_short_path,options){
+      var url='${pageContext.request.contextPath}'+url_short_path;
+
+      var fairwind_subscribe=function(cellvalue, options, rowObject ){
+          if(rowObject.subscribed!==null && rowObject.subscribed!==undefined){
+              if(rowObject.subscribed){
+                  return '<div class="panel center-block bg-success" style="height: 100%;text-align: center;"><span class="glyphicon glyphicon-flag" style="position: relative;top: 0;transform: translateY(50%);"></span></div>';
+              }
+          }
+
+
+
+          if(rowObject.canSubscribe!==null && rowObject.canSubscribe!==undefined){
+              if(fairwind_check_boolean(rowObject.canSubscribe)){
+                  var element=$('<div onclick="fairwind_subscribe_click_handler(event,'+rowObject.id+',\''+url+'\',this)" ' +
+                          'class="btn btn-success" pkey='+rowObject.id+' style="height: 100%;text-align: center;">>' +
+                          '<span class="glyphicon glyphicon-pencil"></span>' +
+                          '</div>');
+                  return element[0].outerHTML;
+              }
+          }
+
+          return '<div class="panel" style="height: 100%;text-align: center;"><span class="glyphicon glyphicon-lock" style="position: relative;top: 0;transform: translateY(50%);"></span></div>';
+      }
+
+      return fairwind_subscribe;
+  }
+  function fairwind_commite_create(url_short_path,options){
+      var url='${pageContext.request.contextPath}'+url_short_path;
+
+      var fairwind_subscribe=function(cellvalue, options, rowObject ){
+          if(rowObject.executed!==null && rowObject.executed!==undefined){
+              if(rowObject.executed){
+                  return '<div class="panel center-block bg-success" style="height: 100%;text-align: center;"><span class="glyphicon glyphicon-check" style="position: relative;top: 0;transform: translateY(50%);"></span></div>';
+              }
+          }
+
+          if(rowObject.canCommite!==null && rowObject.canCommite!==undefined){
+              if(fairwind_check_boolean(rowObject.canCommite)){
+                  var element=$('<div onclick="fairwind_commite_click_handler(event,'+rowObject.id+',\''+url+'\',this)" ' +
+                          'class="btn btn-success" pkey='+rowObject.id+' >' +
+                          '<span class="glyphicon glyphicon-edit"></span>' +
+                          '</div>');
+
+                  return element[0].outerHTML;
+              }
+          }
+          return '<div class="panel" style="height: 100%;text-align: center;"><span class="glyphicon glyphicon-remove-sign" style="position: relative;top: 0;transform: translateY(50%);"></span></div>';
+
+      }
+
+      return fairwind_subscribe;
+  }
+  function fairwind_detail_create(url_short_path,options){
+      var url='${pageContext.request.contextPath}'+url_short_path;
+
+      var fairwind_subscribe=function(cellvalue, options, rowObject ){
+          var element=$('<div onclick="fairwind_detail_click_handler(event,'+rowObject.id+',\''+url+'\',this)" ' +
+                  'class="btn btn-default" pkey='+rowObject.id+' >' +
+                  '<span class="glyphicon glyphicon-open"></span>' +
+                  '</div>');
+          return element[0].outerHTML;
+      }
+
+      return fairwind_subscribe;
+  }
+
+
 
   var fairwind_select_column=function(fieldname,url_short_path,label,modification_object,options){
     var _def_param = {

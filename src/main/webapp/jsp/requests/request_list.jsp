@@ -52,16 +52,6 @@
 </body>
 <script type="text/javascript">
     $(document).ready(function () {
-        var getColumnIndexByName = function(grid,columnName) {
-            var cm = grid.jqGrid('getGridParam','colModel'), i=0,l=cm.length;
-            for (; i<l; i+=1) {
-                if (cm[i].name===columnName) {
-                    return i; // return the index
-                }
-            }
-            return -1;
-        };
-
         var select_object={
 
         }
@@ -78,7 +68,15 @@
             mtype: 'POST',
             styleUI : 'Bootstrap',
             colModel:[
-                {name: "act", width: 20,label:'', editable:false,search:false},
+                {name: "act1", width: 20,label:'&nbsp', editable:false,search:false,
+                    formatter:fairwind_subscribe_create('/requests/subscribe'),
+                },
+                {name: "act2", width: 20,label:'&nbsp', editable:false,search:false,
+                    formatter:fairwind_commite_create('/requests/subscribe'),
+                },
+                {name: "act3", width: 20,label:'&nbsp', editable:false,search:false,
+                    formatter:fairwind_detail_create('/requests/detail'),
+                },
                 {name:'id',index:'id', width:55, editable:false, editoptions:{readonly:true, size:10}, hidden:true,label:'<c:message code="label.id"/>'},
                 {name:'typeRequest',index:'typeRequest', width:100, editable:true, editrules:{required:true}, search:true,edittype:'select',label:'<c:message code="label.requests.type"/>',
                     editoptions:{value:{0:'<c:message code="label.PURCHASE"/>',
@@ -103,6 +101,9 @@
                 {name:'responsiblePerson',index:'responsiblePerson', width:100, editable:false, editrules:{required:false}, search:false,label:'<c:message code="label.storehouse.responsiblePerson"/>',jsonmap:'responsiblePerson.surname'},
                 {name:'comments',index:'comments', width:100, editable:true, editrules:{required:false}, search:false,edittype:'textarea',label:'<c:message code="label.storehouse.comments"/>'},
                 {name:'version',index:'version', width:100, editable:true, editrules:{readonly:true}, editoptions:{defaultValue:'0'}, hidden:true,label:'<c:message code="label.version"/>'},
+                {name:'subscribed',editable:false, hidden:true},
+                {name:'canSubscribe',editable:false, hidden:true},
+                {name:'canCommite',editable:false, hidden:true},
             ],
             rowNum:10,
             rowList:[10,20,40,60],
@@ -116,33 +117,7 @@
             caption:"<c:message code="label.storehouse.view"/>",
             emptyrecords: "<c:message code="label.emptyrecords"/>",
             loadonce: false,
-            loadComplete: function() {
-                var grid = $(this),
-                        iCol = getColumnIndexByName(grid,'act'); // 'act' - name of the actions column
-                grid.children("tbody")
-                        .children("tr.jqgrow")
-                        .children("td:nth-child("+(iCol+1)+")")
-                        .each(function() {
-                            $("<div>",
-                                    {
-                                        title: "Custom",
-                                        mouseover: function() {
-                                            $(this).addClass('ui-state-hover');
-                                        },
-                                        mouseout: function() {
-                                            $(this).removeClass('ui-state-hover');
-                                        },
-                                        click: function(e) {
-                                            alert("'Custom' button is clicked in the rowis="+
-                                                    $(e.target).closest("tr.jqgrow").attr("id") +" !");
-                                        }
-                                    }
-                            ).css({"margin-left": "5px", float:"left"})
-                                    .addClass("ui-pg-div ui-inline-custom")
-                                    .append('<span class="ui-icon ui-icon-document"></span>')
-                                    .appendTo($(this));
-                        });
-            },
+            loadComplete: function() {},
             jsonReader : {
                 root: "rows",
                 page: "page",
@@ -168,6 +143,16 @@
                 var subGrisData={
                     'nomenclature_id':function(){
                         return sub_select_obj.nomenclature_id;
+                    }
+                }
+
+                var parent_data=jQuery("#grid").jqGrid("getRowData",row_id);
+                var can_edit=true;
+                if(parent_data!==undefined && parent_data!==null){
+                    if(parent_data.subscribed!==undefined && parent_data.subscribed!==null){
+                        if($.parseJSON(parent_data.subscribed)) {
+                            can_edit =false;
+                        }
                     }
                 }
 
@@ -216,7 +201,7 @@
                     sortorder: "asc"
                 });
                 $("#"+subgrid_table_id).jqGrid('navGrid','#'+subgrid_pager_id,
-                        {edit:true, add:true, del:true, search:false},
+                        {edit:can_edit, add:can_edit, del:can_edit, search:false},
                         {/*MOD PARAM*/
                             editData:subGrisData,
                                     closeAfterEdit: true,

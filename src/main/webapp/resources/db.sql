@@ -472,7 +472,7 @@ CREATE TABLE IF NOT EXISTS `PERSONS` (
   CONSTRAINT `FK_9ds67nmiw9hlmmmtx4tkj5x89` FOREIGN KEY (`counterparty_id`) REFERENCES `Counterparty` (`id`),
   CONSTRAINT `FK_b4n40d61hy8serxe0bwliy5ao` FOREIGN KEY (`head_of_id`) REFERENCES `PERSONS` (`id`),
   CONSTRAINT `FK_r1igp630q3rvmkqyixl87tppu` FOREIGN KEY (`position_id`) REFERENCES `POSITIONS` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
 
 -- Dumping data for table favorit.PERSONS: ~4 rows (приблизно)
 /*!40000 ALTER TABLE `PERSONS` DISABLE KEYS */;
@@ -480,7 +480,11 @@ INSERT INTO `PERSONS` (`id`, `comments`, `date_of_birth`, `first_name`, `middle_
 	(1, NULL, NULL, 'Лариса', 'Ивановна', 'Бернадина', 0, 1, NULL, 1),
 	(2, NULL, NULL, 'Сергей', 'Владимирович', 'Недеря', 0, 1, 1, 2),
 	(3, NULL, NULL, 'Владимир', 'Михайлович', 'Коротенко', 0, 1, 2, 3),
-	(4, NULL, NULL, 'Сергей', 'Юрьевич', 'Маненок', 0, 1, 2, NULL);
+	(4, NULL, NULL, 'Сергей', 'Юрьевич', 'Маненок', 0, 1, 2, NULL),
+	(5, NULL, NULL, 'Николай', 'Владимирович', 'Стрильчук', 0, 1, 3, 7),
+	(6, NULL, NULL, 'Григорий', 'Андреевич', 'Поляк', 0, 1, 5, 8),
+	(7, NULL, NULL, 'Александр', 'Петрович', 'Кочетов', 0, 1, 5, 9),
+	(8, NULL, NULL, 'Алексей', 'Александрович', 'Кочетов', 0, 1, NULL, NULL);
 /*!40000 ALTER TABLE `PERSONS` ENABLE KEYS */;
 
 
@@ -507,7 +511,7 @@ CREATE TABLE IF NOT EXISTS `POSITIONS` (
   `name` varchar(255) DEFAULT NULL,
   `version` bigint(20) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;
 
 -- Dumping data for table favorit.POSITIONS: ~6 rows (приблизно)
 /*!40000 ALTER TABLE `POSITIONS` DISABLE KEYS */;
@@ -517,7 +521,14 @@ INSERT INTO `POSITIONS` (`id`, `name`, `version`) VALUES
 	(3, 'Начальник НЦТ (Научно-Технического Центра)', 0),
 	(4, 'ИТ инженер', 0),
 	(5, 'Офис менеджер', 0),
-	(6, 'Констркутор', 0);
+	(6, 'Констркутор', 0),
+	(7, 'Главный инженер', 0),
+	(8, 'Начальник проектно-конструкторского отдела', 0),
+	(9, 'Начальник производственного отдела', 0),
+	(10, 'Начальник отдела технического контроля', 0),
+	(11, 'Кладовщик', 0),
+	(12, 'Сервис инженер', 0),
+	(13, 'Начальник участка технческой документации', 0);
 /*!40000 ALTER TABLE `POSITIONS` ENABLE KEYS */;
 
 
@@ -615,42 +626,32 @@ CREATE TABLE IF NOT EXISTS `REQUESTS` (
   `counterparty_id` bigint(20) DEFAULT NULL,
   `parent_request_ID` bigint(20) DEFAULT NULL,
   `responsible_person_ID` bigint(20) DEFAULT NULL,
+  `executedDate` datetime DEFAULT NULL,
+  `executed_person_ID` bigint(20) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_oce0k03fl0ahjmsg6xlxb08mb` (`agreement_ID`),
   KEY `FK_lpitk89d0cr1h200ro5bjw8rd` (`approved_person_ID`),
   KEY `FK_1bfckrsfpb3qw9phfovysod9` (`counterparty_id`),
   KEY `FK_axxkk2jgi3xle3sbx4n4bt7kd` (`parent_request_ID`),
   KEY `FK_3p6f98e6drxjxuvmkyjklexhe` (`responsible_person_ID`),
-  CONSTRAINT `FK_3p6f98e6drxjxuvmkyjklexhe` FOREIGN KEY (`responsible_person_ID`) REFERENCES `PERSONS` (`id`),
+  KEY `FK_enrk09bd7dceoievmt0924h3y` (`executed_person_ID`),
+  CONSTRAINT `FK_enrk09bd7dceoievmt0924h3y` FOREIGN KEY (`executed_person_ID`) REFERENCES `PERSONS` (`id`),
   CONSTRAINT `FK_1bfckrsfpb3qw9phfovysod9` FOREIGN KEY (`counterparty_id`) REFERENCES `Counterparty` (`id`),
+  CONSTRAINT `FK_3p6f98e6drxjxuvmkyjklexhe` FOREIGN KEY (`responsible_person_ID`) REFERENCES `PERSONS` (`id`),
   CONSTRAINT `FK_axxkk2jgi3xle3sbx4n4bt7kd` FOREIGN KEY (`parent_request_ID`) REFERENCES `REQUESTS` (`id`),
   CONSTRAINT `FK_lpitk89d0cr1h200ro5bjw8rd` FOREIGN KEY (`approved_person_ID`) REFERENCES `PERSONS` (`id`),
   CONSTRAINT `FK_oce0k03fl0ahjmsg6xlxb08mb` FOREIGN KEY (`agreement_ID`) REFERENCES `AGREEMENTS` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 
--- Dumping data for table favorit.REQUESTS: ~3 rows (приблизно)
+-- Dumping data for table favorit.REQUESTS: ~5 rows (приблизно)
 /*!40000 ALTER TABLE `REQUESTS` DISABLE KEYS */;
-INSERT INTO `REQUESTS` (`id`, `approvedDate`, `comments`, `executed`, `operationDate`, `typeRequest`, `version`, `agreement_ID`, `approved_person_ID`, `counterparty_id`, `parent_request_ID`, `responsible_person_ID`) VALUES
-	(1, NULL, 'dfbgfdgbfd', b'0', '2015-10-29 15:44:11', 0, 0, NULL, NULL, 2, NULL, 4),
-	(2, NULL, 'fcwewe', b'0', '2015-10-29 16:40:02', 0, 2, 1, NULL, 2, NULL, 4),
-	(3, NULL, 'fddfgdf', b'0', '2015-10-29 16:01:09', 0, 0, 1, NULL, 2, NULL, 4);
+INSERT INTO `REQUESTS` (`id`, `approvedDate`, `comments`, `executed`, `operationDate`, `typeRequest`, `version`, `agreement_ID`, `approved_person_ID`, `counterparty_id`, `parent_request_ID`, `responsible_person_ID`, `executedDate`, `executed_person_ID`) VALUES
+	(1, NULL, 'dfbgfdgbfd', b'0', '2015-10-29 15:44:11', 0, 0, NULL, NULL, 2, NULL, 4, NULL, NULL),
+	(2, NULL, 'fcwewe', b'0', '2015-10-29 16:40:02', 0, 2, 1, NULL, 2, NULL, 4, NULL, NULL),
+	(3, NULL, 'fddfgdf', b'0', '2015-10-29 16:01:09', 0, 0, 1, NULL, 2, NULL, 4, NULL, NULL),
+	(4, NULL, 'разработка прототипа', b'0', '2015-10-30 08:16:39', 0, 0, 1, NULL, 2, NULL, 2, NULL, NULL),
+	(5, '2015-10-30 11:04:31', 'wwef', b'0', '2015-10-30 08:20:25', 2, 1, 1, 4, 2, NULL, 2, NULL, NULL);
 /*!40000 ALTER TABLE `REQUESTS` ENABLE KEYS */;
-
-
--- Dumping structure for таблиця favorit.REQUESTS_REQUEST_ITEMS
-DROP TABLE IF EXISTS `REQUESTS_REQUEST_ITEMS`;
-CREATE TABLE IF NOT EXISTS `REQUESTS_REQUEST_ITEMS` (
-  `REQUESTS_id` bigint(20) NOT NULL,
-  `items_id` bigint(20) NOT NULL,
-  PRIMARY KEY (`REQUESTS_id`,`items_id`),
-  UNIQUE KEY `UK_slvwk7h7i84pqqaee898c6eci` (`items_id`),
-  CONSTRAINT `FK_glybkleaxl2ed4bm9ogg16gpp` FOREIGN KEY (`REQUESTS_id`) REFERENCES `REQUESTS` (`id`),
-  CONSTRAINT `FK_slvwk7h7i84pqqaee898c6eci` FOREIGN KEY (`items_id`) REFERENCES `REQUEST_ITEMS` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- Dumping data for table favorit.REQUESTS_REQUEST_ITEMS: ~0 rows (приблизно)
-/*!40000 ALTER TABLE `REQUESTS_REQUEST_ITEMS` DISABLE KEYS */;
-/*!40000 ALTER TABLE `REQUESTS_REQUEST_ITEMS` ENABLE KEYS */;
 
 
 -- Dumping structure for таблиця favorit.REQUEST_ITEMS
@@ -668,10 +669,16 @@ CREATE TABLE IF NOT EXISTS `REQUEST_ITEMS` (
   KEY `FK_9jhkdmtk4c031yeatvrxl144x` (`request_ID`),
   CONSTRAINT `FK_9jhkdmtk4c031yeatvrxl144x` FOREIGN KEY (`request_ID`) REFERENCES `REQUESTS` (`id`),
   CONSTRAINT `FK_jbfxctdwykidihx3rqx3pf771` FOREIGN KEY (`nomenclature_ID`) REFERENCES `NOMENCLATURE` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 
--- Dumping data for table favorit.REQUEST_ITEMS: ~0 rows (приблизно)
+-- Dumping data for table favorit.REQUEST_ITEMS: ~5 rows (приблизно)
 /*!40000 ALTER TABLE `REQUEST_ITEMS` DISABLE KEYS */;
+INSERT INTO `REQUEST_ITEMS` (`id`, `comments`, `count`, `lastUpdate`, `units`, `nomenclature_ID`, `request_ID`) VALUES
+	(1, 'wdfdsf', 234, '2015-10-30 14:03:30', 1, 4, 2),
+	(2, '23432', 2, '2015-10-30 14:13:31', 3, 1, 1),
+	(3, 'dfq', 3, '2015-10-30 14:13:47', 2, 8, 3),
+	(4, 'werrwe', 1, '2015-10-30 14:14:27', 5, 3, 5),
+	(5, NULL, 3, '2015-10-30 14:14:41', 4, 3, 4);
 /*!40000 ALTER TABLE `REQUEST_ITEMS` ENABLE KEYS */;
 
 
@@ -713,14 +720,15 @@ CREATE TABLE IF NOT EXISTS `STOREHOUSES` (
   PRIMARY KEY (`id`),
   KEY `FK_kr8kiqylaesuo24t7uog4c1wn` (`responsible_person_ID`),
   CONSTRAINT `FK_kr8kiqylaesuo24t7uog4c1wn` FOREIGN KEY (`responsible_person_ID`) REFERENCES `PERSONS` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 
--- Dumping data for table favorit.STOREHOUSES: ~3 rows (приблизно)
+-- Dumping data for table favorit.STOREHOUSES: ~4 rows (приблизно)
 /*!40000 ALTER TABLE `STOREHOUSES` DISABLE KEYS */;
 INSERT INTO `STOREHOUSES` (`id`, `comments`, `location`, `name`, `number`, `responsible_person_ID`, `version`) VALUES
 	(1, 'Участок подготовки компьютерного оборудования', 'Комната 36', 'Участок програмирования', 'Р36', 4, 0),
-	(2, 'Склад', 'Комната 2', 'Склад', 'Склад_1', NULL, 0),
-	(3, 'Участок наладки и ремонта оборудования', 'Комната 37', 'Ремонтный участок', 'Р37', NULL, 0);
+	(2, 'Склад', 'Комната 2', 'Склад', 'Склад', NULL, 0),
+	(3, 'Сервісна дільниця', 'Комната 37', 'Сервісна дільниця', 'C37', NULL, 0),
+	(4, NULL, 'Комната 37', 'Дільниця крупно-вузлового складання ', 'D37', NULL, 0);
 /*!40000 ALTER TABLE `STOREHOUSES` ENABLE KEYS */;
 
 
@@ -903,7 +911,7 @@ INSERT INTO `USERS` (`USER_ID`, `ENABLED`, `PASSWORD`, `USERNAME`, `versionId`, 
 	(1, b'1', '123', 'adminus', 0, 4),
 	(2, b'1', 'volmiko', 'volmiko', 0, 3),
 	(3, b'1', 'manenok', 'manenok', 2, 4),
-	(4, b'1', 'pass', 'admin', 5, 4);
+	(4, b'1', 'pass', 'admin', 6, 4);
 /*!40000 ALTER TABLE `USERS` ENABLE KEYS */;
 
 
@@ -918,7 +926,7 @@ CREATE TABLE IF NOT EXISTS `USERS_USER_ROLES` (
   CONSTRAINT `FK_kf2rdklx3gojnnhpig08yun6t` FOREIGN KEY (`USERS_USER_ID`) REFERENCES `USERS` (`USER_ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- Dumping data for table favorit.USERS_USER_ROLES: ~13 rows (приблизно)
+-- Dumping data for table favorit.USERS_USER_ROLES: ~14 rows (приблизно)
 /*!40000 ALTER TABLE `USERS_USER_ROLES` DISABLE KEYS */;
 INSERT INTO `USERS_USER_ROLES` (`USERS_USER_ID`, `userRoles_id`) VALUES
 	(4, 1),
@@ -933,7 +941,8 @@ INSERT INTO `USERS_USER_ROLES` (`USERS_USER_ID`, `userRoles_id`) VALUES
 	(4, 10),
 	(4, 14),
 	(4, 16),
-	(4, 17);
+	(4, 17),
+	(4, 20);
 /*!40000 ALTER TABLE `USERS_USER_ROLES` ENABLE KEYS */;
 
 
@@ -945,9 +954,9 @@ CREATE TABLE IF NOT EXISTS `USER_ROLES` (
   `name` varchar(255) DEFAULT NULL,
   `version` bigint(20) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8;
 
--- Dumping data for table favorit.USER_ROLES: ~28 rows (приблизно)
+-- Dumping data for table favorit.USER_ROLES: ~31 rows (приблизно)
 /*!40000 ALTER TABLE `USER_ROLES` DISABLE KEYS */;
 INSERT INTO `USER_ROLES` (`id`, `description`, `name`, `version`) VALUES
 	(1, 'Управление пользователями', 'ROLE_ADMIN', 0),
@@ -977,7 +986,10 @@ INSERT INTO `USER_ROLES` (`id`, `description`, `name`, `version`) VALUES
 	(25, 'Право утверждения производства', 'ROLE_SUBSCRIBE_STOREHOUSE_COMBINED', 0),
 	(26, 'Право утверждения утилизации', 'ROLE_SUBSCRIBE_STOREHOUSE_UTILIZATION', 0),
 	(27, 'Право утверждения забраковки', 'ROLE_SUBSCRIBE_STOREHOUSE_DEFECTIVE', 0),
-	(28, 'Право утверждения документов', 'ROLE_SUBSCRIBE_DOCUMENT', 0);
+	(28, 'Право утверждения документов', 'ROLE_SUBSCRIBE_DOCUMENT', 0),
+	(29, 'Право завершения запросов по складу', 'ROLE_COMMIT_REQUEST_STOREHOUSE', 0),
+	(30, 'Право завершения запросов по ремонту', 'ROLE_COMMIT_REQUEST_REPAIR', 0),
+	(31, 'Право завершения запросов по производству', 'ROLE_COMMIT_REQUEST_PRODACTION', 0);
 /*!40000 ALTER TABLE `USER_ROLES` ENABLE KEYS */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;

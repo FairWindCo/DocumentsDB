@@ -2,9 +2,12 @@ package ua.pp.fairwind.favorid.internalDB.model.requests;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import ua.pp.fairwind.favorid.internalDB.model.Agreement;
 import ua.pp.fairwind.favorid.internalDB.model.Counterparty;
 import ua.pp.fairwind.favorid.internalDB.model.Person;
+import ua.pp.fairwind.favorid.internalDB.security.UserDetailsAdapter;
 
 import javax.persistence.*;
 import java.util.Collections;
@@ -33,10 +36,14 @@ public class Request {
     @ManyToOne
     @JoinColumn(name = "agreement_ID")
     Agreement agreement;
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL,mappedBy = "request")
     @JsonIgnore
     Set<RequestItems> items=new HashSet<>();
     boolean executed=false;
+    Date executedDate;
+    @ManyToOne
+    @JoinColumn(name = "executed_person_ID")
+    Person executedPerson;
     @ManyToOne
     @JoinColumn(name = "approved_person_ID")
     Person approvedPerson;
@@ -51,6 +58,64 @@ public class Request {
     @JsonIgnore
     Set<Request> requests=new HashSet<>();
     String comments;
+
+    private boolean testSubscribe(UserDetailsAdapter userDetail){
+        switch (typeRequest){
+            case PRODUCTION:
+                return userDetail.hasRole("ROLE_SUBSCRIBE_REQUEST_PRODUCTION");
+            case SHIPMENT:
+                return userDetail.hasRole("ROLE_SUBSCRIBE_REQUEST_SHIPMENT");
+            case PURCHASE:
+                return userDetail.hasRole("ROLE_SUBSCRIBE_REQUEST_PURCHASE");
+            case REPAIR:
+                return userDetail.hasRole("ROLE_SUBSCRIBE_REQUEST_REPAIR");
+            default:
+                return false;
+        }
+    }
+
+    private boolean testCommite(UserDetailsAdapter userDetail){
+        switch (typeRequest){
+            case PRODUCTION:
+                return userDetail.hasRole("ROLE_COMMIT_REQUEST_PRODACTION");
+            case SHIPMENT:
+                return userDetail.hasRole("ROLE_COMMIT_REQUEST_STOREHOUSE");
+            case PURCHASE:
+                return userDetail.hasRole("ROLE_COMMIT_REQUEST_STOREHOUSE");
+            case REPAIR:
+                return userDetail.hasRole("ROLE_COMMIT_REQUEST_REPAIR");
+            default:
+                return false;
+        }
+    }
+
+    @JsonSerialize
+    public boolean isCanSubscribe(){
+        UserDetailsAdapter userDetail=(UserDetailsAdapter) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if(responsiblePerson!=null && userDetail!=null && userDetail.getUserPerson()!=null){
+            if(responsiblePerson.equals(userDetail))return false;
+            if((approvedDate != null || approvedPerson != null)) return false;
+            return testSubscribe(userDetail);
+        } else {
+            return false;
+        }
+    }
+
+    @JsonSerialize
+    public boolean isSubscribed(){
+        return approvedDate!=null || approvedPerson!=null;
+    }
+
+    @JsonSerialize
+    public boolean isCanCommite(){
+        if((executed || executedPerson != null || executedDate!= null)) return false;
+        UserDetailsAdapter userDetail=(UserDetailsAdapter) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if(userDetail!=null && userDetail.getUserPerson()!=null){
+            return testCommite(userDetail);
+        } else {
+            return false;
+        }
+    }
 
 
     public Long getId() {
@@ -186,5 +251,21 @@ public class Request {
 
     public void setComments(String comments) {
         this.comments = comments;
+    }
+
+    public Date getExecutedDate() {
+        return executedDate;
+    }
+
+    public void setExecutedDate(Date executedDate) {
+        this.executedDate = executedDate;
+    }
+
+    public Person getExecutedPerson() {
+        return executedPerson;
+    }
+
+    public void setExecutedPerson(Person executedPerson) {
+        this.executedPerson = executedPerson;
     }
 }
