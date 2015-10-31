@@ -26,7 +26,7 @@ public class IndexController {
 
     @RequestMapping(value = "/notfound", method = RequestMethod.GET)
     public String eror404(Model model) {
-        return "error404";
+        return "error404rror404";
     }
 
     @RequestMapping(value = "/error403", method = RequestMethod.GET)

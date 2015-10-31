@@ -1,10 +1,12 @@
 package ua.pp.fairwind.favorid.internalDB.model.messages;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.springframework.data.annotation.CreatedBy;
 import ua.pp.fairwind.favorid.internalDB.model.administrative.User;
 
 import javax.persistence.*;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -29,6 +31,10 @@ public class Message {
     @JoinColumn(name = "created_user_id")
     User creationUser;
 
+    @JsonSerialize
+    public String userName(){
+        return creationUser.getFIO();
+    }
 
 
     public Long getId() {
@@ -69,5 +75,9 @@ public class Message {
 
     public void setCreationUser(User creationUser) {
         this.creationUser = creationUser;
+    }
+
+    public Set<MessageRecipient> getRecipientSet() {
+        return  Collections.unmodifiableSet(recipientSet);
     }
 }
