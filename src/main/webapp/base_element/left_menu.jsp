@@ -12,6 +12,57 @@
 <div class="navbar-default sidebar" role="navigation">
   <div class="sidebar-nav navbar-collapse">
     <ul class="nav" id="side-menu">
+      <li>
+        <a href="#"><i class="fa fa-inbox fa-fw"></i><c:message code="label.message"/><span class="fa arrow"></span></a>
+        <ul class="nav nav-second-level">
+          <li>
+            <a href="${pageContext.request.contextPath}/messages/actual"><c:message code="label.message.actual_for_me"/></a>
+          </li>
+          <li>
+            <a href="${pageContext.request.contextPath}/messages/for_me"><c:message code="label.message.for_me"/></a>
+          </li>
+          <li>
+            <a href="${pageContext.request.contextPath}/messages/my"><c:message code="label.message.my"/></a>
+          </li>
+          <sec:authorize ifAnyGranted="ROLE_MESSAGE_ADMINISTRATOR">
+            <li>
+              <a href="${pageContext.request.contextPath}/messages/list"><c:message code="label.message.administrator"/></a>
+            </li>
+          </sec:authorize>
+        </ul>
+        <!-- /.nav-second-level -->
+      </li>
+      <li>
+        <a href="#"><i class="fa fa-inbox fa-fw"></i><c:message code="label.tasks"/><span class="fa arrow"></span></a>
+        <ul class="nav nav-second-level">
+          <li>
+            <a href="${pageContext.request.contextPath}/task/list"><c:message code="label.tasks.task"/></a>
+          </li>
+          <li>
+            <a href="${pageContext.request.contextPath}/tasks/controlledTask"><c:message code="label.tasks.controltask"/></a>
+          </li>
+          <li>
+            <a href="${pageContext.request.contextPath}/task/active"><c:message code="label.tasks.activetask"/></a>
+          </li>
+          <sec:authorize ifAnyGranted="ROLE_TASK_CREATE">
+            <li>
+              <a href="${pageContext.request.contextPath}/task/control"><c:message code="label.tasks.control"/></a>
+            </li>
+          </sec:authorize>
+        </ul>
+        <!-- /.nav-second-level -->
+      </li>
+      <sec:authorize ifAnyGranted="ROLE_VIEW_DOCUMENTS, ROLE_EDIT_DOCUMENTS, ROLE_ADD_DOCUMENTS, ROLE_DELETE_DOCUMENTS">
+        <li>
+          <a href="#"><i class="fa fa-inbox fa-fw"></i><c:message code="label.documents"/><span class="fa arrow"></span></a>
+          <ul class="nav nav-second-level">
+            <li>
+              <a href="${pageContext.request.contextPath}/documents/list/"><c:message code="label.documents.document"/></a>
+            </li>
+          </ul>
+          <!-- /.nav-second-level -->
+        </li>
+      </sec:authorize>
       <sec:authorize ifAnyGranted="ROLE_ADD_TASK">
         <li>
           <a href="dossers/"><i class="glyphicon glyphicon-bell"></i> <c:message code="label.addcomplaint"/></a>
@@ -106,26 +157,6 @@
           <!-- /.nav-second-level -->
         </li>
       </sec:authorize>
-        <li>
-          <a href="#"><i class="fa fa-inbox fa-fw"></i><c:message code="label.tasks"/><span class="fa arrow"></span></a>
-          <ul class="nav nav-second-level">
-            <li>
-              <a href="${pageContext.request.contextPath}/task/list"><c:message code="label.tasks.task"/></a>
-            </li>
-            <li>
-              <a href="${pageContext.request.contextPath}/tasks/controlledTask"><c:message code="label.tasks.controltask"/></a>
-            </li>
-            <li>
-              <a href="${pageContext.request.contextPath}/task/active"><c:message code="label.tasks.activetask"/></a>
-            </li>
-            <sec:authorize ifAnyGranted="ROLE_TASK_CREATE">
-            <li>
-              <a href="${pageContext.request.contextPath}/task/control"><c:message code="label.tasks.control"/></a>
-            </li>
-            </sec:authorize>
-          </ul>
-          <!-- /.nav-second-level -->
-        </li>
       <li>
         <a href="#"><i class="fa fa-inbox fa-fw"></i><c:message code="label.organizational_elements"/><span class="fa arrow"></span></a>
         <ul class="nav nav-second-level">
@@ -141,17 +172,6 @@
         </ul>
         <!-- /.nav-second-level -->
       </li>
-      <sec:authorize ifAnyGranted="ROLE_VIEW_DOCUMENTS, ROLE_EDIT_DOCUMENTS, ROLE_ADD_DOCUMENTS, ROLE_DELETE_DOCUMENTS">
-      <li>
-        <a href="#"><i class="fa fa-inbox fa-fw"></i><c:message code="label.documents"/><span class="fa arrow"></span></a>
-        <ul class="nav nav-second-level">
-          <li>
-            <a href="${pageContext.request.contextPath}/documents/list/"><c:message code="label.documents.document"/></a>
-          </li>
-        </ul>
-        <!-- /.nav-second-level -->
-      </li>
-      </sec:authorize>
       <sec:authorize ifAnyGranted="ROLE_ADMIN">
         <li>
           <a href=""><i class="fa fa-wrench fa-fw"></i><c:message code="label.administrate"/><span class="fa arrow"></span></a>

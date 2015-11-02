@@ -1,5 +1,6 @@
 package ua.pp.fairwind.favorid.internalDB.model.messages;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import ua.pp.fairwind.favorid.internalDB.model.Person;
 
 import javax.persistence.*;
@@ -15,14 +16,20 @@ public class MessageRecipient {
     @GeneratedValue
     Long id;
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "message_ID")
     Message message;
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "person_ID")
     Person recipient;
 
     Date validationDate;
 
+    public String getFio(){
+        if(recipient==null) return "";
+        return (recipient.getSurname()==null?"":recipient.getSurname())+" "+(recipient.getFirstName()==null?"":recipient.getFirstName())+" "+(recipient.getMiddleName()==null?"":recipient.getMiddleName());
+    }
 
     public Long getId() {
         return id;

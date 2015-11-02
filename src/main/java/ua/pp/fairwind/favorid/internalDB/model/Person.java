@@ -75,6 +75,10 @@ public class Person {
         return getLevelNode(node.getHead())+1;
     }
 
+    public String getFio(){
+        return (surname==null?"":surname)+" "+(firstName==null?"":firstName)+" "+(middleName==null?"":middleName);
+    }
+
     public Long getId() {
         return id;
     }

@@ -16,7 +16,7 @@
   <%@include file="/include/jquery_include.jsp" %>
   <!-- Bootstrap Core JavaScript -->
   <%@include file="/include/bootstrup_include.jsp" %>
-  <%@include file="/include/jgrid_include.jsp" %>
+  <%@include file="/include/jgrid_include_ex.jsp" %>
 
 </head>`
 <body>
@@ -39,11 +39,11 @@
 
       <div class="panel panel-default">
         <div class="panel-heading">
-          <h3 class="panel-title"><c:message code="label.globaldirectory.documenttype.title"/></h3>
+          <h3 class="panel-title"><c:message code="label.messages.for_me.title"/></h3>
         </div>
         <div class="panel-body">
           <div>
-            //insert this
+            <%@include file="/jsp/messages/actual.jsp" %>
           </div>
         </div>
       </div>

@@ -79,6 +79,86 @@ public class PersonController {
     }
 
     @Transactional(readOnly = true)
+    @RequestMapping(value = "/documentSubscriber", method = RequestMethod.GET)
+    @ResponseBody
+    public Object documentSubscriberList(@RequestParam(required = false) Integer page_num, @RequestParam(required = false) Integer per_page,@RequestParam(value = "pkey_val[]",required = false) String pkey,@RequestParam(value = "q_word[]",required = false) String[] qword,HttpServletRequest request) {
+        // Retrieve all persons by delegating the call to PersonService
+        //Sort sort= FormSort.formSortFromSortDescription(orderby);
+        Sort sort=new Sort(Sort.Direction.ASC,"surname");
+        PageRequest pager=null;
+        if(page_num!=null && per_page!=null) {
+            page_num= page_num<1?1:page_num;
+            pager = new PageRequest(page_num - 1, per_page, sort);
+        }
+        if(pager!=null) {
+            Page<PersonProxy> page;
+            if (qword != null && qword.length > 0) {
+                page = personRepository.findSubscriberProxyBySurname("%" + qword[0] + "%", pager);
+            } else {
+                page = personRepository.findSubscriberProxy(pager);
+            }
+            return new JSComboExpenseResp<>(page);
+        } else {
+            if(pkey!=null && !pkey.isEmpty()){
+                Long key=Long.valueOf(pkey);
+                Person ft=null;
+                if(key!=null) {
+                    ft = personRepository.findOne(key);
+                }
+                return ft;
+            } else {
+                List<PersonProxy> page;
+                if (qword != null && qword.length > 0) {
+                    page = personRepository.findSubscriberProxyBySurname("%" + qword[0] + "%", sort);
+                } else {
+                    page = personRepository.findSubscriberProxy(sort);
+                }
+                return new JSComboExpenseResp<>(page);
+            }
+        }
+    }
+
+    @Transactional(readOnly = true)
+    @RequestMapping(value = "/userPersons", method = RequestMethod.GET)
+    @ResponseBody
+    public Object userPersonsList(@RequestParam(required = false) Integer page_num, @RequestParam(required = false) Integer per_page,@RequestParam(value = "pkey_val[]",required = false) String pkey,@RequestParam(value = "q_word[]",required = false) String[] qword,HttpServletRequest request) {
+        // Retrieve all persons by delegating the call to PersonService
+        //Sort sort= FormSort.formSortFromSortDescription(orderby);
+        Sort sort=new Sort(Sort.Direction.ASC,"surname");
+        PageRequest pager=null;
+        if(page_num!=null && per_page!=null) {
+            page_num= page_num<1?1:page_num;
+            pager = new PageRequest(page_num - 1, per_page, sort);
+        }
+        if(pager!=null) {
+            Page<PersonProxy> page;
+            if (qword != null && qword.length > 0) {
+                page = personRepository.findUsersProxyBySurname("%" + qword[0] + "%", pager);
+            } else {
+                page = personRepository.findUsersProxy(pager);
+            }
+            return new JSComboExpenseResp<>(page);
+        } else {
+            if(pkey!=null && !pkey.isEmpty()){
+                Long key=Long.valueOf(pkey);
+                Person ft=null;
+                if(key!=null) {
+                    ft = personRepository.findOne(key);
+                }
+                return ft;
+            } else {
+                List<PersonProxy> page;
+                if (qword != null && qword.length > 0) {
+                    page = personRepository.findUsersProxyBySurname("%" + qword[0] + "%", sort);
+                } else {
+                    page = personRepository.findUsersProxy(sort);
+                }
+                return new JSComboExpenseResp<>(page);
+            }
+        }
+    }
+
+    @Transactional(readOnly = true)
     @RequestMapping(value = "/contacts", method = RequestMethod.POST)
     @ResponseBody
     public JGridRowsResponse<Contact> getContacts(HttpServletRequest request,@RequestParam Long ID){

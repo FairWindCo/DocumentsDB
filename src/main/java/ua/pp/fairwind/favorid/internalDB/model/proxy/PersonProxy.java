@@ -1,5 +1,7 @@
 package ua.pp.fairwind.favorid.internalDB.model.proxy;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 import java.util.Date;
 
 /**
@@ -12,7 +14,7 @@ public class PersonProxy {
     final String firstName;
     final Date date_of_birth;
 
-    public PersonProxy(long id, String surname, String middleName, String firstName, Date date_of_birth) {
+    public PersonProxy(long id, String surname, String firstName,String middleName,  Date date_of_birth) {
         this.id = id;
         this.surname = surname;
         this.middleName = middleName;
@@ -38,5 +40,10 @@ public class PersonProxy {
 
     public Date getDate_of_birth() {
         return date_of_birth;
+    }
+
+    @JsonSerialize
+    public String getFio(){
+        return (surname==null?"":surname)+" "+(firstName==null?"":firstName)+" "+(middleName==null?"":middleName);
     }
 }

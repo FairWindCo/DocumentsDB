@@ -3,7 +3,10 @@ package ua.pp.fairwind.favorid.internalDB.model.messages;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.springframework.data.annotation.CreatedBy;
+import org.springframework.security.core.context.SecurityContextHolder;
 import ua.pp.fairwind.favorid.internalDB.model.administrative.User;
+import ua.pp.fairwind.favorid.internalDB.model.proxy.MyDateSerializer;
+import ua.pp.fairwind.favorid.internalDB.security.UserDetailsAdapter;
 
 import javax.persistence.*;
 import java.util.Collections;
@@ -21,9 +24,11 @@ public class Message {
     @GeneratedValue
     Long id;
     String messageText;
+
     Date creationDate;
     Date actual;
     @OneToMany(mappedBy = "message")
+    @JsonIgnore
     Set<MessageRecipient> recipientSet=new HashSet<>();
     @ManyToOne
     @CreatedBy
@@ -35,6 +40,39 @@ public class Message {
     public String userName(){
         return creationUser.getFIO();
     }
+
+    @JsonSerialize
+    public boolean isValidated(){
+        UserDetailsAdapter userDetail=(UserDetailsAdapter) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if(userDetail==null && userDetail.getUserPerson()==null){
+            return false;
+        }
+        for(MessageRecipient in:recipientSet){
+            if(in.getValidationDate()!=null) {
+                if (userDetail.getUserPerson().equals(in.getRecipient())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    @JsonSerialize
+    public boolean isCanValidate(){
+        UserDetailsAdapter userDetail=(UserDetailsAdapter) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if(userDetail==null && userDetail.getUserPerson()==null){
+            return false;
+        }
+        for(MessageRecipient in:recipientSet){
+            if(in.getValidationDate()==null) {
+                if (userDetail.getUserPerson().equals(in.getRecipient())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
 
 
     public Long getId() {
@@ -53,6 +91,7 @@ public class Message {
         this.messageText = messageText;
     }
 
+    @JsonSerialize(using=MyDateSerializer.class)
     public Date getCreationDate() {
         return creationDate;
     }
@@ -60,7 +99,7 @@ public class Message {
     public void setCreationDate(Date creationDate) {
         this.creationDate = creationDate;
     }
-
+    @JsonSerialize(using=MyDateSerializer.class)
     public Date getActual() {
         return actual;
     }
@@ -79,5 +118,22 @@ public class Message {
 
     public Set<MessageRecipient> getRecipientSet() {
         return  Collections.unmodifiableSet(recipientSet);
+    }
+
+    public void addMessageRecicpient(MessageRecipient mesrec){
+        if(mesrec!=null){
+            if(mesrec.message!=null){
+                mesrec.message.recipientSet.remove(mesrec);
+            }
+            mesrec.message=this;
+            recipientSet.add(mesrec);
+        }
+    }
+
+    public void removeMessageRecicpient(MessageRecipient mesrec){
+        if(mesrec!=null){
+            mesrec.message=null;
+            recipientSet.remove(mesrec);
+        }
     }
 }

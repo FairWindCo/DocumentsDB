@@ -37,8 +37,8 @@ public class User {
 
     @JsonSerialize
     public String getFIO(){
-        if(person==null) return null;
-        return person.getSurname()==null?"":person.getSurname()+" "+person.getFirstName()==null?"":person.getFirstName()+" "+person.getMiddleName()==null?"":person.getMiddleName();
+        if(person==null) return "";
+        return (person.getSurname()==null?"":person.getSurname())+" "+(person.getFirstName()==null?"":person.getFirstName())+" "+(person.getMiddleName()==null?"":person.getMiddleName());
     }
 
     @JsonSerialize

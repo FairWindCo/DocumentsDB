@@ -11,13 +11,11 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
 -- Dumping database structure for favorit
-DROP DATABASE IF EXISTS `favorit`;
 CREATE DATABASE IF NOT EXISTS `favorit` /*!40100 DEFAULT CHARACTER SET utf8 */;
 USE `favorit`;
 
 
 -- Dumping structure for таблиця favorit.AGREEMENTS
-DROP TABLE IF EXISTS `AGREEMENTS`;
 CREATE TABLE IF NOT EXISTS `AGREEMENTS` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `endDate` datetime DEFAULT NULL,
@@ -40,7 +38,6 @@ INSERT INTO `AGREEMENTS` (`id`, `endDate`, `name`, `number`, `planEndDate`, `sta
 
 
 -- Dumping structure for таблиця favorit.CONTACTS
-DROP TABLE IF EXISTS `CONTACTS`;
 CREATE TABLE IF NOT EXISTS `CONTACTS` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `contact` varchar(255) DEFAULT NULL,
@@ -57,7 +54,6 @@ CREATE TABLE IF NOT EXISTS `CONTACTS` (
 
 
 -- Dumping structure for таблиця favorit.CONTACT_TYPES
-DROP TABLE IF EXISTS `CONTACT_TYPES`;
 CREATE TABLE IF NOT EXISTS `CONTACT_TYPES` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
@@ -76,7 +72,6 @@ INSERT INTO `CONTACT_TYPES` (`id`, `name`, `numberFormat`, `version`) VALUES
 
 
 -- Dumping structure for таблиця favorit.Counterparty
-DROP TABLE IF EXISTS `Counterparty`;
 CREATE TABLE IF NOT EXISTS `Counterparty` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `full_name` varchar(255) DEFAULT NULL,
@@ -94,7 +89,6 @@ INSERT INTO `Counterparty` (`id`, `full_name`, `short_name`, `version`) VALUES
 
 
 -- Dumping structure for таблиця favorit.Counterparty_CONTACTS
-DROP TABLE IF EXISTS `Counterparty_CONTACTS`;
 CREATE TABLE IF NOT EXISTS `Counterparty_CONTACTS` (
   `Counterparty_id` bigint(20) NOT NULL,
   `contacts_id` bigint(20) NOT NULL,
@@ -110,7 +104,6 @@ CREATE TABLE IF NOT EXISTS `Counterparty_CONTACTS` (
 
 
 -- Dumping structure for таблиця favorit.DOCUMENTS
-DROP TABLE IF EXISTS `DOCUMENTS`;
 CREATE TABLE IF NOT EXISTS `DOCUMENTS` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `creationDate` datetime DEFAULT NULL,
@@ -158,7 +151,6 @@ INSERT INTO `DOCUMENTS` (`id`, `creationDate`, `description`, `modificationDate`
 
 
 -- Dumping structure for таблиця favorit.DOCUMENTS_DOCUMENTS
-DROP TABLE IF EXISTS `DOCUMENTS_DOCUMENTS`;
 CREATE TABLE IF NOT EXISTS `DOCUMENTS_DOCUMENTS` (
   `DOCUMENTS_id` bigint(20) NOT NULL,
   `atachments_id` bigint(20) NOT NULL,
@@ -174,7 +166,6 @@ CREATE TABLE IF NOT EXISTS `DOCUMENTS_DOCUMENTS` (
 
 
 -- Dumping structure for таблиця favorit.DOCUMENTS_FILES
-DROP TABLE IF EXISTS `DOCUMENTS_FILES`;
 CREATE TABLE IF NOT EXISTS `DOCUMENTS_FILES` (
   `DOCUMENTS_id` bigint(20) NOT NULL,
   `documentFiles_id` bigint(20) NOT NULL,
@@ -192,7 +183,6 @@ INSERT INTO `DOCUMENTS_FILES` (`DOCUMENTS_id`, `documentFiles_id`) VALUES
 
 
 -- Dumping structure for таблиця favorit.DOCUMENTS_SECURITY
-DROP TABLE IF EXISTS `DOCUMENTS_SECURITY`;
 CREATE TABLE IF NOT EXISTS `DOCUMENTS_SECURITY` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `action` int(11) DEFAULT NULL,
@@ -213,7 +203,6 @@ CREATE TABLE IF NOT EXISTS `DOCUMENTS_SECURITY` (
 
 
 -- Dumping structure for таблиця favorit.DOCUMENTS_SUBSCRIBE
-DROP TABLE IF EXISTS `DOCUMENTS_SUBSCRIBE`;
 CREATE TABLE IF NOT EXISTS `DOCUMENTS_SUBSCRIBE` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `subscribed` datetime DEFAULT NULL,
@@ -233,7 +222,6 @@ CREATE TABLE IF NOT EXISTS `DOCUMENTS_SUBSCRIBE` (
 
 
 -- Dumping structure for таблиця favorit.DOCUMENT_TYPES
-DROP TABLE IF EXISTS `DOCUMENT_TYPES`;
 CREATE TABLE IF NOT EXISTS `DOCUMENT_TYPES` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `counter` bigint(20) NOT NULL,
@@ -257,7 +245,6 @@ INSERT INTO `DOCUMENT_TYPES` (`id`, `counter`, `name`, `numberFormat`, `version`
 
 
 -- Dumping structure for таблиця favorit.EXECUTORS
-DROP TABLE IF EXISTS `EXECUTORS`;
 CREATE TABLE IF NOT EXISTS `EXECUTORS` (
   `task_id` bigint(20) NOT NULL,
   `person_id` bigint(20) NOT NULL,
@@ -273,7 +260,6 @@ CREATE TABLE IF NOT EXISTS `EXECUTORS` (
 
 
 -- Dumping structure for таблиця favorit.FILES
-DROP TABLE IF EXISTS `FILES`;
 CREATE TABLE IF NOT EXISTS `FILES` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `creationDate` datetime DEFAULT NULL,
@@ -296,7 +282,6 @@ INSERT INTO `FILES` (`id`, `creationDate`, `fileName`, `filePath`, `mimeType`, `
 
 
 -- Dumping structure for таблиця favorit.MESSAGES
-DROP TABLE IF EXISTS `MESSAGES`;
 CREATE TABLE IF NOT EXISTS `MESSAGES` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `actual` datetime DEFAULT NULL,
@@ -306,15 +291,17 @@ CREATE TABLE IF NOT EXISTS `MESSAGES` (
   PRIMARY KEY (`id`),
   KEY `FK_24dkexdrbbc339dsf37g77nfn` (`created_user_id`),
   CONSTRAINT `FK_24dkexdrbbc339dsf37g77nfn` FOREIGN KEY (`created_user_id`) REFERENCES `USERS` (`USER_ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 -- Dumping data for table favorit.MESSAGES: ~0 rows (приблизно)
 /*!40000 ALTER TABLE `MESSAGES` DISABLE KEYS */;
+INSERT INTO `MESSAGES` (`id`, `actual`, `creationDate`, `messageText`, `created_user_id`) VALUES
+	(1, NULL, '2015-11-02 11:36:09', 'Запуск новой системы', 3),
+	(2, '2015-11-01 00:00:00', '2015-11-02 14:58:38', 'Тестирование системы', 4);
 /*!40000 ALTER TABLE `MESSAGES` ENABLE KEYS */;
 
 
 -- Dumping structure for таблиця favorit.MESSAGES_RECIPIENT
-DROP TABLE IF EXISTS `MESSAGES_RECIPIENT`;
 CREATE TABLE IF NOT EXISTS `MESSAGES_RECIPIENT` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `validationDate` datetime DEFAULT NULL,
@@ -325,15 +312,20 @@ CREATE TABLE IF NOT EXISTS `MESSAGES_RECIPIENT` (
   KEY `FK_13vl1ccqh4lfqt6y7bkbea1i3` (`person_ID`),
   CONSTRAINT `FK_13vl1ccqh4lfqt6y7bkbea1i3` FOREIGN KEY (`person_ID`) REFERENCES `PERSONS` (`id`),
   CONSTRAINT `FK_3o6ftkkbbqycss7elh7r8bqsc` FOREIGN KEY (`message_ID`) REFERENCES `MESSAGES` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 
 -- Dumping data for table favorit.MESSAGES_RECIPIENT: ~0 rows (приблизно)
 /*!40000 ALTER TABLE `MESSAGES_RECIPIENT` DISABLE KEYS */;
+INSERT INTO `MESSAGES_RECIPIENT` (`id`, `validationDate`, `message_ID`, `person_ID`) VALUES
+	(2, NULL, 1, 3),
+	(3, NULL, 1, 2),
+	(4, NULL, 1, 5),
+	(5, NULL, 1, 4),
+	(6, NULL, 2, 4);
 /*!40000 ALTER TABLE `MESSAGES_RECIPIENT` ENABLE KEYS */;
 
 
 -- Dumping structure for таблиця favorit.NOMENCLATURE
-DROP TABLE IF EXISTS `NOMENCLATURE`;
 CREATE TABLE IF NOT EXISTS `NOMENCLATURE` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `code` varchar(255) DEFAULT NULL,
@@ -361,7 +353,6 @@ INSERT INTO `NOMENCLATURE` (`id`, `code`, `country`, `manufacturer`, `name`, `co
 
 
 -- Dumping structure for таблиця favorit.NOMENCLATURE_NOMENCLATURE_TYPES
-DROP TABLE IF EXISTS `NOMENCLATURE_NOMENCLATURE_TYPES`;
 CREATE TABLE IF NOT EXISTS `NOMENCLATURE_NOMENCLATURE_TYPES` (
   `NOMENCLATURE_id` bigint(20) NOT NULL,
   `nomenclatureTypes_id` bigint(20) NOT NULL,
@@ -377,7 +368,6 @@ CREATE TABLE IF NOT EXISTS `NOMENCLATURE_NOMENCLATURE_TYPES` (
 
 
 -- Dumping structure for таблиця favorit.NOMENCLATURE_SAFEKEEPING
-DROP TABLE IF EXISTS `NOMENCLATURE_SAFEKEEPING`;
 CREATE TABLE IF NOT EXISTS `NOMENCLATURE_SAFEKEEPING` (
   `NOMENCLATURE_id` bigint(20) NOT NULL,
   `safekeeping_id` bigint(20) NOT NULL,
@@ -393,7 +383,6 @@ CREATE TABLE IF NOT EXISTS `NOMENCLATURE_SAFEKEEPING` (
 
 
 -- Dumping structure for таблиця favorit.NOMENCLATURE_TAMPLATES
-DROP TABLE IF EXISTS `NOMENCLATURE_TAMPLATES`;
 CREATE TABLE IF NOT EXISTS `NOMENCLATURE_TAMPLATES` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `count` bigint(20) NOT NULL,
@@ -422,7 +411,6 @@ INSERT INTO `NOMENCLATURE_TAMPLATES` (`id`, `count`, `version`, `parent_id`, `pa
 
 
 -- Dumping structure for таблиця favorit.NOMENCLATURE_TYPES
-DROP TABLE IF EXISTS `NOMENCLATURE_TYPES`;
 CREATE TABLE IF NOT EXISTS `NOMENCLATURE_TYPES` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
@@ -437,7 +425,6 @@ CREATE TABLE IF NOT EXISTS `NOMENCLATURE_TYPES` (
 
 
 -- Dumping structure for таблиця favorit.NOMENCLATURE_TYPES_NOMENCLATURE
-DROP TABLE IF EXISTS `NOMENCLATURE_TYPES_NOMENCLATURE`;
 CREATE TABLE IF NOT EXISTS `NOMENCLATURE_TYPES_NOMENCLATURE` (
   `NOMENCLATURE_TYPES_id` bigint(20) NOT NULL,
   `nomenclature_id` bigint(20) NOT NULL,
@@ -453,7 +440,6 @@ CREATE TABLE IF NOT EXISTS `NOMENCLATURE_TYPES_NOMENCLATURE` (
 
 
 -- Dumping structure for таблиця favorit.PERSONS
-DROP TABLE IF EXISTS `PERSONS`;
 CREATE TABLE IF NOT EXISTS `PERSONS` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `comments` varchar(255) DEFAULT NULL,
@@ -472,9 +458,9 @@ CREATE TABLE IF NOT EXISTS `PERSONS` (
   CONSTRAINT `FK_9ds67nmiw9hlmmmtx4tkj5x89` FOREIGN KEY (`counterparty_id`) REFERENCES `Counterparty` (`id`),
   CONSTRAINT `FK_b4n40d61hy8serxe0bwliy5ao` FOREIGN KEY (`head_of_id`) REFERENCES `PERSONS` (`id`),
   CONSTRAINT `FK_r1igp630q3rvmkqyixl87tppu` FOREIGN KEY (`position_id`) REFERENCES `POSITIONS` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;
 
--- Dumping data for table favorit.PERSONS: ~4 rows (приблизно)
+-- Dumping data for table favorit.PERSONS: ~13 rows (приблизно)
 /*!40000 ALTER TABLE `PERSONS` DISABLE KEYS */;
 INSERT INTO `PERSONS` (`id`, `comments`, `date_of_birth`, `first_name`, `middle_name`, `surname`, `version`, `counterparty_id`, `head_of_id`, `position_id`) VALUES
 	(1, NULL, NULL, 'Лариса', 'Ивановна', 'Бернадина', 0, 1, NULL, 1),
@@ -484,12 +470,16 @@ INSERT INTO `PERSONS` (`id`, `comments`, `date_of_birth`, `first_name`, `middle_
 	(5, NULL, NULL, 'Николай', 'Владимирович', 'Стрильчук', 0, 1, 3, 7),
 	(6, NULL, NULL, 'Григорий', 'Андреевич', 'Поляк', 0, 1, 5, 8),
 	(7, NULL, NULL, 'Александр', 'Петрович', 'Кочетов', 0, 1, 5, 9),
-	(8, NULL, NULL, 'Алексей', 'Александрович', 'Кочетов', 0, 1, NULL, NULL);
+	(8, NULL, NULL, 'Алексей', 'Александрович', 'Кочетов', 0, 1, NULL, NULL),
+	(9, NULL, NULL, 'Вятчеслва', 'Дмитриевич', 'Поляков', 0, 1, NULL, NULL),
+	(10, NULL, NULL, 'Дмитрий', 'Вятчеславович', 'Поляков', 0, 1, NULL, NULL),
+	(11, NULL, NULL, 'Василий', 'Петрович', 'Гудемчюк', 0, 1, NULL, NULL),
+	(12, NULL, NULL, 'Анатолий', '', 'Куценко', 0, 1, NULL, NULL),
+	(13, NULL, NULL, 'Александр', NULL, 'Марущенко', 0, 1, NULL, NULL);
 /*!40000 ALTER TABLE `PERSONS` ENABLE KEYS */;
 
 
 -- Dumping structure for таблиця favorit.PERSONS_CONTACTS
-DROP TABLE IF EXISTS `PERSONS_CONTACTS`;
 CREATE TABLE IF NOT EXISTS `PERSONS_CONTACTS` (
   `PERSONS_id` bigint(20) NOT NULL,
   `contacts_id` bigint(20) NOT NULL,
@@ -505,7 +495,6 @@ CREATE TABLE IF NOT EXISTS `PERSONS_CONTACTS` (
 
 
 -- Dumping structure for таблиця favorit.POSITIONS
-DROP TABLE IF EXISTS `POSITIONS`;
 CREATE TABLE IF NOT EXISTS `POSITIONS` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
@@ -513,7 +502,7 @@ CREATE TABLE IF NOT EXISTS `POSITIONS` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;
 
--- Dumping data for table favorit.POSITIONS: ~6 rows (приблизно)
+-- Dumping data for table favorit.POSITIONS: ~13 rows (приблизно)
 /*!40000 ALTER TABLE `POSITIONS` DISABLE KEYS */;
 INSERT INTO `POSITIONS` (`id`, `name`, `version`) VALUES
 	(1, 'Директор', 0),
@@ -533,7 +522,6 @@ INSERT INTO `POSITIONS` (`id`, `name`, `version`) VALUES
 
 
 -- Dumping structure for таблиця favorit.PRODUCTS
-DROP TABLE IF EXISTS `PRODUCTS`;
 CREATE TABLE IF NOT EXISTS `PRODUCTS` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `createdDate` datetime DEFAULT NULL,
@@ -557,7 +545,6 @@ CREATE TABLE IF NOT EXISTS `PRODUCTS` (
 
 
 -- Dumping structure for таблиця favorit.PRODUCTS_DOCUMENTS
-DROP TABLE IF EXISTS `PRODUCTS_DOCUMENTS`;
 CREATE TABLE IF NOT EXISTS `PRODUCTS_DOCUMENTS` (
   `PRODUCTS_id` bigint(20) NOT NULL,
   `productDocuments_id` bigint(20) NOT NULL,
@@ -573,7 +560,6 @@ CREATE TABLE IF NOT EXISTS `PRODUCTS_DOCUMENTS` (
 
 
 -- Dumping structure for таблиця favorit.RepairIteration
-DROP TABLE IF EXISTS `RepairIteration`;
 CREATE TABLE IF NOT EXISTS `RepairIteration` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `created` datetime DEFAULT NULL,
@@ -591,7 +577,6 @@ CREATE TABLE IF NOT EXISTS `RepairIteration` (
 
 
 -- Dumping structure for таблиця favorit.REPAIRS
-DROP TABLE IF EXISTS `REPAIRS`;
 CREATE TABLE IF NOT EXISTS `REPAIRS` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `description` varchar(255) DEFAULT NULL,
@@ -612,7 +597,6 @@ CREATE TABLE IF NOT EXISTS `REPAIRS` (
 
 
 -- Dumping structure for таблиця favorit.REQUESTS
-DROP TABLE IF EXISTS `REQUESTS`;
 CREATE TABLE IF NOT EXISTS `REQUESTS` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `approvedDate` datetime DEFAULT NULL,
@@ -635,10 +619,10 @@ CREATE TABLE IF NOT EXISTS `REQUESTS` (
   KEY `FK_axxkk2jgi3xle3sbx4n4bt7kd` (`parent_request_ID`),
   KEY `FK_3p6f98e6drxjxuvmkyjklexhe` (`responsible_person_ID`),
   KEY `FK_enrk09bd7dceoievmt0924h3y` (`executed_person_ID`),
-  CONSTRAINT `FK_enrk09bd7dceoievmt0924h3y` FOREIGN KEY (`executed_person_ID`) REFERENCES `PERSONS` (`id`),
   CONSTRAINT `FK_1bfckrsfpb3qw9phfovysod9` FOREIGN KEY (`counterparty_id`) REFERENCES `Counterparty` (`id`),
   CONSTRAINT `FK_3p6f98e6drxjxuvmkyjklexhe` FOREIGN KEY (`responsible_person_ID`) REFERENCES `PERSONS` (`id`),
   CONSTRAINT `FK_axxkk2jgi3xle3sbx4n4bt7kd` FOREIGN KEY (`parent_request_ID`) REFERENCES `REQUESTS` (`id`),
+  CONSTRAINT `FK_enrk09bd7dceoievmt0924h3y` FOREIGN KEY (`executed_person_ID`) REFERENCES `PERSONS` (`id`),
   CONSTRAINT `FK_lpitk89d0cr1h200ro5bjw8rd` FOREIGN KEY (`approved_person_ID`) REFERENCES `PERSONS` (`id`),
   CONSTRAINT `FK_oce0k03fl0ahjmsg6xlxb08mb` FOREIGN KEY (`agreement_ID`) REFERENCES `AGREEMENTS` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
@@ -655,7 +639,6 @@ INSERT INTO `REQUESTS` (`id`, `approvedDate`, `comments`, `executed`, `operation
 
 
 -- Dumping structure for таблиця favorit.REQUEST_ITEMS
-DROP TABLE IF EXISTS `REQUEST_ITEMS`;
 CREATE TABLE IF NOT EXISTS `REQUEST_ITEMS` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `comments` varchar(255) DEFAULT NULL,
@@ -683,7 +666,6 @@ INSERT INTO `REQUEST_ITEMS` (`id`, `comments`, `count`, `lastUpdate`, `units`, `
 
 
 -- Dumping structure for таблиця favorit.SAFEKEEPING
-DROP TABLE IF EXISTS `SAFEKEEPING`;
 CREATE TABLE IF NOT EXISTS `SAFEKEEPING` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `count` bigint(20) NOT NULL,
@@ -708,7 +690,6 @@ INSERT INTO `SAFEKEEPING` (`id`, `count`, `lastUpdate`, `units`, `nomenclature_I
 
 
 -- Dumping structure for таблиця favorit.STOREHOUSES
-DROP TABLE IF EXISTS `STOREHOUSES`;
 CREATE TABLE IF NOT EXISTS `STOREHOUSES` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `comments` varchar(255) DEFAULT NULL,
@@ -733,7 +714,6 @@ INSERT INTO `STOREHOUSES` (`id`, `comments`, `location`, `name`, `number`, `resp
 
 
 -- Dumping structure for таблиця favorit.STOREHOUSES_SAFEKEEPING
-DROP TABLE IF EXISTS `STOREHOUSES_SAFEKEEPING`;
 CREATE TABLE IF NOT EXISTS `STOREHOUSES_SAFEKEEPING` (
   `STOREHOUSES_id` bigint(20) NOT NULL,
   `safekeeping_id` bigint(20) NOT NULL,
@@ -749,7 +729,6 @@ CREATE TABLE IF NOT EXISTS `STOREHOUSES_SAFEKEEPING` (
 
 
 -- Dumping structure for таблиця favorit.STOREHOUSE_MOVEMENT
-DROP TABLE IF EXISTS `STOREHOUSE_MOVEMENT`;
 CREATE TABLE IF NOT EXISTS `STOREHOUSE_MOVEMENT` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `operationDate` datetime DEFAULT NULL,
@@ -791,7 +770,6 @@ INSERT INTO `STOREHOUSE_MOVEMENT` (`id`, `operationDate`, `typeMovement`, `count
 
 
 -- Dumping structure for таблиця favorit.STOREHOUSE_MOVEMENT_DOCUMENTS
-DROP TABLE IF EXISTS `STOREHOUSE_MOVEMENT_DOCUMENTS`;
 CREATE TABLE IF NOT EXISTS `STOREHOUSE_MOVEMENT_DOCUMENTS` (
   `STOREHOUSE_MOVEMENT_id` bigint(20) NOT NULL,
   `documents_id` bigint(20) NOT NULL,
@@ -807,7 +785,6 @@ CREATE TABLE IF NOT EXISTS `STOREHOUSE_MOVEMENT_DOCUMENTS` (
 
 
 -- Dumping structure for таблиця favorit.STOREHOUSE_MOVEMENT_ELEMENTS
-DROP TABLE IF EXISTS `STOREHOUSE_MOVEMENT_ELEMENTS`;
 CREATE TABLE IF NOT EXISTS `STOREHOUSE_MOVEMENT_ELEMENTS` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `comments` varchar(255) DEFAULT NULL,
@@ -830,7 +807,6 @@ CREATE TABLE IF NOT EXISTS `STOREHOUSE_MOVEMENT_ELEMENTS` (
 
 
 -- Dumping structure for таблиця favorit.TASKS
-DROP TABLE IF EXISTS `TASKS`;
 CREATE TABLE IF NOT EXISTS `TASKS` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `creationDate` datetime DEFAULT NULL,
@@ -862,7 +838,6 @@ CREATE TABLE IF NOT EXISTS `TASKS` (
 
 
 -- Dumping structure for таблиця favorit.TASK_DOCUMENTS
-DROP TABLE IF EXISTS `TASK_DOCUMENTS`;
 CREATE TABLE IF NOT EXISTS `TASK_DOCUMENTS` (
   `task_id` bigint(20) NOT NULL,
   `document_id` bigint(20) NOT NULL,
@@ -878,7 +853,6 @@ CREATE TABLE IF NOT EXISTS `TASK_DOCUMENTS` (
 
 
 -- Dumping structure for таблиця favorit.TASK_TYPES
-DROP TABLE IF EXISTS `TASK_TYPES`;
 CREATE TABLE IF NOT EXISTS `TASK_TYPES` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
@@ -892,7 +866,6 @@ CREATE TABLE IF NOT EXISTS `TASK_TYPES` (
 
 
 -- Dumping structure for таблиця favorit.USERS
-DROP TABLE IF EXISTS `USERS`;
 CREATE TABLE IF NOT EXISTS `USERS` (
   `USER_ID` bigint(20) NOT NULL AUTO_INCREMENT,
   `ENABLED` bit(1) DEFAULT NULL,
@@ -916,7 +889,6 @@ INSERT INTO `USERS` (`USER_ID`, `ENABLED`, `PASSWORD`, `USERNAME`, `versionId`, 
 
 
 -- Dumping structure for таблиця favorit.USERS_USER_ROLES
-DROP TABLE IF EXISTS `USERS_USER_ROLES`;
 CREATE TABLE IF NOT EXISTS `USERS_USER_ROLES` (
   `USERS_USER_ID` bigint(20) NOT NULL,
   `userRoles_id` bigint(20) NOT NULL,
@@ -947,16 +919,15 @@ INSERT INTO `USERS_USER_ROLES` (`USERS_USER_ID`, `userRoles_id`) VALUES
 
 
 -- Dumping structure for таблиця favorit.USER_ROLES
-DROP TABLE IF EXISTS `USER_ROLES`;
 CREATE TABLE IF NOT EXISTS `USER_ROLES` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `description` varchar(255) DEFAULT NULL,
   `name` varchar(255) DEFAULT NULL,
   `version` bigint(20) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8;
 
--- Dumping data for table favorit.USER_ROLES: ~31 rows (приблизно)
+-- Dumping data for table favorit.USER_ROLES: ~32 rows (приблизно)
 /*!40000 ALTER TABLE `USER_ROLES` DISABLE KEYS */;
 INSERT INTO `USER_ROLES` (`id`, `description`, `name`, `version`) VALUES
 	(1, 'Управление пользователями', 'ROLE_ADMIN', 0),
@@ -989,7 +960,8 @@ INSERT INTO `USER_ROLES` (`id`, `description`, `name`, `version`) VALUES
 	(28, 'Право утверждения документов', 'ROLE_SUBSCRIBE_DOCUMENT', 0),
 	(29, 'Право завершения запросов по складу', 'ROLE_COMMIT_REQUEST_STOREHOUSE', 0),
 	(30, 'Право завершения запросов по ремонту', 'ROLE_COMMIT_REQUEST_REPAIR', 0),
-	(31, 'Право завершения запросов по производству', 'ROLE_COMMIT_REQUEST_PRODACTION', 0);
+	(31, 'Право завершения запросов по производству', 'ROLE_COMMIT_REQUEST_PRODACTION', 0),
+	(32, 'Право управление и редактирование всеми сообщениями', 'ROLE_MESSAGE_ADMINISTRATOR', 0);
 /*!40000 ALTER TABLE `USER_ROLES` ENABLE KEYS */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;
