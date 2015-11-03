@@ -1,11 +1,13 @@
 package ua.pp.fairwind.favorid.internalDB.model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import ua.pp.fairwind.favorid.internalDB.model.administrative.User;
 import ua.pp.fairwind.favorid.internalDB.model.directories.TaskType;
 import ua.pp.fairwind.favorid.internalDB.model.document.Document;
+import ua.pp.fairwind.favorid.internalDB.model.proxy.MyDateSerializer;
 
 import javax.persistence.*;
 import java.util.Collections;
@@ -22,14 +24,11 @@ public class Task {
     @Id
     @GeneratedValue
     Long id;
-    String name;
     String description;
+    String result;
     @ManyToOne
-    @JoinColumn(name = "task__type_id")
+    @JoinColumn(name = "task_type_id")
     TaskType taskType;
-    @ManyToOne
-    @JoinColumn(name = "counterparty_id")
-    Counterparty counterparty;
     @ManyToOne
     @JsonManagedReference
     @JoinColumn(name = "responsible_person_id")
@@ -52,7 +51,7 @@ public class Task {
     @CreatedBy
     @JoinColumn(name = "create_user_id")
     User creationUser;
-
+    Date endControlDate;
     @Version
     private long version;
 
@@ -64,12 +63,12 @@ public class Task {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getResult() {
+        return result;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setResult(String result) {
+        this.result = result;
     }
 
     public String getDescription() {
@@ -88,13 +87,6 @@ public class Task {
         this.taskType = taskType;
     }
 
-    public Counterparty getCounterparty() {
-        return counterparty;
-    }
-
-    public void setCounterparty(Counterparty counterparty) {
-        this.counterparty = counterparty;
-    }
 
     public Person getResponsible() {
         return responsible;
@@ -108,7 +100,7 @@ public class Task {
         return Collections.unmodifiableSet(executors);
     }
 
-
+    @JsonSerialize(using=MyDateSerializer.class)
     public Date getStartDate() {
         return startDate;
     }
@@ -117,6 +109,7 @@ public class Task {
         this.startDate = startDate;
     }
 
+    @JsonSerialize(using=MyDateSerializer.class)
     public Date getDedLineDate() {
         return dedLineDate;
     }
@@ -124,7 +117,7 @@ public class Task {
     public void setDedLineDate(Date dedLineDate) {
         this.dedLineDate = dedLineDate;
     }
-
+    @JsonSerialize(using=MyDateSerializer.class)
     public Date getEndDate() {
         return endDate;
     }
@@ -132,7 +125,7 @@ public class Task {
     public void setEndDate(Date endDate) {
         this.endDate = endDate;
     }
-
+    @JsonSerialize(using=MyDateSerializer.class)
     public Date getCreationDate() {
         return creationDate;
     }
@@ -141,6 +134,7 @@ public class Task {
         this.creationDate = creationDate;
     }
 
+    @JsonSerialize(using=MyDateSerializer.class)
     public Date getModificationDate() {
         return modificationDate;
     }
@@ -184,5 +178,14 @@ public class Task {
 
     public void setCreationUser(User creationUser) {
         this.creationUser = creationUser;
+    }
+
+    @JsonSerialize(using=MyDateSerializer.class)
+    public Date getEndControlDate() {
+        return endControlDate;
+    }
+
+    public void setEndControlDate(Date endControlDate) {
+        this.endControlDate = endControlDate;
     }
 }

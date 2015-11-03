@@ -4,6 +4,43 @@
  * Created by Сергей on 02.11.2015.
  */
 
+function fairwind_date_column(fieldname, label, options) {
+var _def_param = {
+format_src: 'd.m.Y H:i:s',
+format_dst: 'd.m.Y H:i:s',
+format:'d.m.yy',
+default_value:"Now",
+size:50,
+search:false,
+editable:true
+}
+var opt= $.extend(_def_param,options);
+var index=fieldname;
+if(opt.index!==null||p[t.index!==undefined])index=opt.index;
+
+var columnd_def={name:fieldname,index:opt.index,width:opt.size, editable:opt.editable, label:label,formatter:'date',search:opt.search,
+formatoptions:{
+srcformat:opt.format_src,
+newformat:opt.format_dst,
+defaultValue:null
+},
+};
+if(opt.editable){
+columnd_def['editoptions']={
+dataInit:function(el){
+var value=$(el).val();
+if(value==undefined||value==null)value=opt.default_value;
+$(el).datepicker({
+dateFormat:opt.format,
+currentText: value,
+});
+},
+};
+}
+var column= $.extend(columnd_def,opt.columnt_options);
+return column;
+}
+
 function fairwind_check_boolean(value) {
 if (value === undefined || value === null) return false;
 if (value === 'true' | value === 'TRUE') return true;
@@ -20,7 +57,7 @@ id: id
 },
 method: 'POST',
 success: function (data, status, jqXHR) {
-$(elemtn).html = '<div class="panel center-block bg-success" style="height: 100%;text-align: center;"><span class="glyphicon glyphicon-flag" style="position: relative;top: 0;transform: translateY(50%);"></span></div>';
+$(elemtn).replaceWith('<div class="panel center-block bg-success" style="height: 100%;text-align: center;"><span class="glyphicon glyphicon-flag" style="position: relative;top: 0;transform: translateY(50%);"></span></div>');
 },
 error: function (jqXHR, status, errorThrown) {
 alert(errorThrown);
@@ -38,7 +75,7 @@ id: id
 },
 method: 'POST',
 success: function (data, status, jqXHR) {
-$(elemtn).html = '<div class="panel center-block bg-success" style="height: 100%;text-align: center;"><span class="glyphicon glyphicon-check" style="position: relative;top: 0;transform: translateY(50%);"></span></div>';
+$(elemtn).replaceWith('<div class="panel center-block bg-success" style="height: 100%;text-align: center;"><span class="glyphicon glyphicon-check" style="position: relative;top: 0;transform: translateY(50%);"></span></div>');
 },
 error: function (jqXHR, status, errorThrown) {
 alert(errorThrown);
@@ -147,16 +184,15 @@ var _def_param = {
 id: 'id',
 show_field: 'name',
 requared: true,
-search: true,
+search: false,
 width: 100,
 useformater:true,
 useunformater:true
-
 }
 if (options !== null && options !== undefined) {
 if (options.post_parameter_name !== null && options.post_parameter_name !== undefined) {
 if (options.master_select_element === null || options.master_select_element === undefined) {
-options.master_select_element = opt.post_parameter_name;
+options.master_select_element = options.post_parameter_name;
 }
 _def_param.postdata_function = {};
 _def_param.postdata_function[options.post_parameter_name] = function () {
@@ -245,6 +281,7 @@ modification_parameter_name = param.parameter_name;
 } else {
 modification_parameter_name = id + '_id';
 }
+modification_object[modification_parameter_name]=value_elem;
 $(elem).wrap("<div id='" + box_name + "'></div>");
 $(elem).width = '80px';
 

@@ -1,7 +1,9 @@
 package ua.pp.fairwind.favorid.internalDB.model.messages;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import ua.pp.fairwind.favorid.internalDB.model.Person;
+import ua.pp.fairwind.favorid.internalDB.model.proxy.MyDateSerializer;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -54,7 +56,7 @@ public class MessageRecipient {
     public void setRecipient(Person recipient) {
         this.recipient = recipient;
     }
-
+    @JsonSerialize(using=MyDateSerializer.class)
     public Date getValidationDate() {
         return validationDate;
     }

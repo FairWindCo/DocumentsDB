@@ -15,7 +15,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Created by Сергей on 16.10.2015.
+ * Created by пїЅпїЅпїЅпїЅпїЅпїЅ on 16.10.2015.
  */
 @Entity
 @Table(name = "MESSAGES")
@@ -65,7 +65,7 @@ public class Message {
         }
         for(MessageRecipient in:recipientSet){
             if(in.getValidationDate()==null) {
-                if (userDetail.getUserPerson().equals(in.getRecipient())) {
+                if (userDetail.getUserPerson().equals(in.getRecipient())||userDetail.getUserPerson().getId().equals(in.getRecipient().getId())) {
                     return true;
                 }
             }

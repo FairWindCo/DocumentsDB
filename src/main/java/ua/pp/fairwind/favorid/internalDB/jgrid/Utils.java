@@ -3,7 +3,10 @@ package ua.pp.fairwind.favorid.internalDB.jgrid;
 import org.springframework.data.domain.Sort;
 
 import javax.servlet.http.HttpServletRequest;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -21,6 +24,26 @@ public class Utils {
             }catch (NumberFormatException e){
                 //do nothing
             }
+        }
+        return val;
+    }
+
+    public static Date getDateParameter(String name,String format,HttpServletRequest request){
+        Date val=null;
+        String value=request.getParameter(name);
+        if(value!=null && !value.isEmpty()){
+            if("null".equals(value)||"undifined".equals(value))return null;
+            val=getDateFromString(value,format);
+        }
+        return val;
+    }
+
+    public static Date getDateParameter(String name,HttpServletRequest request){
+        Date val=null;
+        String value=request.getParameter(name);
+        if(value!=null && !value.isEmpty()){
+            if("null".equals(value)||"undifined".equals(value))return null;
+            val=getDateFromString(value,null);
         }
         return val;
     }
@@ -165,6 +188,17 @@ public class Utils {
         try {
             return new Long(str);
         } catch (NumberFormatException e){
+            return null;
+        }
+    }
+
+    public static Date getDateFromString(String stringValue,String format){
+        if(stringValue==null || stringValue.isEmpty()) return null;
+        if(format==null || format.isEmpty())format="dd-MM-yyyy";
+        try {
+            SimpleDateFormat dateFormat = new SimpleDateFormat(format);
+            return dateFormat.parse(stringValue);
+        } catch (ParseException e){
             return null;
         }
     }

@@ -14,9 +14,9 @@
        <bean id="multipartResolver"
              class="org.springframework.web.multipart.commons.CommonsMultipartResolver" />
 
-       <mvc:resources mapping="/resources/script/images/*" location="/resources/images/"  cache-period="31556926"/>
        <mvc:resources mapping="/resources/**" location="/resources/"  cache-period="31556926"/>
-       <mvc:resources mapping="/images/*" location="/resources/images/"  cache-period="31556926"/>
+       <mvc:resources mapping="/resources/script/images/**" location="/resources/images/"  cache-period="31556926"/>
+       <mvc:resources mapping="/images/**" location="/resources/images/"  cache-period="31556926"/>
        <mvc:resources mapping="/dist/**" location="/resources/"  cache-period="31556926"/>
 
 

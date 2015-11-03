@@ -18,7 +18,7 @@
                 data: data,
                 method: 'POST',
                 success: function (data, status, jqXHR) {
-                    $(elemtn).html = '<div class="panel center-block bg-success" style="height: 100%;text-align: center;"><span class="glyphicon glyphicon-flag" style="position: relative;top: 0;transform: translateY(50%);"></span></div>';
+                    $(elemtn).replaceWith('<div class="panel center-block bg-success" style="height: 100%;text-align: center;"><span class="glyphicon glyphicon-flag" style="position: relative;top: 0;transform: translateY(50%);"></span></div>');
                 },
                 error: function (jqXHR, status, errorThrown) {
                     alert(errorThrown);
@@ -56,8 +56,8 @@
             }
 
             if(opt.check_ability){
-                if (rowObject[opt.check_field]=== null || rowObject[opt.check_field]=== undefined && fairwind_check_boolean(rowObject[opt.check_field])) {
-                    var element = $('<div onclick="fairwind_validate_click_handler(event,' + rowObject.id + ',\'' + url + '\'\''+opt.postfield+'\',this)" ' +
+                if (rowObject[opt.check_field]!== null && rowObject[opt.check_field]!== undefined && fairwind_check_boolean(rowObject[opt.check_field])) {
+                    var element = $('<div onclick="fairwind_validate_click_handler(event,' + rowObject.id + ',\'' + url + '\',\''+opt.postfield+'\',this)" ' +
                             'class="btn btn-success" pkey=' + rowObject.id + ' style="height: 100%;text-align: center;">' +
                             '<span class="glyphicon '+opt.invalid_state_icon+'"></span>' +
                             '</div>');

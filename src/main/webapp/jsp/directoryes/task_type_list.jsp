@@ -67,7 +67,7 @@
             sortname: 'id',
             viewrecords: true,
             sortorder: "asc",
-            caption:"Records",
+            caption:"<c:message code="label.tasktypes.list"/>",
             emptyrecords: "<c:message code="label.emptyrecords"/>",
             loadonce: false,
             loadComplete: function() {},

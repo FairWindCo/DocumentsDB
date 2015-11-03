@@ -57,6 +57,16 @@ public interface PersonRepository extends JpaRepository<Person,Long>{
     List<PersonProxy> findMessageUsersProxy(@Param("messageid")long messageid,Sort sort);
 
 
+    @Query("Select distinct new ua.pp.fairwind.favorid.internalDB.model.proxy.PersonProxy(u.person.id,u.person.surname,u.person.firstName,u.person.middleName,u.person.date_of_birth) from User u where u.person not in (select p from Task t join t.executors p where t.id=:taskid) and  u.person.surname like :surname ")
+    Page<PersonProxy> findTaskUsersProxyBySurname(@Param("surname")String surname,@Param("taskid")long taskid,Pageable pageRequest);
+    @Query("Select distinct new ua.pp.fairwind.favorid.internalDB.model.proxy.PersonProxy(u.person.id,u.person.surname,u.person.firstName,u.person.middleName,u.person.date_of_birth) from User u where u.person not in (select p from Task t join t.executors p where t.id=:taskid) and  u.person.surname like :surname ")
+    List<PersonProxy> findTaskUsersProxyBySurname(@Param("surname")String fio,@Param("taskid")long taskid,Sort sort);
+    @Query("Select distinct new ua.pp.fairwind.favorid.internalDB.model.proxy.PersonProxy(u.person.id,u.person.surname,u.person.firstName,u.person.middleName,u.person.date_of_birth) from User u where u.person not in (select p from Task t join t.executors p where t.id=:taskid)")
+    Page<PersonProxy> findTaskUsersProxy(@Param("taskid")long taskid,Pageable pageRequest);
+    @Query("Select distinct new ua.pp.fairwind.favorid.internalDB.model.proxy.PersonProxy(u.person.id,u.person.surname,u.person.firstName,u.person.middleName,u.person.date_of_birth) from User u where u.person not in (select p from Task t join t.executors p where t.id=:taskid)")
+    List<PersonProxy> findTaskUsersProxy(@Param("taskid")long taskid,Sort sort);
+
+
 
     @Query("select c from Contact c,Person  p where p.id=:ID and c member of p.contacts")
     Page<Contact> getContacts(@Param("ID") long id, Pageable pager);

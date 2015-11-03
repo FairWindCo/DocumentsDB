@@ -11,6 +11,7 @@
     <%@include file="/include/jgrid_include_ex.jsp" %>
     <%-- jquery.ajax-combobox --%>
     <%@include file="/include/select_include.jsp" %>
+    <%-- jquery.ajax-combobox --%>
     <%@include file="/include/te_include.jsp" %>
 
 </head>
@@ -26,7 +27,7 @@
 <div id="page-wrapper">
     <ol class="breadcrumb">
         <li><a href="${pageContext.request.contextPath}/"><c:message code="label.main"/></a></li>
-        <li><a href="#"><c:message code="label.message"/></a></li>
+        <li><a href="#"><c:message code="label.tasks"/></a></li>
     </ol>
     <div class="row">
 
@@ -34,7 +35,7 @@
 
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title"><c:message code="label.messages.view"/></h3>
+                    <h3 class="panel-title"><c:message code="label.tasks.view"/></h3>
                 </div>
                 <div class="panel-body">
                     <div>
@@ -53,33 +54,52 @@
 </body>
 <script type="text/javascript">
     $(document).ready(function () {
+        var select_object={
+
+        }
+
+        var GridData={taskTypeId:function(){return select_object.taskType_id},
+            responsible_id:function(){return select_object.responsible_id},
+        };
+
         $("#grid").jqGrid({
-            url:'${pageContext.request.contextPath}/messages/my_listing',
-            editurl:'${pageContext.request.contextPath}/messages/edit',
+            url:'${pageContext.request.contextPath}/tasks/listing',
+            editurl:'${pageContext.request.contextPath}/tasks/edit',
             datatype: 'json',
             mtype: 'POST',
             styleUI : 'Bootstrap',
             colModel:[
+                {name: "act3", width: 20,label:'&nbsp', editable:false,search:false,
+                    //formatter:fairwind_detail_create('/tasks/detail'),
+                },
                 {name:'id',index:'id', width:55, editable:false, editoptions:{readonly:true, size:10}, hidden:true,label:'<c:message code="label.id"/>'},
-                {name:'userName',width:50, editable:false, editrules:{required:false}, search:false,sort:false,label:'<c:message code="label.messages.creationUser"/>'},
-                {name:'messageText',index:'comments', width:200, editable:true, editrules:{required:true}, edittype:'textarea',label:'<c:message code="label.messages.text"/>',
+                fairwind_select_column('taskType','/tasktypes/showList','<c:message code="label.tasks.type"/>',select_object,{
+                }),
+                fairwind_select_column('responsible','/persons/userPersons','<c:message code="label.tasks.responsible"/>',select_object,{
+                    show_field:'fio'
+                }),
+                {name:'description',index:'description', width:250, editable:true, editrules:{required:false}, search:true,edittype:'textarea',label:'<c:message code="label.tasks.descriptions"/>',
                     editoptions: {rows:"5",cols:"20",dataInit:function(el){
-                        $(el).jqte();
-                    },
-                }},
-                fairwind_date_column('actual','<c:message code="label.messages.actualDate"/>',{format_dst: 'd-m-Y',format:'d-m-'}),
-                fairwind_date_column('creationDate','<c:message code="label.messages.creationDate"/>',{editable:false}),
+                            $(el).jqte();
+                        },
+                    }},
+                fairwind_date_column('startDate','<c:message code="label.tasks.startDate"/>'),
+                fairwind_date_column('dedLineDate','<c:message code="label.tasks.dedLineDate"/>'),
+                fairwind_date_column('creationDate','<c:message code="label.tasks.creationDate"/>',{editable:false}),
+                {name:'version',index:'version', width:100, editable:true, editrules:{readonly:true}, editoptions:{defaultValue:'0'}, hidden:true,label:'<c:message code="label.version"/>'},
+                {name:'commited',editable:false, hidden:true},
+                {name:'canCommite',editable:false, hidden:true},
             ],
             rowNum:10,
             rowList:[10,20,40,60],
             height: 240,
             autowidth: true,
-            rownumbers: true,
+            rownumbers: false,
             pager: '#pager',
             sortname: 'id',
             viewrecords: true,
             sortorder: "asc",
-            caption:"<c:message code="label.message.my"/>",
+            caption:"<c:message code="label.storehouse.view"/>",
             emptyrecords: "<c:message code="label.emptyrecords"/>",
             loadonce: false,
             loadComplete: function() {},
@@ -127,33 +147,32 @@
                 jQuery("#"+subgrid_id).html("<table id='"+subgrid_table_id+"' class='scroll'></table><div id='"+subgrid_pager_id+"'></div>");
                 jQuery("#"+subgrid_table_id).jqGrid({
                     pager:subgrid_pager_id,
-                    url:"${pageContext.request.contextPath}/messages/recipients?messageId="+row_id,
-                    editurl:"${pageContext.request.contextPath}/messages/editRecipient?messgeId="+row_id,
+                    url:"${pageContext.request.contextPath}/tasks/excutors?taskId="+row_id,
+                    editurl:"${pageContext.request.contextPath}/tasks/editRecipient?taskId="+row_id,
                     datatype: "json",
                     mtype: 'POST',
                     width:800,
-                    caption:"<c:message code="label.message.recipients"/>",
+                    caption:"<c:message code="label.storehouse.nomenclature_list"/>",
                     emptyrecords: "<c:message code="label.emptyrecords"/>",
                     styleUI : 'Bootstrap',
                     colModel: [
                         {name:'id',index:'id', width:50, editable:false, editoptions:{readonly:true, size:10}, hidden:true,label:'<c:message code="label.id"/>'},
-                        fairwind_select_column('fio','/messages/messagePersons?messgaeId='+row_id,'<c:message code="label.message.recipient"/>',sub_select_obj,{
+                        fairwind_select_column('fio','/tasks/executorPersons?taskid='+row_id,'<c:message code="label.message.recipient"/>',sub_select_obj,{
                             show_field:'fio',
                             useformater:false,
                             select_plugin_options:{
                                 order_by: 'person.surname'
                             }
                         }),
-                        {name:'validationDate',index:'validationDate', width:70, editable:false, label:'<c:message code="label.message.validationDate"/>'},
                     ],
                     id: "id",
                     height: '100%',
                     rowNum:20,
-                    sortname: 'recipient.surname',
+                    sortname: 'p.surname',
                     sortorder: "asc"
                 });
                 $("#"+subgrid_table_id).jqGrid('navGrid','#'+subgrid_pager_id,
-                        {edit:false, add:true, del:true, search:false},
+                        {edit:can_edit, add:can_edit, del:can_edit, search:false},
                         {/*MOD PARAM*/
                             editData:subGrisData,
                             closeAfterEdit: true,
@@ -175,16 +194,18 @@
         });
         $("#grid").jqGrid('navGrid','#pager',
                 {
-                    <sec:authorize ifAnyGranted="ROLE_MESSAGE_ADMINISTRATOR">
+                    <sec:authorize ifAnyGranted="ROLE_STOREHOUSE_MASTER">
                     edit:true,
                     add:true,
                     del:true,
                     </sec:authorize>
                     search:false},
                 {/*MOD PARAM*/
+                    editData:GridData,
                     closeAfterEdit: true,
                 },
                 {/*ADD PARAM*/
+                    editData:GridData,
                     closeOnEscape: true,
                     closeAfterAdd: true,
                     serializeEditData:function (data) {
@@ -192,11 +213,17 @@
                         return data;
                     }
                 },
-                {/*DEL PARAM*/}
+                {/*DEL PARAM*/},
+                { 	// search
+                    sopt:['cn', 'eq', 'ne', 'lt', 'gt', 'bw', 'ew'],
+                    closeOnEscape: true,
+                    multipleSearch: true,
+                    closeAfterSearch: true,
+                    multipleGroup:true
+                }
         );
 
         jQuery("#grid").jqGrid('filterToolbar',{stringResult: false,searchOnEnter:true});
-
     });
 </script>
 </html>
