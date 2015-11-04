@@ -5,11 +5,12 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.security.core.context.SecurityContextHolder;
 import ua.pp.fairwind.favorid.internalDB.model.Agreement;
 import ua.pp.fairwind.favorid.internalDB.model.Counterparty;
 import ua.pp.fairwind.favorid.internalDB.model.Person;
 import ua.pp.fairwind.favorid.internalDB.model.administrative.User;
-import ua.pp.fairwind.favorid.internalDB.model.directories.DocumentType;
+import ua.pp.fairwind.favorid.internalDB.security.UserDetailsAdapter;
 
 import javax.persistence.*;
 import java.util.Collections;
@@ -35,20 +36,12 @@ public class Document {
 
     @ManyToOne
     @JsonManagedReference
-    @JoinColumn(name = "counterparty_from_ID")
-    Counterparty counterparty_from;
+    @JoinColumn(name = "counterparty_ID")
+    Counterparty counterparty;
     @ManyToOne
     @JsonManagedReference
-    @JoinColumn(name = "counterparty_to_ID")
-    Counterparty counterparty_to;
-    @ManyToOne
-    @JsonManagedReference
-    @JoinColumn(name = "person_from_ID")
-    Person person_from;
-    @ManyToOne
-    @JsonManagedReference
-    @JoinColumn(name = "person_to_ID")
-    Person person_to;
+    @JoinColumn(name = "person_ID")
+    Person person;
     @JsonManagedReference
     @ManyToOne
     @JoinColumn(name = "agreement_ID")
@@ -131,37 +124,23 @@ public class Document {
         this.description = description;
     }
 
-    public Counterparty getCounterparty_from() {
-        return counterparty_from;
+    public Counterparty getCounterparty() {
+        return counterparty;
     }
 
-    public void setCounterparty_from(Counterparty counterparty_from) {
-        this.counterparty_from = counterparty_from;
+    public void setCounterparty(Counterparty counterparty) {
+        this.counterparty = counterparty;
     }
 
-    public Counterparty getCounterparty_to() {
-        return counterparty_to;
+
+    public Person getPerson() {
+        return person;
     }
 
-    public void setCounterparty_to(Counterparty counterparty_to) {
-        this.counterparty_to = counterparty_to;
+    public void setPerson(Person person) {
+        this.person= person;
     }
 
-    public Person getPerson_from() {
-        return person_from;
-    }
-
-    public void setPerson_from(Person person_from) {
-        this.person_from = person_from;
-    }
-
-    public Person getPerson_to() {
-        return person_to;
-    }
-
-    public void setPerson_to(Person person_to) {
-        this.person_to = person_to;
-    }
 
     public Agreement getAgreement() {
         return agreement;
@@ -225,5 +204,138 @@ public class Document {
 
     public void setVersion(long version) {
         this.version = version;
+    }
+
+    public void addSubscriber(DocumentSubscribe subscriber){
+        if(subscriber!=null){
+            if(subscriber.document!=null){
+                subscriber.document.subscribes.remove(subscriber);
+            }
+            subscriber.document=this;
+            subscribes.add(subscriber);
+        }
+    }
+
+    public void removeSubscriber(DocumentSubscribe subscriber){
+        if(subscriber!=null){
+            subscriber.document=null;
+            subscribes.remove(subscriber);
+        }
+    }
+
+    public void addSecurity(DocumentSecurity security){
+        if(security!=null){
+            if(security.document!=null){
+                security.document.securities.remove(security);
+            }
+            security.document=this;
+            securities.add(security);
+        }
+    }
+
+    public void removeSecurity(DocumentSecurity security){
+        if(security!=null){
+            security.document=null;
+            securities.remove(security);
+        }
+    }
+
+    public void addAtachment(Document atacment){
+        if(atacment!=null){
+            atachments.add(atacment);
+        }
+    }
+
+    public void removeAtachment(Document atacment){
+        if(atacment!=null){
+            atachments.remove(atacment);
+        }
+    }
+
+    public boolean checkPermission(SECURITY_ACTION action){
+        if(security_model==DOCUMENT_SECURITY_MODEL.ACCESS_FOR_ALL)return true;
+        UserDetailsAdapter userDetail=(UserDetailsAdapter) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if(userDetail==null && userDetail.getUserPerson()==null){
+            return false;
+        }
+
+        if(security_model==DOCUMENT_SECURITY_MODEL.ACCESS_FOR_OWNER){
+            if(creationUser!=null && creationUser.getPerson()!=null){
+                Person creator=creationUser.getPerson();
+                if(userDetail.getUserPerson().equals(creator) || userDetail.getUserPerson().getId().equals(creator.getId())){
+                    return true;
+                }
+                return false;
+            } else {
+                return true;
+            }
+        } else {
+            boolean res=false;
+            if (securities.isEmpty()) return true;
+            for (DocumentSecurity in : securities) {
+                if (in.getPerson() == null) {
+                    if (in.getPerson()!=null && (userDetail.getUserPerson().equals(in.getPerson()) || userDetail.getUserPerson().getId().equals(in.getPerson().getId()))) {
+                        if (in.action == action || in.action==SECURITY_ACTION.ALL_ACTION) {
+                            if (in.permission == SECURITY_PERMISSION.RESTRICT) return false;
+                            res = true;
+                        }
+                    }
+                }
+            }
+            return res;
+        }
+    }
+
+    public boolean isCanEdit(){
+        return checkPermission(SECURITY_ACTION.EDIT_ACTION);
+    }
+
+    public boolean isCanView(){
+        return checkPermission(SECURITY_ACTION.VIEW_ACTION);
+    }
+
+    public boolean isCanDelete(){
+        return checkPermission(SECURITY_ACTION.DELETE_ACTION);
+    }
+
+    public boolean isCanSubscribe(){
+        UserDetailsAdapter userDetail=(UserDetailsAdapter) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if(userDetail==null && userDetail.getUserPerson()==null){
+            return false;
+        }
+        if (subscribes.isEmpty()) return false;
+        for (DocumentSubscribe in : subscribes) {
+            if (in.getPerson() == null) {
+                if (in.getPerson()!=null && (userDetail.getUserPerson().equals(in.getPerson()) || userDetail.getUserPerson().getId().equals(in.getPerson().getId()))) {
+                    if(in.getSubscribed()!=null)return false;
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean isSubscribed(){
+        UserDetailsAdapter userDetail=(UserDetailsAdapter) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if(userDetail==null && userDetail.getUserPerson()==null){
+            return false;
+        }
+        if (subscribes.isEmpty()) return false;
+        for (DocumentSubscribe in : subscribes) {
+            if (in.getPerson() == null) {
+                if (in.getPerson()!=null && (userDetail.getUserPerson().equals(in.getPerson()) || userDetail.getUserPerson().getId().equals(in.getPerson().getId()))) {
+                    if(in.getSubscribed()!=null)return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public DOCUMENT_SECURITY_MODEL getSecurity_model() {
+        return security_model;
+    }
+
+    public void setSecurity_model(DOCUMENT_SECURITY_MODEL security_model) {
+        this.security_model = security_model;
     }
 }

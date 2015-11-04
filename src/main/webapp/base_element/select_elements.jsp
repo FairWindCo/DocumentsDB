@@ -222,6 +222,14 @@
                 sub_filds: opt.sub_filds
             }
 
+        } else {
+            opt.select_params=$.extend({
+                show_field: opt.show_field,
+                id: opt.id,
+                postdata: opt.postdata_function,
+                parameter_name: opt.parameter_name,
+                sub_filds: opt.sub_filds
+            },  opt.select_params);
         }
 
 

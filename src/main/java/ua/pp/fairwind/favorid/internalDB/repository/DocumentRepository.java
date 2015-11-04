@@ -16,15 +16,15 @@ import java.util.List;
  */
 
 public interface DocumentRepository extends JpaRepository<Document,Long>{
-    @Query("Select new ua.pp.fairwind.favorid.internalDB.model.proxy.DocumentProxy(d.id,d.documentType.name,d.number,d.name,d.counterparty_from.shortName,d.counterparty_to.shortName,d.person_from.surname,d.person_to.surname,d.creationDate) from Document d " +
-            "where d.number like %:serach% or  d.name like %:serach% or d.counterparty_from.shortName like %:serach% or d.counterparty_to.shortName like %:serach%")
+    @Query("Select new ua.pp.fairwind.favorid.internalDB.model.proxy.DocumentProxy(d.id,d.documentType.name,d.number,d.name,d.counterparty.shortName,d.person.surname,d.agreement.name,d.creationDate) from Document d " +
+            "where d.number like %:serach% or  d.name like %:serach% or d.counterparty.shortName like %:serach%")
     Page<DocumentProxy> findProxy(@Param("serach") String serach, Pageable pageRequest);
-    @Query("Select new ua.pp.fairwind.favorid.internalDB.model.proxy.DocumentProxy(d.id,d.documentType.name,d.number,d.name,d.counterparty_from.shortName,d.counterparty_to.shortName,d.person_from.surname,d.person_to.surname,d.creationDate) from Document d " +
-            "where d.number like %:serach% or  d.name like %:serach% or d.counterparty_from.shortName like %:serach% or d.counterparty_to.shortName like %:serach%")
+    @Query("Select new ua.pp.fairwind.favorid.internalDB.model.proxy.DocumentProxy(d.id,d.documentType.name,d.number,d.name,d.counterparty.shortName,d.person.surname,d.agreement.name,d.creationDate) from Document d " +
+            "where d.number like %:serach% or  d.name like %:serach% or d.counterparty.shortName like %:serach%")
     List<DocumentProxy> findProxy(@Param("serach") String serach, Sort sort);
-    @Query("Select new ua.pp.fairwind.favorid.internalDB.model.proxy.DocumentProxy(d.id,d.documentType.name,d.number,d.name,d.counterparty_from.shortName,d.counterparty_to.shortName,d.person_from.surname,d.person_to.surname,d.creationDate) from Document d ")
+    @Query("Select new ua.pp.fairwind.favorid.internalDB.model.proxy.DocumentProxy(d.id,d.documentType.name,d.number,d.name,d.counterparty.shortName,d.person.surname,d.agreement.name,d.creationDate) from Document d ")
     Page<DocumentProxy> findProxy(Pageable pageRequest);
-    @Query("Select new ua.pp.fairwind.favorid.internalDB.model.proxy.DocumentProxy(d.id,d.documentType.name,d.number,d.name,d.counterparty_from.shortName,d.counterparty_to.shortName,d.person_from.surname,d.person_to.surname,d.creationDate) from Document d ")
+    @Query("Select new ua.pp.fairwind.favorid.internalDB.model.proxy.DocumentProxy(d.id,d.documentType.name,d.number,d.name,d.counterparty.shortName,d.person.surname,d.agreement.name,d.creationDate) from Document d ")
     List<DocumentProxy> findProxy(Sort sort);
 
     Page<Document> findByName(String name,Pageable pageRequest);

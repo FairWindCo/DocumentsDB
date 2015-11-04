@@ -1,4 +1,4 @@
-package ua.pp.fairwind.favorid.internalDB.model.directories;
+package ua.pp.fairwind.favorid.internalDB.model.document;
 
 import javax.persistence.*;
 
@@ -13,6 +13,8 @@ public class DocumentType {
     Long id;
     String name;
     String numberFormat;
+    @Column(nullable = false)
+    DOCUMENT_CLASS documentClass=DOCUMENT_CLASS.INTERNAL;
     @Version
     long version;
     long counter;
@@ -55,5 +57,13 @@ public class DocumentType {
 
     public void setVersion(long version) {
         this.version = version;
+    }
+
+    public DOCUMENT_CLASS getDocumentClass() {
+        return documentClass;
+    }
+
+    public void setDocumentClass(DOCUMENT_CLASS documentClass) {
+        this.documentClass = documentClass;
     }
 }

@@ -14,6 +14,7 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import ua.pp.fairwind.favorid.internalDB.jgrid.JGridRowsResponse;
 import ua.pp.fairwind.favorid.internalDB.jgrid.JSComboExpenseResp;
+import ua.pp.fairwind.favorid.internalDB.jgrid.Utils;
 import ua.pp.fairwind.favorid.internalDB.model.Agreement;
 import ua.pp.fairwind.favorid.internalDB.model.Contact;
 import ua.pp.fairwind.favorid.internalDB.model.Counterparty;
@@ -451,7 +452,8 @@ public class ConterpartyController {
     @Transactional(readOnly = true)
     @RequestMapping(value = "/showListAgreements", method = RequestMethod.GET)
     @ResponseBody
-    public Object simpleAgrimentsList(@RequestParam(required = false) Integer page_num, @RequestParam(required = false) Integer per_page,@RequestParam(value = "pkey_val[]",required = false) String pkey,@RequestParam(value = "q_word[]",required = false) String[] qword,@RequestParam(required = false) Long counterpart_id) {
+    public Object simpleAgrimentsList(@RequestParam(required = false) Integer page_num, @RequestParam(required = false) Integer per_page,@RequestParam(value = "pkey_val[]",required = false) String pkey,@RequestParam(value = "q_word[]",required = false) String[] qword,HttpServletRequest request) {
+        Long counterpart_id= Utils.getLongParameter("counterpart_id",request);
         //Sort sort= FormSort.formSortFromSortDescription(orderby);
         Sort sort=new Sort(Sort.Direction.ASC,"name");
         PageRequest pager=null;

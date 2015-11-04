@@ -12,21 +12,19 @@ public class DocumentProxy {
     final String documentType;
     final String number;
     final String name;
-    final String from;
-    final String to;
-    final String from_person;
-    final String to_person;
+    final String respondent_firm;
+    final String respondent_person;
+    final String agriment;
     final String date;
 
-    public DocumentProxy(long id, String documentType, String number, String name, String from, String to, String from_person, String to_person, Date date) {
+    public DocumentProxy(long id, String documentType, String number, String name, String respondent_firm, String respondent_person, String agriment, Date date) {
         this.id = id;
         this.documentType = documentType;
         this.number = number;
         this.name = name;
-        this.from = from;
-        this.to = to;
-        this.from_person = from_person;
-        this.to_person = to_person;
+        this.respondent_firm=respondent_firm;
+        this.respondent_person=respondent_person;
+        this.agriment=agriment;
         this.date = formater.format(date);
     }
 
@@ -50,23 +48,19 @@ public class DocumentProxy {
         return name;
     }
 
-    public String getFrom() {
-        return from;
-    }
-
-    public String getTo() {
-        return to;
-    }
-
-    public String getFrom_person() {
-        return from_person;
-    }
-
-    public String getTo_person() {
-        return to_person;
-    }
-
     public String getDate() {
         return date;
+    }
+
+    public String getRespondent_firm() {
+        return respondent_firm;
+    }
+
+    public String getRespondent_person() {
+        return respondent_person;
+    }
+
+    public String getAgriment() {
+        return agriment;
     }
 }

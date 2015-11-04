@@ -10,21 +10,17 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ua.pp.fairwind.favorid.internalDB.jgrid.JGridRowsResponse;
 import ua.pp.fairwind.favorid.internalDB.jgrid.JSComboExpenseResp;
 import ua.pp.fairwind.favorid.internalDB.jgrid.Utils;
+import ua.pp.fairwind.favorid.internalDB.model.Agreement;
 import ua.pp.fairwind.favorid.internalDB.model.Counterparty;
 import ua.pp.fairwind.favorid.internalDB.model.Person;
 import ua.pp.fairwind.favorid.internalDB.model.administrative.User;
-import ua.pp.fairwind.favorid.internalDB.model.directories.DocumentType;
-import ua.pp.fairwind.favorid.internalDB.model.document.Document;
-import ua.pp.fairwind.favorid.internalDB.model.document.DocumentFile;
-import ua.pp.fairwind.favorid.internalDB.model.document.DocumentSecurity;
-import ua.pp.fairwind.favorid.internalDB.model.document.DocumentSubscribe;
+import ua.pp.fairwind.favorid.internalDB.model.document.*;
 import ua.pp.fairwind.favorid.internalDB.model.proxy.DocumentProxy;
 import ua.pp.fairwind.favorid.internalDB.repository.*;
 import ua.pp.fairwind.favorid.internalDB.security.UserDetailsAdapter;
@@ -61,6 +57,8 @@ public class DocumentController {
     DocumentSubscribeRepository documentSubscribeRepository;
     @Autowired
     DocumentFileRepository documentFileRepository;
+    @Autowired
+    AgrimentRepository agrimentRepository;
 
 
     @Secured("ROLE_USER")
@@ -231,13 +229,42 @@ public class DocumentController {
         }
     }
 
+
+
+    private boolean updateDocument(Document document,HttpServletRequest request,HttpServletResponse response){
+        Long typeId= Utils.getLongParameter("documentType_key",request);
+        if(typeId!=null){
+            DocumentType dt=documentTypeRepository.findOne(typeId);
+            if(dt!=null)document.setDocumentType(dt);
+        }
+        Long from_firm=Utils.getLongParameter("counterprty_id",request);
+        if(from_firm!=null){
+            Counterparty from=counterpartyRepository.findOne(from_firm);
+            if(from!=null)document.setCounterparty(from);
+        }
+        Long from_person=Utils.getLongParameter("person_id",request);
+        if(from_person!=null){
+            Person from=personRepository.findOne(from_person);
+            if(from!=null)document.setPerson(from);
+        }
+        Long agr=Utils.getLongParameter("agreement_id",request);
+        if(agr!=null){
+            Agreement agreement=agrimentRepository.findOne(agr);
+            if(agreement!=null)document.setAgreement(agreement);
+        }
+        Long security_model=Utils.getLongParameter("security_model",request);
+        if(security_model!=null){
+            document.setSecurity_model(DOCUMENT_SECURITY_MODEL.fromInteger(security_model.intValue()));
+        }
+        document.setName(request.getParameter("name"));
+        document.setDescription(request.getParameter("description"));
+        document.setNumber(request.getParameter("number"));
+        return true;
+    }
+
     @Transactional(readOnly = false)
     @RequestMapping(value = "/edit", method = {RequestMethod.POST,RequestMethod.GET})
-    public void editor(@RequestParam String oper,Document document,BindingResult result,HttpServletRequest request,HttpServletResponse response)throws IOException {
-        if(result.hasErrors()){
-            response.sendError(400,result.toString());
-            return;
-        }
+    public void editor(@RequestParam String oper,@RequestParam(required = false)Long id,HttpServletRequest request,HttpServletResponse response)throws IOException {
         UserDetailsAdapter userDetail=(UserDetailsAdapter)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if(userDetail==null){
             response.sendError(403, "FORBIDDEN!");
@@ -247,31 +274,8 @@ public class DocumentController {
             case "add":
                 if(userDetail.hasRole("ROLE_ADD_DOCUMENTS")) {
                     //document.setCreationUser(userDetail.getUserP());
-                    Long typeId= Utils.getLongParameter("documentType_key",request);
-                    if(typeId!=null){
-                        DocumentType dt=documentTypeRepository.findOne(typeId);
-                        if(dt!=null)document.setDocumentType(dt);
-                    }
-                    Long from_firm=Utils.getLongParameter("counterprty_from_id",request);
-                    if(from_firm!=null){
-                        Counterparty from=counterpartyRepository.findOne(from_firm);
-                        if(from!=null)document.setCounterparty_from(from);
-                    }
-                    Long to_firm=Utils.getLongParameter("counterprty_to_id",request);
-                    if(to_firm!=null){
-                        Counterparty to=counterpartyRepository.findOne(to_firm);
-                        if(to!=null)document.setCounterparty_to(to);
-                    }
-                    Long from_person=Utils.getLongParameter("person_from_id",request);
-                    if(from_person!=null){
-                        Person from=personRepository.findOne(from_person);
-                        if(from!=null)document.setPerson_from(from);
-                    }
-                    Long to_person=Utils.getLongParameter("person_to_id",request);
-                    if(to_person!=null){
-                        Person to=personRepository.findOne(to_person);
-                        if(to!=null)document.setPerson_to(to);
-                    }
+                    Document document=new Document();
+                    if(updateDocument(document,request,response));
                     documentRepository.save(document);
                     response.setStatus(200);
                 } else {
@@ -280,44 +284,19 @@ public class DocumentController {
                 break;
             case "edit":
                 if(userDetail.hasRole("ROLE_EDIT_DOCUMENTS")) {
-                    Document cpt = documentRepository.findOne(document.getId());
-                    if (document != null) {
-                        if (cpt.getVersion() <= document.getVersion()) {
-                            cpt.setNumber(document.getNumber());
-                            cpt.setName(document.getName());
-                            cpt.setDescription(document.getDescription());
-                            Long typeId= Utils.getLongParameter("documentType_key",request);
-                            if(typeId!=null){
-                                DocumentType dt=documentTypeRepository.findOne(typeId);
-                                if(dt!=null)cpt.setDocumentType(dt);
+                    Document cpt = documentRepository.findOne(id);
+                    Long version=Utils.getLongParameter("version",request);
+                    if (cpt != null&&version!=null) {
+                        if (cpt.getVersion() <= version) {
+                            if (updateDocument(cpt, request, response)) {
+                                documentRepository.save(cpt);
+                                response.setStatus(200);
                             }
-                            Long from_firm=Utils.getLongParameter("counterprty_from_id",request);
-                            if(from_firm!=null){
-                                Counterparty from=counterpartyRepository.findOne(from_firm);
-                                if(from!=null)cpt.setCounterparty_from(from);
-                            }
-                            Long to_firm=Utils.getLongParameter("counterprty_to_id",request);
-                            if(to_firm!=null){
-                                Counterparty to=counterpartyRepository.findOne(to_firm);
-                                if(to!=null)cpt.setCounterparty_to(to);
-                            }
-                            Long from_person=Utils.getLongParameter("person_from_id",request);
-                            if(from_person!=null){
-                                Person from=personRepository.findOne(from_person);
-                                if(from!=null)cpt.setPerson_from(from);
-                            }
-                            Long to_person=Utils.getLongParameter("person_to_id",request);
-                            if(to_person!=null){
-                                Person to=personRepository.findOne(to_person);
-                                if(to!=null)cpt.setPerson_to(to);
-                            }
-                            documentRepository.save(cpt);
-                            response.setStatus(200);
                         } else {
                             response.sendError(400, "ANOTHER TRANSACTION MODIFICATION!");
                         }
                     } else {
-                        response.sendError(404, "NO Counterpart WITH ID " + document.getId() + " FOUND");
+                        response.sendError(404, "NO Counterpart WITH ID " + id + " FOUND");
                     }
                 } else {
                     response.sendError(403, "FORBIDDEN!");
@@ -325,7 +304,7 @@ public class DocumentController {
                 break;
             case "del":
                 if(userDetail.hasRole("ROLE_DELETE_DOCUMENTS")) {
-                    documentRepository.delete(document.getId());
+                    documentRepository.delete(id);
                     response.setStatus(200);
                 } else {
                     response.sendError(403, "FORBIDDEN!");
@@ -509,6 +488,66 @@ public class DocumentController {
                 }
                 return new JSComboExpenseResp<>(page);
             }
+        }
+    }
+
+    @Transactional(readOnly = false)
+    @RequestMapping(value = "/editSecurity", method = {RequestMethod.POST,RequestMethod.GET})
+    public void editorSecurity(@RequestParam String oper,@RequestParam(required = false) Long id,@RequestParam long documentID,@RequestParam(required = false) Long personID,HttpServletRequest request,HttpServletResponse response)throws IOException {
+        Document document=documentRepository.findOne(documentID);
+        if(document==null){
+            response.sendError(404,"Document not found!");
+            return;
+        }
+        switch (oper) {
+            case "add": {
+                if (personID == null) {
+                    response.sendError(404, "Person not found!");
+                    return;
+                }
+                DocumentSecurity ds =new DocumentSecurity();
+                Person person = personRepository.findOne(personID);
+                ds.setDocument(document);
+                ds.setPerson(person);
+                Long action_id=Utils.getLongParameter("action_id",request);
+                if(action_id!=null){
+                    ds.setAction(SECURITY_ACTION.fromInteger(action_id.intValue()));
+                }
+                Long permision_id=Utils.getLongParameter("permision_id",request);
+                if(permision_id!=null){
+                    ds.setPermission(SECURITY_PERMISSION.fromInteger(permision_id.intValue()));
+                }
+                documentSecurityRepository.save(ds);
+                documentRepository.save(document);
+            }break;
+            case "edit": {
+                DocumentSecurity ds = documentSecurityRepository.findOne(id);
+                if (personID == null || ds==null) {
+                    response.sendError(404, "Person not found!");
+                    return;
+                }
+                Person person = personRepository.findOne(personID);
+                ds.setDocument(document);
+                ds.setPerson(person);
+                Long action_id=Utils.getLongParameter("action_id",request);
+                if(action_id!=null){
+                    ds.setAction(SECURITY_ACTION.fromInteger(action_id.intValue()));
+                }
+                Long permision_id=Utils.getLongParameter("permision_id",request);
+                if(permision_id!=null){
+                    ds.setPermission(SECURITY_PERMISSION.fromInteger(permision_id.intValue()));
+                }
+                documentSecurityRepository.save(ds);
+                documentRepository.save(document);
+            }break;
+            case "del":
+                DocumentSecurity ds = documentSecurityRepository.findOne(id);
+                document.removeSecurity(ds);
+                documentSecurityRepository.delete(ds);
+                documentRepository.save(document);
+            default:
+                response.sendError(406, "UNKNOWN OPERATION");
+
         }
     }
 

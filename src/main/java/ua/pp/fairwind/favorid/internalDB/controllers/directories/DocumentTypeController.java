@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import ua.pp.fairwind.favorid.internalDB.jgrid.JGridRowsResponse;
 import ua.pp.fairwind.favorid.internalDB.jgrid.JSComboExpenseResp;
-import ua.pp.fairwind.favorid.internalDB.model.directories.DocumentType;
+import ua.pp.fairwind.favorid.internalDB.jgrid.Utils;
+import ua.pp.fairwind.favorid.internalDB.model.document.DOCUMENT_CLASS;
+import ua.pp.fairwind.favorid.internalDB.model.document.DocumentType;
 import ua.pp.fairwind.favorid.internalDB.repository.DocumentTypeRepository;
 
 import javax.servlet.http.HttpServletRequest;
@@ -155,6 +157,55 @@ public class DocumentTypeController {
                     page = repositoryDocumentType.findByNameContains(qword[0],sort);
                 } else {
                     page = repositoryDocumentType.findAll(sort);
+                }
+                return new JSComboExpenseResp<>(page);
+            }
+        }
+    }
+
+    private DOCUMENT_CLASS getDocumentclass(HttpServletRequest request){
+        Long id= Utils.getLongParameter("class",request);
+        if(id==null)return DOCUMENT_CLASS.INTERNAL;
+        if(id==1L)return DOCUMENT_CLASS.IN;
+        if(id==2L)return DOCUMENT_CLASS.OUT;
+        return DOCUMENT_CLASS.INTERNAL;
+    }
+
+    @Transactional(readOnly = true)
+    @RequestMapping(value = "/showTypedList", method = RequestMethod.GET)
+    @ResponseBody
+    public Object simpleClientList(@RequestParam(required = false) Integer page_num, @RequestParam(required = false) Integer per_page,@RequestParam(value = "pkey_val[]",required = false) String pkey,@RequestParam(value = "q_word[]",required = false) String[] qword,HttpServletRequest request) {
+        DOCUMENT_CLASS document_class=getDocumentclass(request);
+        // Retrieve all persons by delegating the call to PersonService
+        //Sort sort= FormSort.formSortFromSortDescription(orderby);
+        Sort sort=new Sort(Sort.Direction.ASC,"name");
+        PageRequest pager=null;
+        if(page_num!=null && per_page!=null) {
+            page_num= page_num<1?1:page_num;
+            pager = new PageRequest(page_num - 1, per_page, sort);
+        }
+        if(pager!=null) {
+            Page<DocumentType> page;
+            if (qword != null && qword.length > 0) {
+                page = repositoryDocumentType.findByNameContainsAndDocumentClass(qword[0], document_class, pager);
+            } else {
+                page = repositoryDocumentType.findByDocumentClass(document_class, pager);
+            }
+            return new JSComboExpenseResp<>(page);
+        } else {
+            if(pkey!=null && !pkey.isEmpty()){
+                Long key=Long.valueOf(pkey);
+                DocumentType ft=null;
+                if(key!=null) {
+                    ft = repositoryDocumentType.findOne(key);
+                }
+                return ft;
+            } else {
+                List<DocumentType> page;
+                if (qword != null && qword.length > 0) {
+                    page = repositoryDocumentType.findByNameContainsAndDocumentClass(qword[0], document_class);
+                } else {
+                    page = repositoryDocumentType.findByDocumentClass(document_class,sort);
                 }
                 return new JSComboExpenseResp<>(page);
             }

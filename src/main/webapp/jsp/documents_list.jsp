@@ -11,6 +11,7 @@
     <%@include file="/include/jgrid_include_ex.jsp" %>
     <%-- jquery.ajax-combobox --%>
     <%@include file="/include/select_include.jsp" %>
+    <%@include file="/include/te_include.jsp" %>
 
 </head>
 <body>
@@ -52,16 +53,12 @@
 </body>
 <script type="text/javascript">
     $(document).ready(function () {
-        var documentType_id;
-        var counterprty_from_id=1;
-        var counterprty_to_id=1;
-        var person_from_id;
-        var person_to_id;
-        var GridData={documentType_key:function(){return documentType_id},
-            counterprty_to_id:function(){return counterprty_to_id},
-            counterprty_from_id:function(){return counterprty_from_id},
-            person_from_id:function(){return person_from_id},
-            person_to_id:function(){return person_to_id}
+        var select_obj={};
+        var GridData={
+            documentType_key:function(){return select_obj.documentType_name_id},
+            counterprty_id:function(){return select_obj.counterprty_id},
+            person_id:function(){return select_obj.person_id},
+            agreement_id:function(){return select_obj.agreement_id}
         };
         $("#grid").jqGrid({
             url:'${pageContext.request.contextPath}/documents/listing',
@@ -69,180 +66,60 @@
             datatype: 'json',
             mtype: 'POST',
             styleUI : 'Bootstrap',
-            colNames:['<c:message code="label.id"/>', '<c:message code="label.documents.table.col_title.number"/>', '<c:message code="label.documents.table.col_title.name"/>','<c:message code="label.documents.table.col_title.document_type"/>','<c:message code="label.documents.table.col_title.counterpart_from"/>','<c:message code="label.documents.table.col_title.person_from"/>','<c:message code="label.documents.table.col_title.counterpart_to"/>','<c:message code="label.documents.table.col_title.person_to"/>', '<c:message code="label.documents.table.col_title.description"/>','<c:message code="label.version"/>'],
             colModel:[
-                {name:'id',index:'id', width:55, editable:false, editoptions:{readonly:true, size:10}, hidden:true},
-                {name:'number',index:'number', width:100, editable:true, editrules:{required:true}, editoptions:{size:10}},
-                {name:'name',index:'name', width:100, editable:true, editrules:{required:false}, editoptions:{size:10},search:false},
-                    {name:'documentType_name', width:100, editable:true, editrules:{edithidden:true,required:false},jsonmap:'documentType',search:false,editoptions:{
-                        /**/
-                        dataInit : function (elem) {
-                            var value_elem=$(elem).val();
-                            $(elem).wrap("<div></div>");
-                            $(elem).width='80px';
-                            $(elem).ajaxComboBox('${pageContext.request.contextPath}/documenttypes/showList',
-                                    {lang: 'en',
-                                        db_table: 'nation',
-                                        per_page: 20,
-                                        navi_num: 10,
-                                        select_only: true,
-                                        primary_key: 'id',
-                                        show_field: 'name',
-                                        field:'name',
-                                        //recalc_width:false,
-                                        button_img:'${pageContext.request.contextPath}/resources/images/btn.png',
-                                        init_record: [value_elem],
-                                        bind_to:'personIDkey_setup',
-                                    }).bind('personIDkey_setup', function() {
-                                        //$('#documentType_key').val($('#documentType_name_primary_key').val());
-                                        documentType_id=$('#documentType_name_primary_key').val();
-                                    });
-                        }/**/
-                        },formatter:function(cellvalue, options, rowObject ){
-                            if(cellvalue===null || cellvalue===undefined)return '';
-                            return '<p pkey='+cellvalue.id+'>'+cellvalue.name+'</p>'
-                        },unformat:function(cellvalue, options, cellObject ){
-                            var element=$(cellObject).html();
-                            return $(element).attr('pkey');
-                        }
+                {name:'id',index:'id', width:55, editable:false, editoptions:{readonly:true, size:10}, hidden:true, label:'<c:message code="label.id"/>'},
+                {name:'number',index:'number', width:100, editable:true, editrules:{required:true}, editoptions:{size:10},label:'<c:message code="label.documents.table.col_title.number"/>'},
+                {name:'name',index:'name', width:100, editable:true, editrules:{required:false}, editoptions:{size:10},search:false,label:'<c:message code="label.documents.table.col_title.name"/>'},
+                {name:'class',width:30, editable:true, search:false,edittype:'select',
+                    editrules:{required:true},
+                    label:'<c:message code="label.documents.table.col_title.class"/>',jsonmap:'documentType.documentClass',
+                    editoptions:{value:{
+                        0:'<c:message code="label.INTERNAL"/>',
+                        1:'<c:message code="label.IN"/>',
+                        2:'<c:message code="label.OUT"/>',
                     },
-                {name:'from_counterperty', width:100, editable:true, editrules:{edithidden:true,required:false},jsonmap:'counterparty_from.shortName',search:false,editoptions:{
-                    /**/
-                    dataInit : function (elem) {
-                        var value_elem=$(elem).val();
-                        $(elem).wrap("<div></div>");
-                        if(value_elem===null || value_elem===undefined || !(value_elem)){
-                            value_elem=counterprty_from_id;
-                        }
-                        //counterprty_from_id=value_elem;
-                        $(elem).width='80px';
-                        $(elem).ajaxComboBox('${pageContext.request.contextPath}/counterparts/showList',
-                                {lang: 'en',
-                                    db_table: 'nation',
-                                    per_page: 20,
-                                    navi_num: 10,
-                                    select_only: true,
-                                    primary_key: 'id',
-                                    show_field: 'shortName',
-                                    field:'shortName',
-                                    //recalc_width:false,
-                                    button_img:'${pageContext.request.contextPath}/resources/images/btn.png',
-                                    init_record: [value_elem],
-                                    bind_to:'key_setup',
-                                }).bind('key_setup', function() {
-                                    counterprty_from_id=$('#from_counterperty_primary_key').val();
-                                });
-                    }/**/
-                },formatter:function(cellvalue, options, rowObject ){
-                    if(cellvalue===null || cellvalue===undefined)return '';
-                    return '<p pkey='+cellvalue.id+'>'+cellvalue.shortName+'</p>'
-                },unformat:function(cellvalue, options, cellObject ){
-                    var element=$(cellObject).html();
-                    return $(element).attr('pkey');
-                }
+                        dataEvents: [
+                            { type: 'click', data: { i: 7 }, fn: function(e) {
+                                    select_obj.class=e.currentTarget.value;
+                                }
+                            },
+                        ]
+                    }
                 },
-                {name:'from_person', width:100, editable:true, editrules:{edithidden:true,required:false},jsonmap:'person_from.surname',search:false,editoptions:{
-                    /**/
-                    dataInit : function (elem) {
-                        var value_elem=$(elem).val();
-                        person_from_id=value_elem;
-                        $(elem).wrap("<div></div>");
-                        $(elem).width='80px';
-                        $(elem).ajaxComboBox('${pageContext.request.contextPath}/persons/showList',
-                                {lang: 'en',
-                                    db_table: 'nation',
-                                    per_page: 20,
-                                    navi_num: 10,
-                                    postData:{'firmID':function(){return counterprty_from_id}},
-                                    select_only: true,
-                                    primary_key: 'id',
-                                    show_field: 'surname',
-                                    field:'surname',
-                                    //recalc_width:false,
-                                    button_img:'${pageContext.request.contextPath}/resources/images/btn.png',
-                                    init_record: [value_elem],
-                                    bind_to:'key_setup',
-                                }).bind('key_setup', function() {
-                                    person_from_id=$('#from_person_primary_key').val();
-                                });
-                    }/**/
-                },formatter:function(cellvalue, options, rowObject ){
-                    if(cellvalue===null || cellvalue===undefined)return '';
-                    return '<p pkey='+cellvalue.id+'>'+cellvalue.surname+'</p>'
-                },unformat:function(cellvalue, options, cellObject ){
-                    var element=$(cellObject).html();
-                    return $(element).attr('pkey');
-                }
+                fairwind_select_column('documentType','/documenttypes/showTypedList','<c:message code="label.documents.table.col_title.document_type"/>',select_obj,{
+                    post_parameter_name:'class',
+                    master_select_element:'class',
+                    select_params:{
+                        parameter_name:'documentType_name_class'
+                    }
+                }),
+                fairwind_select_column('counterparty','/counterparts/showList','<c:message code="label.documents.table.col_title.counterpart"/>',select_obj,{
+                    show_field: 'shortName',
+                    select_params:{
+                        parameter_name:'counterprty_id'
+                    }
+                }),
+                fairwind_select_column('agreement','/counterparts/showListAgreements','<c:message code="label.documents.table.col_title.agreement"/>',select_obj,{
+                    post_parameter_name:'counterpart_id',
+                    master_select_element:'counterprty_id',
+                    select_params:{
+                        parameter_name:'agreement_id'
+                    }
+                }),
+                fairwind_select_column('person','/persons/showList','<c:message code="label.documents.table.col_title.person"/>',select_obj,{
+                    show_field: 'fio',
+                    post_parameter_name:'firmID',
+                    master_select_element:'counterprty_id',
+                    select_params:{
+                        parameter_name:'person_id'
+                    }
+                }),
+                {name:'description',index:'description', width:100, editable:true, editrules:{required:false}, search:false,edittype:'textarea',
+                    editoptions: {rows:"5",cols:"20",dataInit:function(el){
+                            $(el).jqte();
+                        },
+                    }
                 },
-                {name:'to_counterperty', width:100, editable:true, editrules:{edithidden:true,required:false},jsonmap:'counterparty_from.shortName',search:false,editoptions:{
-                    /**/
-                    dataInit : function (elem) {
-                        var value_elem=$(elem).val();
-                        $(elem).wrap("<div></div>");
-                        $(elem).width='80px';
-                        //counterprty_to_id=value_elem;
-                        if(value_elem===null || value_elem===undefined || !(value_elem)){
-                            value_elem=counterprty_to_id;
-                        }
-                        $(elem).ajaxComboBox('${pageContext.request.contextPath}/counterparts/showList',
-                                {lang: 'en',
-                                    db_table: 'nation',
-                                    per_page: 20,
-                                    navi_num: 10,
-                                    select_only: true,
-                                    primary_key: 'id',
-                                    show_field: 'shortName',
-                                    field:'shortName',
-                                    //recalc_width:false,
-                                    button_img:'${pageContext.request.contextPath}/resources/images/btn.png',
-                                    init_record: [value_elem],
-                                    bind_to:'key_setup',
-                                }).bind('key_setup', function() {
-                                    counterprty_to_id=$('#to_counterperty_primary_key').val();
-                                });
-                    }/**/
-                },formatter:function(cellvalue, options, rowObject ){
-                    if(cellvalue===null || cellvalue===undefined)return '';
-                    return '<p pkey='+cellvalue.id+'>'+cellvalue.shortName+'</p>'
-                },unformat:function(cellvalue, options, cellObject ){
-                    var element=$(cellObject).html();
-                    return $(element).attr('pkey');
-                }
-                },
-                {name:'to_person', width:100, editable:true, editrules:{edithidden:true,required:false},jsonmap:'person_from.surname',search:false,editoptions:{
-                    /**/
-                    dataInit : function (elem) {
-                        var value_elem=$(elem).val();
-                        $(elem).wrap("<div></div>");
-                        $(elem).width='80px';
-                        person_to_id=value_elem;
-                        $(elem).ajaxComboBox('${pageContext.request.contextPath}/persons/showList',
-                                {lang: 'en',
-                                    db_table: 'nation',
-                                    per_page: 20,
-                                    navi_num: 10,
-                                    postData:{'firmID':function(){return counterprty_to_id}},
-                                    select_only: true,
-                                    primary_key: 'id',
-                                    show_field: 'surname',
-                                    field:'surname',
-                                    //recalc_width:false,
-                                    button_img:'${pageContext.request.contextPath}/resources/images/btn.png',
-                                    init_record: [value_elem],
-                                    bind_to:'key_setup',
-                                }).bind('key_setup', function() {
-                                    person_to_id=$('#from_person_primary_key').val();
-                                });
-                    }/**/
-                },formatter:function(cellvalue, options, rowObject ){
-                    if(cellvalue===null || cellvalue===undefined)return '';
-                    return '<p pkey='+cellvalue.id+'>'+cellvalue.surname+'</p>'
-                },unformat:function(cellvalue, options, cellObject ){
-                    var element=$(cellObject).html();
-                    return $(element).attr('pkey');
-                }
-                },
-                {name:'description',index:'description', width:100, editable:true, editrules:{required:false}, search:false,edittype:'textarea'},
                 {name:'version',index:'version', width:100, editable:true, editrules:{readonly:true}, editoptions:{size:10,defaultValue:'0'}, hidden:true},
             ],
             rowNum:10,
@@ -288,7 +165,9 @@
                 subgrid_table_scr_id = subgrid_id+"_t_scr";
                 subgrid_pager_scr_id = subgrid_id+"_p_scr"
 
-                jQuery("#"+subgrid_id).html("<table id='"+subgrid_table_id+"' class='scroll'></table><div id='"+subgrid_pager_id+"'></div><table id='"+subgrid_table_sec_id+"' class='scroll'></table><div id='"+subgrid_pager_sec_id+"'></div><table id='"+subgrid_table_scr_id+"' class='scroll'></table><div id='"+subgrid_pager_scr_id+"'></div>");
+                jQuery("#"+subgrid_id).html("<table id='"+subgrid_table_id+"' class='scroll'></table><div id='"+subgrid_pager_id+"'></div>" +
+                        "                    <table id='"+subgrid_table_sec_id+"' class='scroll'></table><div id='"+subgrid_pager_sec_id+"'></div>" +
+                        "                    <table id='"+subgrid_table_scr_id+"' class='scroll'></table><div id='"+subgrid_pager_scr_id+"'></div>");
                 jQuery("#"+subgrid_table_id).jqGrid({
                     pager:subgrid_pager_id,
                     url:"${pageContext.request.contextPath}/documents/file_listing?document_id="+row_id,
@@ -316,10 +195,129 @@
                     dataProxy:$.jgrid.ext.ajaxFormProxy, //our charming dataProxy ^__^
                     sortorder: "asc"
                 }).jqGrid('extBindEvents');
-                $("#"+subgrid_table_id).jqGrid('navGrid','#'+subgrid_pager_id,
+                $("#"+subgrid_table_id).jqGrid('navGrid','#'+subgrid_pager_sec_id,
                         {edit:true, add:true, del:true, search:false},
                         {/*MOD PARAM*/},
                         {/*ADD PARAM*/
+                            closeOnEscape: true,
+                            closeAfterAdd: true,
+                            serializeEditData:function (data) {
+                                if(data.id=="_empty")data.id=null;
+                                return data;
+                            }
+                        }
+                );
+
+                //Таблица дескриптор безопасности
+                var select_sec_obj={};
+                var GridDataSec={
+                    person_id:function(){return select_sec_obj.person_id},
+                };
+                jQuery("#"+subgrid_table_sec_id).jqGrid({
+                    pager:subgrid_pager_sec_id,
+                    url:"${pageContext.request.contextPath}/documents/security_listing?document_id="+row_id,
+                    editurl:null,
+                    fileurl:"${pageContext.request.contextPath}/documents/editSecurity?documentID="+row_id,
+                    datatype: "json",
+                    mtype: 'POST',
+                    width:800,
+                    caption:"<c:message code="label.documents.security.title"/>",
+                    emptyrecords: "<c:message code="label.emptyrecords"/>",
+                    styleUI : 'Bootstrap',
+                    colModel: [
+                        {name:"id",index:"id",width:20,hidden:true,label:'<c:message code="label.id"/>'},
+                        {name:'action',width:30, editable:true, search:false,edittype:'select',
+                            editrules:{required:true},
+                            label:'<c:message code="label.documents.table.col_title.class"/>',jsonmap:'documentType.documentClass',
+                            editoptions:{
+                                value:{
+                                    0:'<c:message code="label.ALL_ACTION"/>',
+                                    1:'<c:message code="label.VIEW_ACTION"/>',
+                                    2:'<c:message code="label.EDIT_ACTION"/>',
+                                    3:'<c:message code="label.DELETE_ACTION"/>',
+                                },
+                            }
+                        },
+                        {name:'permission',width:30, editable:true, search:false,edittype:'select',
+                            editrules:{required:true},
+                            label:'<c:message code="label.documents.table.col_title.class"/>',jsonmap:'documentType.documentClass',
+                            editoptions:{
+                                value:{
+                                    0:'<c:message code="label.RESTRICT"/>',
+                                    1:'<c:message code="label.PERMIT"/>',
+                                },
+                            }
+                        },
+                        fairwind_select_column('person','/persons/showList','<c:message code="label.documents.table.col_title.person"/>',select_sec_obj,{
+                            show_field: 'fio',
+                            select_params:{
+                                parameter_name:'person_id'
+                            }
+                        }),
+                        {name:"version",index:"version",width:20,hidden:true,label:'<c:message code="label.version"/>'},
+                    ],
+                    id: "id",
+                    height: '100%',
+                    rowNum:20,
+                    sortname: 'fileName',
+                    dataProxy:$.jgrid.ext.ajaxFormProxy, //our charming dataProxy ^__^
+                    sortorder: "asc"
+                }).jqGrid('extBindEvents');
+                $("#"+subgrid_table_sec_id).jqGrid('navGrid','#'+subgrid_pager_sec_id,
+                        {edit:true, add:true, del:true, search:false},
+                        {/*MOD PARAM*/
+                            editData:GridDataSec,},
+                        {/*ADD PARAM*/
+                            editData:GridDataSec,
+                            closeOnEscape: true,
+                            closeAfterAdd: true,
+                            serializeEditData:function (data) {
+                                if(data.id=="_empty")data.id=null;
+                                return data;
+                            }
+                        }
+                );
+
+                //список лиц на утверждение
+                var select_sub_obj={};
+                var GridDataSub={
+                    person_id:function(){return select_sub_obj.person_id},
+                };
+                jQuery("#"+subgrid_table_scr_id).jqGrid({
+                    pager:subgrid_pager_scr_id,
+                    url:"${pageContext.request.contextPath}/documents/subscriber_listing?document_id="+row_id,
+                    editurl:null,
+                    fileurl:"${pageContext.request.contextPath}/documents/editSubscribe?documentID="+row_id,
+                    datatype: "json",
+                    mtype: 'POST',
+                    width:800,
+                    caption:"<c:message code="label.documents.subscriber.title"/>",
+                    emptyrecords: "<c:message code="label.emptyrecords"/>",
+                    styleUI : 'Bootstrap',
+                    colModel: [
+                        {name:"id",index:"id",width:20,hidden:true,label:'<c:message code="label.id"/>'},
+                        fairwind_select_column('person','/persons/showList','<c:message code="label.documents.table.col_title.person"/>',select_sub_obj,{
+                            show_field: 'fio',
+                            select_params:{
+                                parameter_name:'person_id'
+                            }
+                        }),
+                        {name:"version",index:"version",width:20,hidden:true,label:'<c:message code="label.version"/>'},
+
+                    ],
+                    id: "id",
+                    height: '100%',
+                    rowNum:20,
+                    sortname: 'fileName',
+                    dataProxy:$.jgrid.ext.ajaxFormProxy, //our charming dataProxy ^__^
+                    sortorder: "asc"
+                }).jqGrid('extBindEvents');
+                $("#"+subgrid_table_scr_id).jqGrid('navGrid','#'+subgrid_pager_scr_id,
+                        {edit:true, add:true, del:false, search:false},
+                        {/*MOD PARAM*/
+                            editData:GridDataSub,},
+                        {/*ADD PARAM*/
+                            editData:GridDataSub,
                             closeOnEscape: true,
                             closeAfterAdd: true,
                             serializeEditData:function (data) {

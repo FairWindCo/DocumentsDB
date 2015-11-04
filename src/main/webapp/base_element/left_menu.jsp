@@ -56,6 +56,11 @@
         <li>
           <a href="#"><i class="fa fa-inbox fa-fw"></i><c:message code="label.documents"/><span class="fa arrow"></span></a>
           <ul class="nav nav-second-level">
+            <sec:authorize ifAnyGranted="ROLE_DIRECTORY">
+            <li>
+              <a href="${pageContext.request.contextPath}/documenttypes/list"> <c:message code="label.menu.globaldirectory.documentstypes"></c:message></a>
+            </li>
+            </sec:authorize>
             <li>
               <a href="${pageContext.request.contextPath}/documents/list/"><c:message code="label.documents.document"/></a>
             </li>

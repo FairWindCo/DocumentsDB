@@ -113,47 +113,41 @@ CREATE TABLE IF NOT EXISTS `Counterparty_CONTACTS` (
 DROP TABLE IF EXISTS `DOCUMENTS`;
 CREATE TABLE IF NOT EXISTS `DOCUMENTS` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `creationDate` datetime DEFAULT NULL,
-  `description` varchar(255) DEFAULT NULL,
-  `modificationDate` datetime DEFAULT NULL,
-  `name` varchar(255) DEFAULT NULL,
   `number` varchar(255) DEFAULT NULL,
-  `version` bigint(20) NOT NULL,
-  `agreement_ID` bigint(20) DEFAULT NULL,
-  `counterparty_from_ID` bigint(20) DEFAULT NULL,
-  `counterparty_to_ID` bigint(20) DEFAULT NULL,
-  `created_user_id` bigint(20) DEFAULT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `description` varchar(255) DEFAULT NULL,
   `documentType_ID` bigint(20) DEFAULT NULL,
-  `modify_user_id` bigint(20) DEFAULT NULL,
-  `parent_id` bigint(20) DEFAULT NULL,
-  `person_from_ID` bigint(20) DEFAULT NULL,
-  `person_to_ID` bigint(20) DEFAULT NULL,
+  `agreement_ID` bigint(20) DEFAULT NULL,
   `security_model` int(11) DEFAULT NULL,
+  `person_ID` bigint(20) DEFAULT NULL,
+  `counterparty_ID` bigint(20) DEFAULT NULL,
+  `parent_id` bigint(20) DEFAULT NULL,
+  `created_user_id` bigint(20) DEFAULT NULL,
+  `creationDate` datetime DEFAULT NULL,
+  `modify_user_id` bigint(20) DEFAULT NULL,
+  `modificationDate` datetime DEFAULT NULL,
+  `version` bigint(20) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_7dwik5irx2a7qakwjsyagsy20` (`agreement_ID`),
-  KEY `FK_fwe2rrdjni6wnu0o8bn4u417t` (`counterparty_from_ID`),
-  KEY `FK_kl33s0xsb5j2crm2u2v7suyjs` (`counterparty_to_ID`),
   KEY `FK_1x6wma4o912pgklqodxd03td6` (`created_user_id`),
   KEY `FK_k821q7c3jqqd49duqnx2uf3qq` (`documentType_ID`),
   KEY `FK_ogk4dt5yus0dyorl2ualhgdh5` (`modify_user_id`),
   KEY `FK_1peyp1wwyo9kk8og8sunuuxwx` (`parent_id`),
-  KEY `FK_nl6q1ui9fgxfkq2nhqfntsa93` (`person_from_ID`),
-  KEY `FK_14j3raoo1353p9anlyboqx2p9` (`person_to_ID`),
-  CONSTRAINT `FK_14j3raoo1353p9anlyboqx2p9` FOREIGN KEY (`person_to_ID`) REFERENCES `PERSONS` (`id`),
+  KEY `FK_limr04uapwn4wd5bfpj8vsbhl` (`counterparty_ID`),
+  KEY `FK_89jsaxmrdyrnmtdnsi6y3hyd7` (`person_ID`),
   CONSTRAINT `FK_1peyp1wwyo9kk8og8sunuuxwx` FOREIGN KEY (`parent_id`) REFERENCES `DOCUMENTS` (`id`),
   CONSTRAINT `FK_1x6wma4o912pgklqodxd03td6` FOREIGN KEY (`created_user_id`) REFERENCES `USERS` (`USER_ID`),
   CONSTRAINT `FK_7dwik5irx2a7qakwjsyagsy20` FOREIGN KEY (`agreement_ID`) REFERENCES `AGREEMENTS` (`id`),
-  CONSTRAINT `FK_fwe2rrdjni6wnu0o8bn4u417t` FOREIGN KEY (`counterparty_from_ID`) REFERENCES `Counterparty` (`id`),
+  CONSTRAINT `FK_89jsaxmrdyrnmtdnsi6y3hyd7` FOREIGN KEY (`person_ID`) REFERENCES `PERSONS` (`id`),
   CONSTRAINT `FK_k821q7c3jqqd49duqnx2uf3qq` FOREIGN KEY (`documentType_ID`) REFERENCES `DOCUMENT_TYPES` (`id`),
-  CONSTRAINT `FK_kl33s0xsb5j2crm2u2v7suyjs` FOREIGN KEY (`counterparty_to_ID`) REFERENCES `Counterparty` (`id`),
-  CONSTRAINT `FK_nl6q1ui9fgxfkq2nhqfntsa93` FOREIGN KEY (`person_from_ID`) REFERENCES `PERSONS` (`id`),
+  CONSTRAINT `FK_limr04uapwn4wd5bfpj8vsbhl` FOREIGN KEY (`counterparty_ID`) REFERENCES `Counterparty` (`id`),
   CONSTRAINT `FK_ogk4dt5yus0dyorl2ualhgdh5` FOREIGN KEY (`modify_user_id`) REFERENCES `USERS` (`USER_ID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
 -- Dumping data for table favorit.DOCUMENTS: ~1 rows (приблизно)
 /*!40000 ALTER TABLE `DOCUMENTS` DISABLE KEYS */;
-INSERT INTO `DOCUMENTS` (`id`, `creationDate`, `description`, `modificationDate`, `name`, `number`, `version`, `agreement_ID`, `counterparty_from_ID`, `counterparty_to_ID`, `created_user_id`, `documentType_ID`, `modify_user_id`, `parent_id`, `person_from_ID`, `person_to_ID`, `security_model`) VALUES
-	(1, '2015-10-20 13:18:03', 'sdfdsfds', NULL, 'dsfdsfds', '34543', 0, NULL, NULL, NULL, 4, 1, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `DOCUMENTS` (`id`, `number`, `name`, `description`, `documentType_ID`, `agreement_ID`, `security_model`, `person_ID`, `counterparty_ID`, `parent_id`, `created_user_id`, `creationDate`, `modify_user_id`, `modificationDate`, `version`) VALUES
+	(1, '34543', 'dsfdsfds', 'ntcn', 1, 1, NULL, 6, 1, NULL, 4, '2015-10-20 13:18:03', NULL, NULL, 2);
 /*!40000 ALTER TABLE `DOCUMENTS` ENABLE KEYS */;
 
 
@@ -240,19 +234,20 @@ CREATE TABLE IF NOT EXISTS `DOCUMENT_TYPES` (
   `name` varchar(255) DEFAULT NULL,
   `numberFormat` varchar(255) DEFAULT NULL,
   `version` bigint(20) NOT NULL,
+  `documentClass` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
 
 -- Dumping data for table favorit.DOCUMENT_TYPES: ~7 rows (приблизно)
 /*!40000 ALTER TABLE `DOCUMENT_TYPES` DISABLE KEYS */;
-INSERT INTO `DOCUMENT_TYPES` (`id`, `counter`, `name`, `numberFormat`, `version`) VALUES
-	(1, 0, 'Входящая корреспонденция', 'ВХ-№%1/%4', 0),
-	(2, 0, 'Исходящая кореспонденция', NULL, 0),
-	(3, 0, 'Счета на оплату', NULL, 0),
-	(4, 0, 'Конструкторская документация', NULL, 0),
-	(5, 0, 'Электронные схемы', NULL, 0),
-	(6, 0, 'Руководства по эксплуатации', NULL, 0),
-	(7, 0, 'Нормативная документация (ГОСТ/ДСТУ/ОСТ и др)', NULL, 0);
+INSERT INTO `DOCUMENT_TYPES` (`id`, `counter`, `name`, `numberFormat`, `version`, `documentClass`) VALUES
+	(1, 0, 'Входящая корреспонденция', 'ВХ-№%1/%4', 0, 1),
+	(2, 0, 'Исходящая кореспонденция', NULL, 0, 2),
+	(3, 0, 'Счета на оплату', NULL, 0, 1),
+	(4, 0, 'Конструкторская документация', NULL, 0, 0),
+	(5, 0, 'Электронные схемы', NULL, 0, 0),
+	(6, 0, 'Руководства по эксплуатации', NULL, 0, 0),
+	(7, 0, 'Нормативная документация (ГОСТ/ДСТУ/ОСТ и др)', NULL, 0, 0);
 /*!40000 ALTER TABLE `DOCUMENT_TYPES` ENABLE KEYS */;
 
 
@@ -267,7 +262,7 @@ CREATE TABLE IF NOT EXISTS `EXECUTORS` (
   CONSTRAINT `FK_pbo9qvoj8dh34rp9ppu8r493d` FOREIGN KEY (`person_id`) REFERENCES `PERSONS` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- Dumping data for table favorit.EXECUTORS: ~0 rows (приблизно)
+-- Dumping data for table favorit.EXECUTORS: ~2 rows (приблизно)
 /*!40000 ALTER TABLE `EXECUTORS` DISABLE KEYS */;
 INSERT INTO `EXECUTORS` (`task_id`, `person_id`) VALUES
 	(1, 3),
@@ -333,7 +328,7 @@ CREATE TABLE IF NOT EXISTS `MESSAGES_RECIPIENT` (
   CONSTRAINT `FK_3o6ftkkbbqycss7elh7r8bqsc` FOREIGN KEY (`message_ID`) REFERENCES `MESSAGES` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
 
--- Dumping data for table favorit.MESSAGES_RECIPIENT: ~5 rows (приблизно)
+-- Dumping data for table favorit.MESSAGES_RECIPIENT: ~6 rows (приблизно)
 /*!40000 ALTER TABLE `MESSAGES_RECIPIENT` DISABLE KEYS */;
 INSERT INTO `MESSAGES_RECIPIENT` (`id`, `validationDate`, `message_ID`, `person_ID`) VALUES
 	(2, NULL, 1, 3),
@@ -872,7 +867,7 @@ CREATE TABLE IF NOT EXISTS `TASKS` (
   CONSTRAINT `FK_geq0ybfepta8w7oar08ug5dob` FOREIGN KEY (`task_type_id`) REFERENCES `TASK_TYPES` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
--- Dumping data for table favorit.TASKS: ~0 rows (приблизно)
+-- Dumping data for table favorit.TASKS: ~2 rows (приблизно)
 /*!40000 ALTER TABLE `TASKS` DISABLE KEYS */;
 INSERT INTO `TASKS` (`id`, `description`, `creationDate`, `dedLineDate`, `startDate`, `version`, `task_type_id`, `responsible_person_id`, `result`, `endDate`, `create_user_id`, `modificationDate`, `endControlDate`) VALUES
 	(1, '<h2><b><i>tryttwr</i></b></h2><p>trywtwt</p><p>wrywtwr</p>', '2015-11-03 11:32:37', '2015-11-30 00:00:00', '2015-11-01 00:00:00', 7, 5, 3, NULL, NULL, 4, '2015-11-03 14:57:35', NULL),
