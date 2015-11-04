@@ -77,6 +77,7 @@ public class DocumentController {
             int page;
             try {
                 page = Integer.parseInt(request.getParameter("page")) - 1;
+                if(page<0)page=0;
                 rows = request.getParameter("rows") == null ? 10 : Integer.parseInt(request.getParameter("rows"));
                 if(request.getParameter("sidx")!=null && !request.getParameter("sidx").isEmpty()){
                     String direction=request.getParameter("sord");
@@ -113,6 +114,7 @@ public class DocumentController {
             int page;
             try {
                 page = Integer.parseInt(request.getParameter("page")) - 1;
+                if(page<0)page=0;
                 rows = request.getParameter("rows") == null ? 10 : Integer.parseInt(request.getParameter("rows"));
                 if(request.getParameter("sidx")!=null && !request.getParameter("sidx").isEmpty()){
                     String direction=request.getParameter("sord");
@@ -155,6 +157,7 @@ public class DocumentController {
             int page;
             try {
                 page = Integer.parseInt(request.getParameter("page")) - 1;
+                if(page<0)page=0;
                 rows = request.getParameter("rows") == null ? 10 : Integer.parseInt(request.getParameter("rows"));
                 if(request.getParameter("sidx")!=null && !request.getParameter("sidx").isEmpty()){
                     String direction=request.getParameter("sord");
@@ -509,11 +512,11 @@ public class DocumentController {
                 Person person = personRepository.findOne(personID);
                 ds.setDocument(document);
                 ds.setPerson(person);
-                Long action_id=Utils.getLongParameter("action_id",request);
+                Long action_id=Utils.getLongParameter("action",request);
                 if(action_id!=null){
                     ds.setAction(SECURITY_ACTION.fromInteger(action_id.intValue()));
                 }
-                Long permision_id=Utils.getLongParameter("permision_id",request);
+                Long permision_id=Utils.getLongParameter("permision",request);
                 if(permision_id!=null){
                     ds.setPermission(SECURITY_PERMISSION.fromInteger(permision_id.intValue()));
                 }

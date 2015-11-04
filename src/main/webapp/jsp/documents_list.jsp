@@ -211,13 +211,12 @@
                 //Таблица дескриптор безопасности
                 var select_sec_obj={};
                 var GridDataSec={
-                    person_id:function(){return select_sec_obj.person_id},
+                    personID:function(){return select_sec_obj.person_id},
                 };
                 jQuery("#"+subgrid_table_sec_id).jqGrid({
                     pager:subgrid_pager_sec_id,
                     url:"${pageContext.request.contextPath}/documents/security_listing?document_id="+row_id,
-                    editurl:null,
-                    fileurl:"${pageContext.request.contextPath}/documents/editSecurity?documentID="+row_id,
+                    editurl:"${pageContext.request.contextPath}/documents/editSecurity?documentID="+row_id,
                     datatype: "json",
                     mtype: 'POST',
                     width:800,
@@ -259,7 +258,7 @@
                     id: "id",
                     height: '100%',
                     rowNum:20,
-                    sortname: 'fileName',
+                    sortname: 'person.surname',
                     dataProxy:$.jgrid.ext.ajaxFormProxy, //our charming dataProxy ^__^
                     sortorder: "asc"
                 }).jqGrid('extBindEvents');
@@ -281,13 +280,12 @@
                 //список лиц на утверждение
                 var select_sub_obj={};
                 var GridDataSub={
-                    person_id:function(){return select_sub_obj.person_id},
+                    personID:function(){return select_sub_obj.person_id},
                 };
                 jQuery("#"+subgrid_table_scr_id).jqGrid({
                     pager:subgrid_pager_scr_id,
                     url:"${pageContext.request.contextPath}/documents/subscriber_listing?document_id="+row_id,
-                    editurl:null,
-                    fileurl:"${pageContext.request.contextPath}/documents/editSubscribe?documentID="+row_id,
+                    editurl:"${pageContext.request.contextPath}/documents/editSubscribe?documentID="+row_id,
                     datatype: "json",
                     mtype: 'POST',
                     width:800,
@@ -308,7 +306,7 @@
                     id: "id",
                     height: '100%',
                     rowNum:20,
-                    sortname: 'fileName',
+                    sortname: 'person.surname',
                     dataProxy:$.jgrid.ext.ajaxFormProxy, //our charming dataProxy ^__^
                     sortorder: "asc"
                 }).jqGrid('extBindEvents');
